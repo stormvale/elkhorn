@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.Weather", "src\API.Weather\API.Weather.csproj", "{AAC3178A-B0F9-462F-B2E6-F00FB6CE58EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0C5A74F6-702F-4276-B76F-A37F3CBB1C90}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{6B2739BB-9489-4079-ACF5-BFB4ACA98B86}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{0A7760F7-6729-4C6E-897B-5D65B1CCD63A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{8780E688-835A-4B67-9B60-2F3B74ABDBB1}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build-test.yml = .github\workflows\build-test.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.Weather.Tests", "test\Unit\API.Weather.Tests\API.Weather.Tests.csproj", "{2D8DAECF-5A47-485A-B37D-69D8FD268F62}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AAC3178A-B0F9-462F-B2E6-F00FB6CE58EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAC3178A-B0F9-462F-B2E6-F00FB6CE58EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAC3178A-B0F9-462F-B2E6-F00FB6CE58EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAC3178A-B0F9-462F-B2E6-F00FB6CE58EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D8DAECF-5A47-485A-B37D-69D8FD268F62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D8DAECF-5A47-485A-B37D-69D8FD268F62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D8DAECF-5A47-485A-B37D-69D8FD268F62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D8DAECF-5A47-485A-B37D-69D8FD268F62}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AAC3178A-B0F9-462F-B2E6-F00FB6CE58EE} = {0C5A74F6-702F-4276-B76F-A37F3CBB1C90}
+		{8780E688-835A-4B67-9B60-2F3B74ABDBB1} = {0A7760F7-6729-4C6E-897B-5D65B1CCD63A}
+		{2D8DAECF-5A47-485A-B37D-69D8FD268F62} = {6B2739BB-9489-4079-ACF5-BFB4ACA98B86}
+	EndGlobalSection
+EndGlobal
