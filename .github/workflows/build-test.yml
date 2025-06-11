@@ -111,7 +111,10 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
+      - name: Set lower case project name
+        run: echo PROJECT_LOWERCASE=$(echo ${{ matrix.project }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.project }}:latest src/${{ matrix.project }}
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.project }}:latest
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/$PROJECT_LOWERCASE:latest src/${{ matrix.project }}
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/$PROJECT_LOWERCASE:latest
