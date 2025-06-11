@@ -17,12 +17,6 @@ jobs:
     strategy:
       matrix:
         project: [ API.Weather ]
-      
-      #    permissions:
-      #      contents: read
-      #      issues: read
-      #      checks: write
-      #      pull-requests: write
     
     steps:
       - name: Checkout repository
@@ -58,6 +52,12 @@ jobs:
     needs: build-test
     if: github.event_name == 'pull_request'
 
+    permissions:
+        contents: read
+        issues: read
+        checks: write
+        pull-requests: write
+
     steps:
       - name: Download test results - API.Weather
         uses: actions/download-artifact@v4
@@ -88,7 +88,6 @@ jobs:
 
       - name: Publish coverage report
         uses: marocchino/sticky-pull-request-comment@v2
-        if: github.event_name == 'pull_request'
         with:
           recreate: true
           path: code-coverage-results.md
