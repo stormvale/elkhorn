@@ -40,7 +40,7 @@ jobs:
         run: dotnet build src/${{ matrix.project }} --configuration Release --no-restore
 
       - name: Run tests
-        run: dotnet test test/unit/${{ matrix.project }}.Tests --collect:"XPlat Code Coverage" --logger trx
+        run: dotnet test test/unit/${{ matrix.project }}.Tests --configuration Release --collect:"XPlat Code Coverage" --logger trx
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -48,8 +48,8 @@ jobs:
         with:
           name: test-results-${{ matrix.project }}
           path: |
-            ${{ matrix.project }}/TestResults/*.trx
-            ${{ matrix.project }}/TestResults/**/coverage.cobertura.xml
+            test/**/TestResults/*.trx
+            test/**/TestResults/**/coverage.cobertura.xml
           retention-days: 1
 
   publish-results:
