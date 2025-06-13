@@ -6,6 +6,10 @@ on:
     branches: [ master ]
   workflow_dispatch:
 
+permissions:
+  id-token: write # needed for Azure CLI login
+  contents: read
+
 env:
   REGISTRY: ${{ secrets.AZURE_CONTAINER_REGISTRY }}.azurecr.io
 
