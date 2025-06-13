@@ -1,11 +1,14 @@
 on:
   push:
-    branches:
-      - master
+    branches: [ $default-branch ]
+    tags: [ 'v*.*.*' ] # Publish semver tags as releases.
   pull_request:
-    branches:
-      - master
+    branches: [ $default-branch ]
   workflow_dispatch:
+
+env:
+  REGISTRY: ${{ secrets.ACR_NAME }}.azurecr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-test:
@@ -101,25 +104,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set Image Name
-        id: image_name
-        run: |
-          PROJECT_LOWERCASE=$(echo ${{ matrix.project }} | tr '[:upper:]' '[:lower:]')
-          IMAGE_NAME="${{ secrets.ACR_NAME }}.azurecr.io/$PROJECT_LOWERCASE"
-          echo "{image_name}={$IMAGE_NAME}" >> $GITHUB_OUTPUT
+      # - name: Set Image Name
+      #   id: image_name
+      #   run: |
+      #     PROJECT_LC=$(echo ${{ matrix.project }} | tr '[:upper:]' '[:lower:]')
+      #     IMAGE_NAME="${{ secrets.ACR_NAME }}.azurecr.io/$PROJECT_LC"
+      #     echo "{image_name}={$IMAGE_NAME}" >> $GITHUB_OUTPUT
 
       # - name: Set lower case project name
       #   run: echo PROJECT_LOWERCASE=$(echo ${{ matrix.project }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
 
-        # ${{ secrets.ACR_NAME }}.azurecr.io/$PROJECT_LOWERCASE
-
-      - name: Docker meta
+      - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ steps.image_name.outputs.image_name }}:${{ github.sha }}
-            ${{ steps.image_name.outputs.image_name }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            latest=auto
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -134,15 +136,12 @@ jobs:
           password: ${{ secrets.AZURE_CLIENT_SECRET }}
 
       - name: Build and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
-          push: true
+          push: ${{ github.event_name != 'pull_request' }} # don't push on PRs
           context: src/${{ matrix.project }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-    outputs:
-      image_name: ${{ steps.image_name.outputs.image_name }}
 
   deploy:
     runs-on: ubuntu-latest
