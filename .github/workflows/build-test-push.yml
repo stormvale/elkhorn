@@ -7,8 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  REGISTRY: ${{ secrets.ACR_NAME }}.azurecr.io
-  IMAGE_NAME: ${{ github.repository }}
+  REGISTRY: ${{ secrets.AZURE_CONTAINER_REGISTRY }}.azurecr.io
 
 jobs:
   build-test:
@@ -17,6 +16,9 @@ jobs:
     strategy:
       matrix:
         project: [ API.Weather ]
+
+    env:
+      IMAGE_NAME: ${{ matrix.project }}
     
     steps:
       - name: Checkout repository
@@ -100,19 +102,12 @@ jobs:
       matrix:
         project: [ API.Weather ]
 
+    env:
+      IMAGE_NAME: ${{ matrix.project }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      # - name: Set Image Name
-      #   id: image_name
-      #   run: |
-      #     PROJECT_LC=$(echo ${{ matrix.project }} | tr '[:upper:]' '[:lower:]')
-      #     IMAGE_NAME="${{ secrets.ACR_NAME }}.azurecr.io/$PROJECT_LC"
-      #     echo "{image_name}={$IMAGE_NAME}" >> $GITHUB_OUTPUT
-
-      # - name: Set lower case project name
-      #   run: echo PROJECT_LOWERCASE=$(echo ${{ matrix.project }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
 
       - name: Docker metadata
         id: meta
@@ -131,14 +126,14 @@ jobs:
       - name: Login to ACR
         uses: docker/login-action@v3
         with:
-          registry: ${{ secrets.ACR_NAME }}.azurecr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ secrets.AZURE_CLIENT_ID }}
           password: ${{ secrets.AZURE_CLIENT_SECRET }}
 
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          push: ${{ github.event_name != 'pull_request' }} # don't push on PRs
+          push: true # don't push on PRs?
           context: src/${{ matrix.project }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -149,6 +144,7 @@ jobs:
 
     strategy:
       matrix:
+        project: [ API.Weather ]
         environment: [development, production]
 
     environment: ${{ matrix.environment }}
@@ -171,4 +167,4 @@ jobs:
       #   uses: azure/webapps-deploy@v2
       #   with:
       #     app-name: '<WEB_APP_NAME>'
-      #     images: '${{ secrets.ACR_NAME }}.azurecr.io/${{ needs.docker-build-push.outputs.image_name}}:latest'
+      #     images: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest'
