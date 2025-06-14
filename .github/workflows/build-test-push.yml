@@ -11,9 +11,6 @@ permissions:
   contents: read
   packages: write
 
-env:
-  REGISTRY: ${{ secrets.AZURE_CONTAINER_REGISTRY }}.azurecr.io
-
 jobs:
   build-test:
     runs-on: ubuntu-latest
@@ -108,7 +105,7 @@ jobs:
         project: [ API.Weather ]
 
     env:
-      IMAGE_NAME: ${{ matrix.project }} # docker actions will handle the lowercase stuff
+      IMAGE_NAME: ghcr.io/stormvale/${{ matrix.project }} # docker actions will handle the lowercase stuff
 
     steps:
       - name: Checkout repository
@@ -118,10 +115,8 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: |
-            ghcr.io/${{ env.IMAGE_NAME }}
-          flavor: |
-            latest=auto
+          images: ${{ env.IMAGE_NAME }}
+          flavor: latest=auto
           tags: |
             type=ref,event=branch
             type=ref,event=pr
