@@ -8,6 +8,13 @@ on:
 #     branches: [ master ]
 #     paths: [ 'src/api.weather/**' ]
   workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        required: true
+        description: Environment
+        options: [ 'development', 'production']
+        default: ''
 
 permissions:
   id-token: write # needed for Azure CLI login
@@ -22,14 +29,14 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        environment: [development, production]
+    # strategy:
+    #   matrix:
+    #     environment: [development]
 
-    environment: ${{ matrix.environment }}
+    environment: ${{ inputs.environment }}
 
     env:
-      ENV_SHORT: ${{ matrix.environment ==  'development' && 'dev' || 'prod' }}
+      ENV_SHORT: ${{ inputs.environment ==  'development' && 'dev' || 'prod' }}
 
     steps:
       - name: Checkout repository
