@@ -9,6 +9,7 @@ on:
 permissions:
   id-token: write # needed for Azure CLI login
   contents: read
+  packages: write
 
 env:
   REGISTRY: ${{ secrets.AZURE_CONTAINER_REGISTRY }}.azurecr.io
@@ -107,7 +108,7 @@ jobs:
         project: [ API.Weather ]
 
     env:
-      IMAGE_NAME: ${{ matrix.project }}
+      IMAGE_NAME: ${{ matrix.project }} # docker actions will handle the lowercase stuff
 
     steps:
       - name: Checkout repository
@@ -118,7 +119,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+            ghcr.io/${{ env.IMAGE_NAME }}
           flavor: |
             latest=auto
           tags: |
@@ -127,12 +128,12 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
 
-      - name: Login to ACR
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.AZURE_CLIENT_ID }}
-          password: ${{ secrets.AZURE_CLIENT_SECRET }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
         uses: docker/build-push-action@v6
