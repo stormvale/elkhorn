@@ -1,12 +1,12 @@
 name: Deploy API - Weather
 
 on:
-  push:
-    branches: [ master ]
-    paths: [ 'src/api.weather/**' ]
-  pull_request:
-    branches: [ master ]
-    paths: [ 'src/api.weather/**' ]
+#   push:
+#     branches: [ master ]
+#     paths: [ 'src/api.weather/**' ]
+#   pull_request:
+#     branches: [ master ]
+#     paths: [ 'src/api.weather/**' ]
   workflow_dispatch:
 
 permissions:
