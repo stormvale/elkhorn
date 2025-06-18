@@ -14,7 +14,12 @@ on:
         required: true
         description: Environment
         options: [ 'development', 'production']
-        default: ''
+        default: 'development'
+      tag:
+        type: string
+        required: true
+        description: 'Tag to deploy (see https://github.com/stormvale/elkhorn/pkgs/container/api.weather)'
+        default: 'latest'
 
 permissions:
   id-token: write # needed for Azure CLI login
@@ -23,7 +28,7 @@ permissions:
 
 env:
   PROJECT: 'api-weather' # name of azure web app
-  IMAGE_NAME: ghcr.io/stormvale/api-weather
+  
 
 jobs:
   deploy:
@@ -37,6 +42,7 @@ jobs:
 
     env:
       ENV_SHORT: ${{ inputs.environment ==  'development' && 'dev' || 'prod' }}
+      IMAGE_NAME: ghcr.io/stormvale/$env.PROJECT
 
     steps:
       - name: Checkout repository
@@ -60,4 +66,4 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.PROJECT }}-elkhorn-${{ env.ENV_SHORT }}-wus2 # api-weather-elkhorn-dev-wus2
-          images: '${{ env.IMAGE_NAME }}:latest'
+          images: '${{ env.IMAGE_NAME }}:${{ inputs.tag }}'
