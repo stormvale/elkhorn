@@ -115,7 +115,6 @@ jobs:
           images: ghcr.io/stormvale/${{ env.project_name }} # docker action will handle the lowercase stuff
           flavor: latest=auto
           tags: |
-            type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
