@@ -1,9 +1,5 @@
 name: api-weather
 
-permissions:
-  contents: read
-  packages: write
-
 on:
   push:
     branches: [ master ]
@@ -12,6 +8,10 @@ on:
     branches: [ master ]
     paths: [ src/API.Weather/** ]
   workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write # needed to publish image to ghcr
 
 env:
   project_name: API.Weather
@@ -75,7 +75,6 @@ jobs:
           files: |
             TestResults/**/*.trx
 
-      # [requires Linux runner]
       - name: Generate coverage report
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
@@ -98,10 +97,6 @@ jobs:
   docker-build-tag-push:
     needs: build-test
     runs-on: ubuntu-latest
-    
-    permissions:
-      contents: read
-      packages: write # needed to publish image to ghcr
 
     outputs:
       image_name: ${{ steps.get-build-name.outputs.image_name }}
@@ -139,7 +134,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Set 'image_name' output
+      - name: 'Set output: imageName'
         id: get-build-name
         run: |
           imageName=${{ fromJSON(steps.build-push.outputs.metadata)['image.name'] }}
