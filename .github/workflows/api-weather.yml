@@ -98,7 +98,9 @@ jobs:
   docker-build-tag-push:
     needs: build-test
     runs-on: ubuntu-latest
+    
     permissions:
+      contents: read
       packages: write # needed to publish image to ghcr
 
     outputs:
@@ -106,7 +108,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Docker metadata
         id: meta
