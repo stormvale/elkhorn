@@ -15,7 +15,6 @@ permissions:
 
 env:
   project_name: API.Weather
-  # image_name: ghcr.io/stormvale/api.weather
   container_app_name: api-weather-elkhorn-{0}-wus2
 
 jobs:
@@ -113,7 +112,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.image_name }} # the action will handle the lowercase stuff
+          images: ghcr.io/stormvale/${{ env.project_name }} # docker actions will handle the lowercase stuff
           flavor: latest=auto
           tags: |
             type=ref,event=branch
