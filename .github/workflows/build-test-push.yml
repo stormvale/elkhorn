@@ -108,6 +108,9 @@ jobs:
     env:
       IMAGE_NAME: ghcr.io/stormvale/${{ matrix.project }} # docker actions will handle the lowercase stuff
 
+    outputs:
+      image_name: ${{ steps.get-build-name.outputs.image_name }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -133,6 +136,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
+        id: build-push
         uses: docker/build-push-action@v6
         with:
           push: true # don't push on PRs?
@@ -140,4 +144,40 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      # post some sort of update to PR
+      - id: test
+        run: |
+          ${{ fromJSON(steps.build-push.outputs.metadata) }}
+          ${{ steps.build-push.outputs.imageid }}
+
+      - id: get-build-name
+        run: |
+          imageName=${{ fromJSON(steps.build-push.outputs.metadata)['image.name'] }}
+          echo "::set-output name=image_name::$imageName"
+
+      # - name: Deploy to Container App (DEV)
+      #   uses: azure/container-apps-deploy-action@v1
+      #   with:
+      #     containerAppName: ${{ env.PROJECT }}-elkhorn-dev-wus2
+      #     resourceGroup: rg-elkhorn-dev-wus2
+      #     imageToDeploy: ghcr.io/stormvale/${{ env.PROJECT }}:${{ inputs.tag }}
+
+  deploy-to-dev:
+    runs-on: ubuntu-latest
+    environment: development
+    needs: [docker-build-push]
+
+    env:
+      PROJECT: api-weather
+
+    steps:
+
+      - id: test
+        run: |
+          ${{ needs.docker-build-push.outputs.image_name }}
+
+      # - name: Deploy to Container App (DEV)
+      #   uses: azure/container-apps-deploy-action@v1
+      #   with:
+      #     containerAppName: ${{ env.PROJECT }}-elkhorn-dev-wus2
+      #     resourceGroup: rg-elkhorn-dev-wus2
+      #     imageToDeploy: ghcr.io/stormvale/${{ env.PROJECT }}:${{ inputs.tag }}
