@@ -17,6 +17,10 @@ builder.Services.AddOpenApi(o =>
             TermsOfService = new Uri("https://opensource.org/licenses/MIT")
         };
         
+        // required to access scalar ui when using https. something about how the AspNetCore.OpenApi
+        // document generator uses the applicationUrl config in the launchSettings.json.
+        document.Servers = [];
+        
         return Task.CompletedTask;
     });
 });
