@@ -15,7 +15,7 @@ permissions:
 
 env:
   project_name: API.Weather
-  image_name: ghcr.io/stormvale/api.weather
+  # image_name: ghcr.io/stormvale/api.weather
   container_app_name: api-weather-elkhorn-{0}-wus2
 
 jobs:
@@ -99,6 +99,9 @@ jobs:
     needs: build-test
     runs-on: ubuntu-latest
 
+    outputs:
+      image_name: ${{ steps.get-build-name.outputs.image_name }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -116,7 +119,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Login to GitHub Container Registry
+      - name: Login to GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -127,10 +130,16 @@ jobs:
         id: build-push
         uses: docker/build-push-action@v6
         with:
-          push: true # should we push on PRs?
+          push: true # should we always push?
           context: src/${{ env.project_name }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Set 'image_name' output
+        id: get-build-name
+        run: |
+          imageName=${{ fromJSON(steps.build-push.outputs.metadata)['image.name'] }}
+          echo "image_name=${imageName}" >> "$GITHUB_OUTPUT"
 
   deploy:
     runs-on: ubuntu-latest
@@ -142,17 +151,17 @@ jobs:
 
     strategy:
       matrix:
-        environment: [development, production]
+        environment: [development] #, production]
         include:
           - environment: development
             env_short: dev
-          - environment: production
-            env_short: prod
+          # - environment: production
+          #   env_short: prod
 
     steps:
 
-      - name: show deploy
-        run: echo deploying ${{ env.image_name }} to ${{ format(env.container_app_name, matrix.env_short) }}
+      - name: Show deploy info
+        run: echo deploying ${{ needs.docker-build-tag-push.outputs.image_name }} to ${{ format(env.container_app_name, matrix.env_short) }}
 
       - name: 'Azure login'
         uses: azure/login@v2
@@ -169,4 +178,16 @@ jobs:
         with:
           containerAppName: ${{ format(env.container_app_name, matrix.env_short) }}
           resourceGroup: rg-elkhorn-dev-wus2
-          imageToDeploy: ${{ env.image_name }}
+          imageToDeploy: ${{ needs.docker-build-tag-push.outputs.image_name }}
+
+      - name: Update PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '${{ needs.docker-build-tag-push.outputs.image_name }} deployed to ${{ format(env.container_app_name, matrix.env_short) }}'
+            })
