@@ -148,6 +148,7 @@ jobs:
 
     permissions:
       id-token: write # needed for az login
+      pull-requests: write
 
     strategy:
       matrix:
@@ -159,7 +160,6 @@ jobs:
           #   env_short: prod
 
     steps:
-
       - name: Show deploy info
         run: echo deploying ${{ needs.docker-build-tag-push.outputs.image_name }} to ${{ format(env.container_app_name, matrix.env_short) }}
 
