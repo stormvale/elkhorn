@@ -9,10 +9,6 @@ on:
     paths: [ src/API.Weather/** ]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  packages: write
-
 env:
   project_name: API.Weather
   # image_name: ghcr.io/stormvale/api.weather
@@ -98,6 +94,8 @@ jobs:
   docker-build-tag-push:
     needs: build-test
     runs-on: ubuntu-latest
+    permissions:
+      packages: write # needed to publish image to ghcr
 
     outputs:
       image_name: ${{ steps.get-build-name.outputs.image_name }}
@@ -152,7 +150,7 @@ jobs:
 
     strategy:
       matrix:
-        environment: [development] #, production]
+        environment: [development] # production
         include:
           - environment: development
             env_short: dev
