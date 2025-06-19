@@ -144,15 +144,10 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - id: test
-        run: |
-          ${{ fromJSON(steps.build-push.outputs.metadata) }}
-          ${{ steps.build-push.outputs.imageid }}
-
       - id: get-build-name
         run: |
           imageName=${{ fromJSON(steps.build-push.outputs.metadata)['image.name'] }}
-          echo "::set-output name=image_name::$imageName"
+          echo "image_name=${imageName}" >> "$GITHUB_OUTPUT"
 
       # - name: Deploy to Container App (DEV)
       #   uses: azure/container-apps-deploy-action@v1
@@ -171,13 +166,14 @@ jobs:
 
     steps:
 
-      - id: test
+      - name: check image name
         run: |
-          ${{ needs.docker-build-push.outputs.image_name }}
+          echo ${{ needs.docker-build-push.outputs.image_name }}
+          echo "::set-output name=image_name::$imageName"
 
       # - name: Deploy to Container App (DEV)
       #   uses: azure/container-apps-deploy-action@v1
       #   with:
       #     containerAppName: ${{ env.PROJECT }}-elkhorn-dev-wus2
       #     resourceGroup: rg-elkhorn-dev-wus2
-      #     imageToDeploy: ghcr.io/stormvale/${{ env.PROJECT }}:${{ inputs.tag }}
+      #     imageToDeploy: ${{ needs.docker-build-push.outputs.image_name }}
