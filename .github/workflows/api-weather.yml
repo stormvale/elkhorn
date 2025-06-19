@@ -137,6 +137,9 @@ jobs:
     needs: [docker-build-tag-push]
     environment: ${{ matrix.environment }}
 
+    permissions:
+      id-token: write # needed for az login
+
     strategy:
       matrix:
         environment: [development, production]
