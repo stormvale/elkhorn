@@ -147,7 +147,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [docker-build-tag-push]
     environment: ${{ matrix.environment }}
-    if: false # disabled for now. manual deployments can be done using api-weather-deploy.yml
+
+    # only run on pushes to master (ie. merges into master)
+    if: (github.event_name == 'push') && (github.ref == 'refs/heads/master')
 
     permissions:
       id-token: write # needed for az login
