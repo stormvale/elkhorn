@@ -18,7 +18,7 @@ on:
       tag:
         type: string
         required: true
-        description: 'Tag to deploy (see https://github.com/stormvale/elkhorn/pkgs/container/api.weather)'
+        description: 'Tag to deploy'
         default: 'latest'
 
 permissions:
@@ -62,8 +62,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Deploy container to Azure Web App
-        uses: azure/webapps-deploy@v3
+      - name: Deploy private GHCR image to Container App
+        uses: azure/container-apps-deploy-action@v1
         with:
-          app-name: ${{ env.PROJECT }}-elkhorn-${{ env.ENV_SHORT }}-wus2 # api-weather-elkhorn-dev-wus2
-          images: '${{ env.IMAGE_NAME }}:${{ inputs.tag }}'
+          containerAppName: ${{ env.PROJECT }}-elkhorn-${{ env.ENV_SHORT }}-wus2 # api-weather-elkhorn-dev-wus2
+          resourceGroup: rg-elkhorn-${{ env.ENV_SHORT }}-wus2
+          imageToDeploy: ghcr.io/stormvale/'${{ env.IMAGE_NAME }}:${{ inputs.tag }}'
+          #registryUrl: ghcr.io
+          # registryUsername: ${{ secrets.GHCR_USERNAME }}
+          # registryPassword: ${{ secrets.GHCR_TOKEN }}
