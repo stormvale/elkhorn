@@ -26,23 +26,14 @@ permissions:
   contents: read
   packages: write
 
-env:
-  PROJECT: 'api-weather' # name of azure web app
-  
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
-    # strategy:
-    #   matrix:
-    #     environment: [development]
-
     environment: ${{ inputs.environment }}
 
     env:
+      PROJECT: 'api-weather'
       ENV_SHORT: ${{ inputs.environment ==  'development' && 'dev' || 'prod' }}
-      IMAGE_NAME: ghcr.io/stormvale/$env.PROJECT
 
     steps:
       - name: Checkout repository
@@ -67,7 +58,4 @@ jobs:
         with:
           containerAppName: ${{ env.PROJECT }}-elkhorn-${{ env.ENV_SHORT }}-wus2 # api-weather-elkhorn-dev-wus2
           resourceGroup: rg-elkhorn-${{ env.ENV_SHORT }}-wus2
-          imageToDeploy: ghcr.io/stormvale/'${{ env.IMAGE_NAME }}:${{ inputs.tag }}'
-          #registryUrl: ghcr.io
-          # registryUsername: ${{ secrets.GHCR_USERNAME }}
-          # registryPassword: ${{ secrets.GHCR_TOKEN }}
+          imageToDeploy: ghcr.io/stormvale/${{ env.PROJECT }}:${{ inputs.tag }} # ghcr.io/stormvale/api-weather:pr-3
