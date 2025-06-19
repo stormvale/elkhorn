@@ -32,7 +32,6 @@ jobs:
     environment: ${{ inputs.environment }}
 
     env:
-      PROJECT: 'api-weather'
       ENV_SHORT: ${{ inputs.environment ==  'development' && 'dev' || 'prod' }}
 
     steps:
@@ -56,6 +55,6 @@ jobs:
       - name: Deploy private GHCR image to Container App
         uses: azure/container-apps-deploy-action@v1
         with:
-          containerAppName: ${{ env.PROJECT }}-elkhorn-${{ env.ENV_SHORT }}-wus2 # api-weather-elkhorn-dev-wus2
+          containerAppName: api-weather-elkhorn-${{ env.ENV_SHORT }}-wus2 # api-weather-elkhorn-dev-wus2
           resourceGroup: rg-elkhorn-${{ env.ENV_SHORT }}-wus2
-          imageToDeploy: ghcr.io/stormvale/${{ env.PROJECT }}:${{ inputs.tag }} # ghcr.io/stormvale/api-weather:pr-3
+          imageToDeploy: ghcr.io/stormvale/api.weather:${{ inputs.tag }} # ghcr.io/stormvale/api.weather:pr-3

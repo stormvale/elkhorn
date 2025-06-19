@@ -1,0 +1,160 @@
+name: api-weather
+
+on:
+  push:
+    branches: [ master ]
+    tags: [ 'v*.*.*' ] # publish semver tags as releases.
+  pull_request:
+    branches: [ master ]
+    paths: [ src/API.Weather/** ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  project_name: API.Weather
+  image_name: ghcr.io/stormvale/api.weather
+  container_app_name: api-weather-elkhorn-{0}-wus2
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0'
+
+      - name: Restore dependencies
+        run: dotnet restore src/${{ env.project_name }}
+
+      - name: Build project
+        run: dotnet build src/${{ env.project_name }} --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test test/unit/${{ env.project_name }}.Tests --configuration Release --collect:"XPlat Code Coverage" --logger trx
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }} # run even if tests fail
+        with:
+          name: test-results-${{ env.project_name }}
+          path: |
+            test/**/TestResults/*.trx
+            test/**/TestResults/**/coverage.cobertura.xml
+          retention-days: 1
+
+  publish-results:
+    name: Publish Results
+    runs-on: ubuntu-latest
+    needs: build-test
+    if: github.event_name == 'pull_request'
+
+    permissions:
+        contents: read
+        issues: read
+        checks: write
+        pull-requests: write
+
+    steps:
+      - name: Download test results
+        uses: actions/download-artifact@v4
+        with:
+          name: test-results-${{ env.project_name }}
+          path: TestResults/${{ env.project_name }}
+
+      - name: Publish test results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: (!cancelled())
+        with:
+          files: |
+            TestResults/**/*.trx
+
+      # [requires Linux runner]
+      - name: Generate coverage report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: TestResults/**/coverage.cobertura.xml
+          badge: true
+          fail_below_min: false
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: false
+          indicators: true
+          output: file
+          thresholds: "50 70"
+
+      - name: Publish coverage report
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          recreate: true
+          path: code-coverage-results.md
+
+  docker-build-tag-push:
+    needs: build-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.image_name }} # the action will handle the lowercase stuff
+          flavor: latest=auto
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        id: build-push
+        uses: docker/build-push-action@v6
+        with:
+          push: true # should we push on PRs?
+          context: src/${{ env.project_name }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [docker-build-tag-push]
+    environment: ${{ matrix.environment }}
+
+    strategy:
+      matrix:
+        environment: [development, production]
+        include:
+          - environment: development
+            env_short: dev
+          - environment: production
+            env_short: prod
+
+    steps:
+
+      - name: show deploy
+        run: echo deploying ${{ env.image_name }} to ${{ format(env.container_app_name, matrix.env_short) }}
+
+      - name: Deploy to Container App
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          containerAppName: ${{ format(env.container_app_name, matrix.env_short) }}
+          resourceGroup: rg-elkhorn-dev-wus2
+          imageToDeploy: ${{ env.image_name }}
