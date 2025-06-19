@@ -10,7 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{0A77
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{8780E688-835A-4B67-9B60-2F3B74ABDBB1}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\build-test.yml = .github\workflows\build-test.yml
+		.github\workflows\build-test-push.yml = .github\workflows\build-test-push.yml
+		.github\workflows\deploy-api-weather.yml = .github\workflows\deploy-api-weather.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.Weather.Tests", "test\Unit\API.Weather.Tests\API.Weather.Tests.csproj", "{2D8DAECF-5A47-485A-B37D-69D8FD268F62}"
