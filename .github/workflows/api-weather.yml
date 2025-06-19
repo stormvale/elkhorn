@@ -98,6 +98,10 @@ jobs:
     needs: build-test
     runs-on: ubuntu-latest
 
+    permissions:
+        contents: read
+        packages: write # needed to publish image to ghcr
+
     outputs:
       image_name: ${{ steps.get-build-name.outputs.image_name }}
 
