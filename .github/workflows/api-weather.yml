@@ -1,5 +1,9 @@
 name: api-weather
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   push:
     branches: [ master ]
