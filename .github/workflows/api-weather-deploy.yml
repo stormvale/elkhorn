@@ -1,4 +1,4 @@
-name: Deploy API - Weather
+name: api-weather-deploy
 
 on:
   workflow_dispatch:

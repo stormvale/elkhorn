@@ -10,11 +10,30 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{0A77
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{8780E688-835A-4B67-9B60-2F3B74ABDBB1}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\build-test-push.yml = .github\workflows\build-test-push.yml
-		.github\workflows\deploy-api-weather.yml = .github\workflows\deploy-api-weather.yml
+		.github\workflows\api-weather.yml = .github\workflows\api-weather.yml
+		.github\workflows\api-weather-deploy.yml = .github\workflows\api-weather-deploy.yml
+		.github\workflows\api-restaurants.yml = .github\workflows\api-restaurants.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.Weather.Tests", "test\Unit\API.Weather.Tests\API.Weather.Tests.csproj", "{2D8DAECF-5A47-485A-B37D-69D8FD268F62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "src\Domain\Domain.csproj", "{79BC888A-EA7F-42A1-BF6C-B35A353CB67F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "api", "api", "{1A6D6DDC-352A-40A9-A857-7A8CBB833539}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lunches.Api", "src\Lunches.Api\Lunches.Api.csproj", "{A8F41E22-5A2C-451E-AD6D-DB1861727968}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "src\Contracts\Contracts.csproj", "{5A48B050-4AB7-4B1D-859F-449F9369352F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Restaurants.Api", "src\Restaurants.Api\Restaurants.Api.csproj", "{1EAD8DD4-4375-4DF9-BEDF-148CC8BF2965}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Restaurants.Api.Tests", "test\unit\Restaurants.Api.Tests\Restaurants.Api.Tests.csproj", "{50FE8260-BAE0-49C9-9832-115845F244F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schools.Api", "src\Schools.Api\Schools.Api.csproj", "{0E50785F-3B0B-4759-A4DB-9B8B29010398}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lunches.Api.Tests", "test\unit\Lunches.Api.Tests\Lunches.Api.Tests.csproj", "{88FF3118-E0AA-4D60-8BBA-F868515E1F11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Schools.Api.Tests", "test\unit\Schools.Api.Tests\Schools.Api.Tests.csproj", "{D7558035-A2B5-4635-AB4A-B9389C11308F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,10 +49,51 @@ Global
 		{2D8DAECF-5A47-485A-B37D-69D8FD268F62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D8DAECF-5A47-485A-B37D-69D8FD268F62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D8DAECF-5A47-485A-B37D-69D8FD268F62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79BC888A-EA7F-42A1-BF6C-B35A353CB67F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79BC888A-EA7F-42A1-BF6C-B35A353CB67F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79BC888A-EA7F-42A1-BF6C-B35A353CB67F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79BC888A-EA7F-42A1-BF6C-B35A353CB67F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8F41E22-5A2C-451E-AD6D-DB1861727968}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8F41E22-5A2C-451E-AD6D-DB1861727968}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8F41E22-5A2C-451E-AD6D-DB1861727968}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8F41E22-5A2C-451E-AD6D-DB1861727968}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A48B050-4AB7-4B1D-859F-449F9369352F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A48B050-4AB7-4B1D-859F-449F9369352F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A48B050-4AB7-4B1D-859F-449F9369352F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A48B050-4AB7-4B1D-859F-449F9369352F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EAD8DD4-4375-4DF9-BEDF-148CC8BF2965}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EAD8DD4-4375-4DF9-BEDF-148CC8BF2965}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EAD8DD4-4375-4DF9-BEDF-148CC8BF2965}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EAD8DD4-4375-4DF9-BEDF-148CC8BF2965}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50FE8260-BAE0-49C9-9832-115845F244F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50FE8260-BAE0-49C9-9832-115845F244F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50FE8260-BAE0-49C9-9832-115845F244F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50FE8260-BAE0-49C9-9832-115845F244F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E50785F-3B0B-4759-A4DB-9B8B29010398}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E50785F-3B0B-4759-A4DB-9B8B29010398}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E50785F-3B0B-4759-A4DB-9B8B29010398}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E50785F-3B0B-4759-A4DB-9B8B29010398}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88FF3118-E0AA-4D60-8BBA-F868515E1F11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88FF3118-E0AA-4D60-8BBA-F868515E1F11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88FF3118-E0AA-4D60-8BBA-F868515E1F11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88FF3118-E0AA-4D60-8BBA-F868515E1F11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7558035-A2B5-4635-AB4A-B9389C11308F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7558035-A2B5-4635-AB4A-B9389C11308F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7558035-A2B5-4635-AB4A-B9389C11308F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7558035-A2B5-4635-AB4A-B9389C11308F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AAC3178A-B0F9-462F-B2E6-F00FB6CE58EE} = {0C5A74F6-702F-4276-B76F-A37F3CBB1C90}
 		{8780E688-835A-4B67-9B60-2F3B74ABDBB1} = {0A7760F7-6729-4C6E-897B-5D65B1CCD63A}
 		{2D8DAECF-5A47-485A-B37D-69D8FD268F62} = {6B2739BB-9489-4079-ACF5-BFB4ACA98B86}
+		{79BC888A-EA7F-42A1-BF6C-B35A353CB67F} = {0C5A74F6-702F-4276-B76F-A37F3CBB1C90}
+		{1A6D6DDC-352A-40A9-A857-7A8CBB833539} = {0C5A74F6-702F-4276-B76F-A37F3CBB1C90}
+		{A8F41E22-5A2C-451E-AD6D-DB1861727968} = {1A6D6DDC-352A-40A9-A857-7A8CBB833539}
+		{5A48B050-4AB7-4B1D-859F-449F9369352F} = {0C5A74F6-702F-4276-B76F-A37F3CBB1C90}
+		{1EAD8DD4-4375-4DF9-BEDF-148CC8BF2965} = {1A6D6DDC-352A-40A9-A857-7A8CBB833539}
+		{50FE8260-BAE0-49C9-9832-115845F244F2} = {6B2739BB-9489-4079-ACF5-BFB4ACA98B86}
+		{0E50785F-3B0B-4759-A4DB-9B8B29010398} = {1A6D6DDC-352A-40A9-A857-7A8CBB833539}
+		{88FF3118-E0AA-4D60-8BBA-F868515E1F11} = {6B2739BB-9489-4079-ACF5-BFB4ACA98B86}
+		{D7558035-A2B5-4635-AB4A-B9389C11308F} = {6B2739BB-9489-4079-ACF5-BFB4ACA98B86}
 	EndGlobalSection
 EndGlobal
