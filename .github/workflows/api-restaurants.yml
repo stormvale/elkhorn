@@ -108,6 +108,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # use github references & events to generate metadata
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -132,7 +133,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true # should we always push?
-          context: src/${{ env.project_name }}
+          file: src/${{ env.project_name }}/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
