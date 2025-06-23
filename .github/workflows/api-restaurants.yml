@@ -6,7 +6,7 @@ on:
     tags: [ 'v*.*.*' ] # publish semver tags as releases.
   pull_request:
     branches: [ master ]
-    paths: [ src/api/Restaurants.Api/** ]
+    paths: [ src/Restaurants.Api/** ]
   workflow_dispatch:
 
 permissions:
@@ -31,10 +31,10 @@ jobs:
           dotnet-version: '9.0'
 
       - name: Restore dependencies
-        run: dotnet restore src/api/${{ env.project_name }}
+        run: dotnet restore src/${{ env.project_name }}
 
       - name: Build project
-        run: dotnet build src/api/${{ env.project_name }} --configuration Release --no-restore
+        run: dotnet build src/${{ env.project_name }} --configuration Release --no-restore
 
       - name: Run tests
         run: dotnet test test/unit/${{ env.project_name }}.Tests --configuration Release --collect:"XPlat Code Coverage" --logger trx
