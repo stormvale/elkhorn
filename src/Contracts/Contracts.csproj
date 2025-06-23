@@ -26,9 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="stormvale_logo.png">
-        <Pack>True</Pack>
-      </None>
+      <None Include="stormvale_logo.png" Pack="true" PackagePath="" />
     </ItemGroup>
 
 </Project>
