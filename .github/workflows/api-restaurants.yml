@@ -6,7 +6,7 @@ on:
     tags: [ 'v*.*.*' ] # publish semver tags as releases.
   pull_request:
     branches: [ master ]
-    paths: [ src/Restaurants.Api/** ]
+    # paths: [ src/Restaurants.Api/** ]
   workflow_dispatch:
 
 permissions:
