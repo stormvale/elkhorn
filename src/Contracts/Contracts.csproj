@@ -9,7 +9,6 @@
         <Title>Elkhorn.Contracts</Title>
         <Authors>stormvale</Authors>
         <Copyright>stormvale</Copyright>
-        <PackageIcon>stormvale_logo.png</PackageIcon>
         <RepositoryUrl>https://github.com/stormvale/elkhorn</RepositoryUrl>
     </PropertyGroup>
 
@@ -19,16 +18,8 @@
       <Folder Include="Orders\Messages\" />
       <Folder Include="Orders\Requests\" />
       <Folder Include="Orders\Responses\" />
-      <Folder Include="Restaurant\Messages\" />
-      <Folder Include="Restaurant\Requests\" />
       <Folder Include="Schools\Messages\" />
       <Folder Include="Schools\Requests\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Update="stormvale_logo.png">
-        <Pack>True</Pack>
-      </None>
     </ItemGroup>
 
 </Project>

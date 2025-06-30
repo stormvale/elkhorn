@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAspireHost>true</IsAspireHost>
+    <UserSecretsId>a9c99755-6c0f-4583-a9d0-c217956d090c</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.3.1" />
+    <PackageReference Include="Aspire.Hosting.Azure.CosmosDB" Version="9.3.1" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Dapr" Version="9.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Gateway.Api\Gateway.Api.csproj" />
+    <ProjectReference Include="..\services\Billing.Api\Billing.Api.csproj" />
+    <ProjectReference Include="..\services\Cart.Api\Cart.Api.csproj" />
+    <ProjectReference Include="..\services\Lunches.Api\Lunches.Api.csproj" />
+    <ProjectReference Include="..\services\Notifications.Api\Notifications.Api.csproj" />
+    <ProjectReference Include="..\services\Orders.Api\Orders.Api.csproj" />
+    <ProjectReference Include="..\services\Restaurants.Api\Restaurants.Api.csproj" />
+    <ProjectReference Include="..\services\Schools.Api\Schools.Api.csproj" />
+  </ItemGroup>
+
+</Project>

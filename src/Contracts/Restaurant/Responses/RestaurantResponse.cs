@@ -7,7 +7,4 @@ public record RestaurantResponse(
     string Name,
     ContactResponse Contact,
     AddressResponse Address,
-    List<MealResponse> Menu,
-    uint Version,
-    DateTimeOffset CreatedUtc,
-    DateTimeOffset? LastModifiedUtc);
+    List<MealResponse> Menu);
