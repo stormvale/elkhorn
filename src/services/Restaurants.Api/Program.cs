@@ -45,4 +45,4 @@ app.MapRegister();
 app.MapGetById();
 app.MapList();
 
-app.Run();
+await app.RunAsync();

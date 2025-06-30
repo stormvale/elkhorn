@@ -28,26 +28,19 @@ var pubSub = builder.AddDaprPubSub("pubsub");
 
 #endregion
 
-builder.AddProject<Projects.Gateway_Api>("gateway-api")
-    .WithUrlForEndpoint("https", url =>
-    {
-        url.DisplayText = "Scalar";
-        url.Url = "/scalar";
-    });
-
-builder.AddProject<Projects.Restaurants_Api>("restaurants-api")
+var restaurantsApi = builder.AddProject<Projects.Restaurants_Api>("restaurants-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
     .WithReference(pubSub)
     .WithReference(restaurantsDb);
 
-builder.AddProject<Projects.Schools_Api>("schools-api")
+var schoolsApi = builder.AddProject<Projects.Schools_Api>("schools-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
     .WithReference(pubSub)
     .WithReference(schoolsDb);
 
-builder.AddProject<Projects.Lunches_Api>("lunches-api")
+var lunchesApi = builder.AddProject<Projects.Lunches_Api>("lunches-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
     .WithReference(pubSub)
@@ -72,5 +65,15 @@ builder.AddProject<Projects.Notifications_Api>("notifications-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
     .WithReference(pubSub);
+
+builder.AddProject<Projects.Gateway_Api>("gateway-api")
+    .WithReference(restaurantsApi).WaitFor(restaurantsApi)
+    .WithReference(schoolsApi).WaitFor(schoolsApi)
+    .WithExternalHttpEndpoints()
+    .WithUrlForEndpoint("https", url =>
+    {
+        url.DisplayText = "Scalar";
+        url.Url = "/scalar";
+    });
 
 builder.Build().Run();

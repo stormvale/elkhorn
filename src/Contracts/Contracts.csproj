@@ -18,8 +18,6 @@
       <Folder Include="Orders\Messages\" />
       <Folder Include="Orders\Requests\" />
       <Folder Include="Orders\Responses\" />
-      <Folder Include="Schools\Messages\" />
-      <Folder Include="Schools\Requests\" />
     </ItemGroup>
 
 </Project>
