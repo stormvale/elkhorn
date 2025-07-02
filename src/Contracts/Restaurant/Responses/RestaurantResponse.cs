@@ -7,4 +7,4 @@ public record RestaurantResponse(
     string Name,
     ContactResponse Contact,
     AddressResponse Address,
-    List<MealResponse> Menu);
+    List<RestaurantMealResponse> Menu);

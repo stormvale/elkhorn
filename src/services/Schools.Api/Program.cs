@@ -2,6 +2,7 @@ using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using Schools.Api.EfCore;
 using Schools.Api.Features;
+using Schools.Api.Features.Pac;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,5 +45,8 @@ app.MapDefaultEndpoints();
 app.MapRegister();
 app.MapGetById();
 app.MapList();
+
+var pac = app.MapGroup("{schoolId:Guid}/pac");
+pac.MapCreateLunchItem();
 
 await app.RunAsync();

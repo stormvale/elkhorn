@@ -28,12 +28,16 @@ public static class MappingExtensions
         restaurant.Menu.Select(meal => meal.ToResponse()).ToList()
     );
     
-    private static MealResponse ToResponse(this Meal meal) =>
-        new(meal.Id, meal.Name, meal.Price, meal.AvailableModifiers.Select(mealModifier => mealModifier.ToResponse()).ToList());
+    private static RestaurantMealResponse ToResponse(this Meal meal) => new(
+        meal.Id,
+        meal.Name,
+        meal.Price,
+        meal.AvailableModifiers.Select(mealModifier => mealModifier.ToResponse()).ToList()
+    );
     
-    private static MealModifier ToMealModifier(this MealModifierResponse dto) =>
+    private static MealModifier ToMealModifier(this RestaurantMealModifierResponse dto) =>
         new(dto.Name, dto.PriceAdjustment);
     
-    private static MealModifierResponse ToResponse(this MealModifier mealModifier) =>
+    private static RestaurantMealModifierResponse ToResponse(this MealModifier mealModifier) =>
         new(mealModifier.Name, mealModifier.PriceAdjustment);
 }

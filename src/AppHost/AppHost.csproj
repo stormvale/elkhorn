@@ -9,6 +9,7 @@
     <Nullable>enable</Nullable>
     <IsAspireHost>true</IsAspireHost>
     <UserSecretsId>a9c99755-6c0f-4583-a9d0-c217956d090c</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +17,7 @@
     <PackageReference Include="Aspire.Hosting.AppHost" Version="9.3.1" />
     <PackageReference Include="Aspire.Hosting.Azure.CosmosDB" Version="9.3.1" />
     <PackageReference Include="CommunityToolkit.Aspire.Hosting.Dapr" Version="9.5.0" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.MailPit" Version="9.5.0" />
   </ItemGroup>
 
   <ItemGroup>

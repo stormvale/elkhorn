@@ -23,7 +23,7 @@ public static class MappingExtensions
     private static PacResponse ToResponse(this Pac pac) => new(
         pac.Id,
         pac.Chairperson.ToResponse(),
-        pac.LunchItems.Select(x => new LunchItemResponse(x.Name, x.Price)).ToList());
+        pac.LunchItems.Select(x => new LunchItemResponse(x.Name, x.Price, [])).ToList());
     
     public static SchoolResponse ToSchoolResponse(this School school) => new(
         school.Id,

@@ -19,7 +19,6 @@ public class School : AggregateRoot, IAuditable
     public string Name { get; set; }
     public Address Address { get; set; }
     public Contact Contact { get; set; }
-
     public Pac Pac { get; set; }
 
     public void UpdateContact(Contact contact) => Contact = contact;

@@ -9,7 +9,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<School>().ToContainer("Schools")
+        modelBuilder.Entity<School>().ToContainer("schools")
             .HasPartitionKey(x => x.Id);
 
         modelBuilder.Entity<School>().Property(x => x.Name)

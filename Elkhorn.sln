@@ -9,15 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0C5A74F6-702
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{6B2739BB-9489-4079-ACF5-BFB4ACA98B86}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{0A7760F7-6729-4C6E-897B-5D65B1CCD63A}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{8780E688-835A-4B67-9B60-2F3B74ABDBB1}"
-	ProjectSection(SolutionItems) = preProject
-		.github\workflows\api-restaurants.yml = .github\workflows\api-restaurants.yml
-		.github\workflows\api-weather-deploy.yml = .github\workflows\api-weather-deploy.yml
-		.github\workflows\api-weather.yml = .github\workflows\api-weather.yml
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.Weather.Tests", "test\Unit\API.Weather.Tests\API.Weather.Tests.csproj", "{2D8DAECF-5A47-485A-B37D-69D8FD268F62}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "src\Domain\Domain.csproj", "{79BC888A-EA7F-42A1-BF6C-B35A353CB67F}"
@@ -132,7 +123,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AAC3178A-B0F9-462F-B2E6-F00FB6CE58EE} = {0C5A74F6-702F-4276-B76F-A37F3CBB1C90}
-		{8780E688-835A-4B67-9B60-2F3B74ABDBB1} = {0A7760F7-6729-4C6E-897B-5D65B1CCD63A}
 		{2D8DAECF-5A47-485A-B37D-69D8FD268F62} = {6B2739BB-9489-4079-ACF5-BFB4ACA98B86}
 		{79BC888A-EA7F-42A1-BF6C-B35A353CB67F} = {0C5A74F6-702F-4276-B76F-A37F3CBB1C90}
 		{5A48B050-4AB7-4B1D-859F-449F9369352F} = {0C5A74F6-702F-4276-B76F-A37F3CBB1C90}

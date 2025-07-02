@@ -1,0 +1,22 @@
+﻿apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: email
+spec:
+  type: bindings.smtp
+  version: v1
+  metadata:
+    - name: host
+      value: "localhost"
+    - name: port
+      value: "1025"
+    - name: user
+      value: "admin"
+    - name: password
+      value: "password123"
+    - name: skipTLSVerify
+      value: "true"
+    - name: emailFrom
+      value: "no-reply@elkhorn.ca"
+scopes:
+  - notifications-api

@@ -9,11 +9,13 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Restaurant>().ToContainer("Restaurants")
+        modelBuilder.Entity<Restaurant>().ToContainer("restaurants")
             .HasPartitionKey(x => x.Id);
 
         modelBuilder.Entity<Restaurant>().Property(x => x.Name)
             .HasMaxLength(100); // to avoid ef mapping this as ntext or varchar(max)
+        
+        modelBuilder.Entity<Meal>().Property(x => x.Name).HasMaxLength(100);
     }
 }
 

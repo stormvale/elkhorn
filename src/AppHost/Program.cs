@@ -1,3 +1,5 @@
+using CommunityToolkit.Aspire.Hosting.Dapr;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 #region Aspire resources
@@ -18,6 +20,10 @@ var restaurantsDb = cosmos.AddCosmosDatabase("restaurantsDb");
 var schoolsDb = cosmos.AddCosmosDatabase("schoolsDb");
 var lunchesDb = cosmos.AddCosmosDatabase("lunchesDb");
 
+restaurantsDb.AddContainer("restaurants", "/id");
+schoolsDb.AddContainer("schools", "/id");
+lunchesDb.AddContainer("lunches", "/id");
+
 #endregion
 
 #region Dapr components
@@ -26,11 +32,22 @@ var stateStore = builder.AddDaprStateStore("statestore");
 
 var pubSub = builder.AddDaprPubSub("pubsub");
 
+var email = builder.AddDaprComponent("email", "bindings.smtp", new DaprComponentOptions
+{
+    LocalPath = "components/"
+});
+
+var secretstore = builder.AddDaprComponent("secretstore", "secretstores.local.file", new DaprComponentOptions
+{
+    LocalPath = "components/"
+});
+
 #endregion
 
 var restaurantsApi = builder.AddProject<Projects.Restaurants_Api>("restaurants-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
+    .WithReference(secretstore)
     .WithReference(pubSub)
     .WithReference(restaurantsDb);
 
@@ -64,11 +81,13 @@ var lunchesApi = builder.AddProject<Projects.Lunches_Api>("lunches-api")
 builder.AddProject<Projects.Notifications_Api>("notifications-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
-    .WithReference(pubSub);
+    .WithReference(pubSub)
+    .WithReference(email);
 
 builder.AddProject<Projects.Gateway_Api>("gateway-api")
     .WithReference(restaurantsApi).WaitFor(restaurantsApi)
     .WithReference(schoolsApi).WaitFor(schoolsApi)
+    .WithReference(lunchesApi).WaitFor(lunchesApi)
     .WithExternalHttpEndpoints()
     .WithUrlForEndpoint("https", url =>
     {

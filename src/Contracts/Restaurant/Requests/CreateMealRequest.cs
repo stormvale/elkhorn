@@ -1,16 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Contracts.Restaurant.DTOs;
 
-namespace Contracts.Lunches.Responses;
+namespace Contracts.Restaurant.Requests;
 
-public record LunchItemResponse(
+public record CreateMealRequest(
 
     [Required]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 50 characters.")]
     string Name,
 
     [Required]
-    [Range(0, 10, ErrorMessage = "Price must be between 0 and 10.")]
+    [Range(0, 10, ErrorMessage = "Price must be between 0 and 10")]
     decimal Price,
-    
-    List<LunchItemModifierResponse> AvailableModifiers
-);
+
+    List<MealModifierDto> Modifiers);

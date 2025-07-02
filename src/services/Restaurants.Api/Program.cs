@@ -1,6 +1,7 @@
 using Microsoft.OpenApi.Models;
 using Restaurants.Api.EfCore;
 using Restaurants.Api.Features;
+using Restaurants.Api.Features.Meals;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,5 +45,8 @@ app.MapDefaultEndpoints();
 app.MapRegister();
 app.MapGetById();
 app.MapList();
+
+var meals = app.MapGroup("{restaurantId:Guid}/meals");
+meals.MapCreateMeal();
 
 await app.RunAsync();

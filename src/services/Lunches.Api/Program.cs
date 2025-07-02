@@ -1,45 +1,45 @@
+using Lunches.Api.EfCore;
+using Lunches.Api.Features;
+using Microsoft.OpenApi.Models;
+using Scalar.AspNetCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.AddCosmosDbContext<AppDbContext>("lunchesDb");
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(o =>
+{
+    o.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Info = new OpenApiInfo
+        {
+            Title = "Lunches API",
+            Version = "v1",
+            Description = "Lunches API description.",
+            Contact = new OpenApiContact { Name = "Kevin Reid", Url = new Uri("https://github.com/codeswithfists") },
+            License = new OpenApiLicense { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") },
+            TermsOfService = new Uri("https://opensource.org/licenses/MIT")
+        };
+        
+        return Task.CompletedTask;
+    });
+
+    // required if using Scalar.AspNetCore extensions package
+    o.AddScalarTransformers();
+});
+
+builder.Services.AddDaprClient();
 
 var app = builder.Build();
 
+app.UseCloudEvents();
+app.MapSubscribeHandler();
+app.MapOpenApi();
 app.MapDefaultEndpoints();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+// endpoints
+app.MapSchedule();
+app.MapGetById();
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
-app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+await app.RunAsync();
