@@ -1,4 +1,5 @@
 using CommunityToolkit.Aspire.Hosting.Dapr;
+using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -19,10 +20,12 @@ var cosmos = builder.AddAzureCosmosDB("cosmos")
 var restaurantsDb = cosmos.AddCosmosDatabase("restaurantsDb");
 var schoolsDb = cosmos.AddCosmosDatabase("schoolsDb");
 var lunchesDb = cosmos.AddCosmosDatabase("lunchesDb");
+var ordersDb = cosmos.AddCosmosDatabase("ordersDb");
 
 restaurantsDb.AddContainer("restaurants", "/id");
 schoolsDb.AddContainer("schools", "/id");
 lunchesDb.AddContainer("lunches", "/id");
+ordersDb.AddContainer("orders", "/id");
 
 #endregion
 
@@ -44,20 +47,20 @@ var secretstore = builder.AddDaprComponent("secretstore", "secretstores.local.fi
 
 #endregion
 
-var restaurantsApi = builder.AddProject<Projects.Restaurants_Api>("restaurants-api")
+var restaurantsApi = builder.AddProject<Restaurants_Api>("restaurants-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
     .WithReference(secretstore)
     .WithReference(pubSub)
     .WithReference(restaurantsDb);
 
-var schoolsApi = builder.AddProject<Projects.Schools_Api>("schools-api")
+var schoolsApi = builder.AddProject<Schools_Api>("schools-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
     .WithReference(pubSub)
     .WithReference(schoolsDb);
 
-var lunchesApi = builder.AddProject<Projects.Lunches_Api>("lunches-api")
+var lunchesApi = builder.AddProject<Lunches_Api>("lunches-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
     .WithReference(pubSub)
@@ -67,27 +70,29 @@ var lunchesApi = builder.AddProject<Projects.Lunches_Api>("lunches-api")
 //     .WithDaprSidecar()
 //     .WithReference(stateStore)
 //     .WithReference(pubSub);
-//
-// builder.AddProject<Projects.Orders_Api>("orders-api")
-//     .WithDaprSidecar()
-//     .WithReference(stateStore)
-//     .WithReference(pubSub);
-//
+
+var ordersApi = builder.AddProject<Orders_Api>("orders-api")
+    .WithDaprSidecar()
+    .WithReference(stateStore)
+    .WithReference(pubSub)
+    .WithReference(ordersDb);
+
 // builder.AddProject<Projects.Billing_Api>("billing-api")
 //     .WithDaprSidecar()
 //     .WithReference(stateStore)
 //     .WithReference(pubSub);
 
-builder.AddProject<Projects.Notifications_Api>("notifications-api")
+builder.AddProject<Notifications_Api>("notifications-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
     .WithReference(pubSub)
     .WithReference(email);
 
-builder.AddProject<Projects.Gateway_Api>("gateway-api")
+builder.AddProject<Gateway_Api>("gateway-api")
     .WithReference(restaurantsApi).WaitFor(restaurantsApi)
     .WithReference(schoolsApi).WaitFor(schoolsApi)
     .WithReference(lunchesApi).WaitFor(lunchesApi)
+    .WithReference(ordersApi).WaitFor(ordersApi)
     .WithExternalHttpEndpoints()
     .WithUrlForEndpoint("https", url =>
     {

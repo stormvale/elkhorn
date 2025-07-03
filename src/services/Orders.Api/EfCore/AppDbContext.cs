@@ -1,15 +1,15 @@
-﻿using Lunches.Api.Domain;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Orders.Api.Domain;
 
-namespace Lunches.Api.EfCore;
+namespace Orders.Api.EfCore;
 
 public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public DbSet<Lunch> Lunches { get; set; }
+    public DbSet<Order> Orders { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Lunch>().ToContainer("lunches")
+        modelBuilder.Entity<Order>().ToContainer("orders")
             .HasPartitionKey(x => x.Id)
             .HasDefaultTimeToLive(null);
     }

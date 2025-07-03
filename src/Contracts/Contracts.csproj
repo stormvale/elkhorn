@@ -15,9 +15,6 @@
     <ItemGroup>
       <Folder Include="Common\Messages\" />
       <Folder Include="Common\Requests\" />
-      <Folder Include="Orders\Messages\" />
-      <Folder Include="Orders\Requests\" />
-      <Folder Include="Orders\Responses\" />
     </ItemGroup>
 
 </Project>

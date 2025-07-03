@@ -2,10 +2,10 @@
 
 namespace Lunches.Api.Domain;
 
+// saga? (Scheduled, OpenForOrders, OrderingClosed, Delivered, Complete, Canceled)
 public class Lunch : AggregateRoot
 {
     // ef core constructor?
-    // saga? (Scheduled, OpenForOrders, OrderingClosed, Delivered, Complete, Canceled)
     
     public Lunch(Guid id, Guid schoolId, Guid restaurantId, DateOnly date) : base(id)
     {
