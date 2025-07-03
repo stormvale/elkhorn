@@ -25,9 +25,19 @@ builder.Services.AddRateLimiter(options =>
     });
 });
 
+// need to configure CORS to allow clients to call this API
+builder.Services.AddCors(options =>
+    options.AddDefaultPolicy(corsPolicyBuilder => corsPolicyBuilder
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+    )
+);
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+app.UseCors();
 app.UseRateLimiter();
 
 app.MapDefaultEndpoints();
