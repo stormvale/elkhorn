@@ -88,7 +88,7 @@ builder.AddProject<Notifications_Api>("notifications-api")
     .WithReference(pubSub)
     .WithReference(email);
 
-builder.AddProject<Gateway_Api>("gateway-api")
+var gatewayApi = builder.AddProject<Gateway_Api>("gateway-api")
     .WithReference(restaurantsApi).WaitFor(restaurantsApi)
     .WithReference(schoolsApi).WaitFor(schoolsApi)
     .WithReference(lunchesApi).WaitFor(lunchesApi)
@@ -99,5 +99,12 @@ builder.AddProject<Gateway_Api>("gateway-api")
         url.DisplayText = "Scalar";
         url.Url = "/scalar";
     });
+
+builder.AddNpmApp("web-react-ts-mui", "../clients/web-react-ts-mui")
+    .WithReference(gatewayApi)
+    .WithEnvironment("BROWSER", "none")
+    .WithHttpEndpoint(env: "VITE_PORT", name: "vite-http")
+    .WithExternalHttpEndpoints()
+    .PublishAsDockerFile();
 
 builder.Build().Run();
