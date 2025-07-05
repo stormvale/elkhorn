@@ -31,10 +31,10 @@ jobs:
           dotnet-version: '9.0'
 
       - name: Restore dependencies
-        run: dotnet restore src/${{ env.project_name }}
+        run: dotnet restore src/services/${{ env.project_name }}
 
       - name: Build project
-        run: dotnet build src/${{ env.project_name }} --configuration Release --no-restore
+        run: dotnet build src/services/${{ env.project_name }} --configuration Release --no-restore
 
       - name: Run tests
         run: dotnet test test/unit/${{ env.project_name }}.Tests --configuration Release --collect:"XPlat Code Coverage" --logger trx
@@ -133,7 +133,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true # should we always push?
-          file: src/${{ env.project_name }}/Dockerfile
+          file: src/services/${{ env.project_name }}/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
