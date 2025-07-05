@@ -3,10 +3,10 @@ name: api-restaurants
 on: 
   push:
     branches: [ master ]
-    tags: [ 'v*.*.*' ] # publish semver tags as releases.
+    paths: [ 'src/services/Restaurants.Api/**' ]
   pull_request:
     branches: [ master ]
-    # paths: [ src/Restaurants.Api/** ]
+    paths: [ 'src/services/Restaurants.Api/**' ]
   workflow_dispatch:
 
 permissions:
@@ -149,7 +149,9 @@ jobs:
     environment: ${{ matrix.environment }}
 
     # only run on pushes to master (ie. merges into master)
-    if: (github.event_name == 'push') && (github.ref == 'refs/heads/master')
+    # if: (github.event_name == 'push') && (github.ref == 'refs/heads/master')
+    
+    if: false # disabling automatic deployments for now
 
     permissions:
       id-token: write # needed for az login
