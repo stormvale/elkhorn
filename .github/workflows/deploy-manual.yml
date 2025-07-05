@@ -7,7 +7,7 @@ on:
         type: choice
         required: true
         description: Service
-        options: [ 'restaurants.api', 'schools.api', 'lunches.api', 'gateway.api' ]
+        options: [ 'restaurants' ] # 'schools', 'lunches', 'gateway'
         
       environment:
         type: choice
@@ -23,7 +23,7 @@ on:
         default: 'latest'
 
 permissions:
-  id-token: write # needed for Azure CLI login
+  id-token: write
   contents: read
   packages: write
 
@@ -36,10 +36,7 @@ jobs:
       ENV_SHORT: ${{ inputs.environment ==  'development' && 'dev' || 'prod' }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: 'Azure login'
+      - name: Az login
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -53,11 +50,8 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # still need to switch this over to use web apps
-      - name: Deploy private GHCR image to Container App
-        if: false
-        uses: azure/container-apps-deploy-action@v1
+      - name: 'Deploy image to Azure Web apps'
+        uses: azure/webapps-deploy@v3
         with:
-          containerAppName: api-weather-elkhorn-${{ env.ENV_SHORT }}-wus2 # api-weather-elkhorn-dev-wus2
-          resourceGroup: rg-elkhorn-${{ env.ENV_SHORT }}-wus2
-          imageToDeploy: ghcr.io/stormvale/${{ inputs.service }}:${{ inputs.tag }} # ghcr.io/stormvale/api.weather:pr-3
+          app-name: app-${{ inputs.service }}-elkhorn-${{ env.ENV_SHORT }}-wus2
+          images: ghcr.io/stormvale/${{ inputs.service }}.api:${{ inputs.tag }} # eg. ghcr.io/stormvale/restaurants.api:pr-3

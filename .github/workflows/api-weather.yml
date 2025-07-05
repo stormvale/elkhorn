@@ -146,9 +146,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: [docker-build-tag-push]
     environment: ${{ matrix.environment }}
-
+    
     # only run on pushes to master (ie. merges into master)
-    if: (github.event_name == 'push') && (github.ref == 'refs/heads/master')
+    # if: (github.event_name == 'push') && (github.ref == 'refs/heads/master')
+    
+    if: false # disabling automatic deployments for now
 
     permissions:
       id-token: write # needed for az login
