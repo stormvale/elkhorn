@@ -57,4 +57,4 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: app-${{ inputs.service }}-elkhorn-${{ env.ENV_SHORT }}-wus2
-          package: ghcr.io/stormvale/${{ inputs.service }}.api:${{ inputs.tag }} # ghcr.io/stormvale/restaurants.api:pr-3
+          images: ghcr.io/stormvale/${{ inputs.service }}.api:${{ inputs.tag }} # ghcr.io/stormvale/restaurants.api:pr-3
