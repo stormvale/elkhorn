@@ -1,14 +1,21 @@
-name: api-weather-deploy
+name: deploy-manual
 
 on:
   workflow_dispatch:
     inputs:
+      service:
+        type: choice
+        required: true
+        description: Service
+        options: [ 'restaurants.api', 'schools.api', 'lunches.api', 'gateway.api' ]
+        
       environment:
         type: choice
         required: true
         description: Environment
         options: [ 'development', 'production']
         default: 'development'
+        
       tag:
         type: string
         required: true
@@ -46,9 +53,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # still need to switch this over to use web apps
       - name: Deploy private GHCR image to Container App
+        if: false
         uses: azure/container-apps-deploy-action@v1
         with:
           containerAppName: api-weather-elkhorn-${{ env.ENV_SHORT }}-wus2 # api-weather-elkhorn-dev-wus2
           resourceGroup: rg-elkhorn-${{ env.ENV_SHORT }}-wus2
-          imageToDeploy: ghcr.io/stormvale/api.weather:${{ inputs.tag }} # ghcr.io/stormvale/api.weather:pr-3
+          imageToDeploy: ghcr.io/stormvale/${{ inputs.service }}:${{ inputs.tag }} # ghcr.io/stormvale/api.weather:pr-3
