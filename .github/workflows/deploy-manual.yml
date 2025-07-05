@@ -7,7 +7,7 @@ on:
         type: choice
         required: true
         description: Service
-        options: [ 'restaurants', 'schools', 'lunches', 'gateway' ]
+        options: [ 'restaurants' ] # 'schools', 'lunches', 'gateway'
         
       environment:
         type: choice
@@ -23,7 +23,7 @@ on:
         default: 'latest'
 
 permissions:
-  id-token: write # needed for Azure CLI login
+  id-token: write
   contents: read
   packages: write
 
@@ -36,9 +36,6 @@ jobs:
       ENV_SHORT: ${{ inputs.environment ==  'development' && 'dev' || 'prod' }}
 
     steps:
-      # - name: Checkout repository
-      #   uses: actions/checkout@v3
-
       - name: Az login
         uses: azure/login@v2
         with:
@@ -57,4 +54,4 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: app-${{ inputs.service }}-elkhorn-${{ env.ENV_SHORT }}-wus2
-          images: ghcr.io/stormvale/${{ inputs.service }}.api:${{ inputs.tag }} # ghcr.io/stormvale/restaurants.api:pr-3
+          images: ghcr.io/stormvale/${{ inputs.service }}.api:${{ inputs.tag }} # eg. ghcr.io/stormvale/restaurants.api:pr-3
