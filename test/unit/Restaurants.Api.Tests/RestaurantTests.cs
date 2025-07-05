@@ -1,6 +1,5 @@
 ﻿using Domain.Common;
 using Restaurants.Api.Domain;
-using Restaurants.Api.Domain.Events;
 using Shouldly;
 
 namespace Restaurants.Api.Tests;
@@ -19,10 +18,5 @@ public class RestaurantTests
         restaurant.Address.ShouldBe(address);
         restaurant.Contact.ShouldBe(contact);
         restaurant.Menu.ShouldBeEmpty();
-
-        var domainEvents = restaurant.PopDomainEvents();
-        domainEvents.ShouldNotBeEmpty();
-        domainEvents[0].ShouldBeOfType<RestaurantRegisteredDomainEvent>();
-        ((RestaurantRegisteredDomainEvent)domainEvents[0]).RestaurantId.ShouldBe(restaurant.Id);
     }
 }

@@ -1,4 +1,7 @@
 ﻿namespace Contracts.Lunches.Messages;
 
-// [Topic("lunch.scheduled")]
-public record LunchScheduledMessage(Guid LunchId);
+public record LunchScheduledMessage(
+    Guid LunchId,
+    DateOnly Date,
+    string SchoolName,
+    string RestaurantName);

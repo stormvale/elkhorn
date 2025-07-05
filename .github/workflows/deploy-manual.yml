@@ -1,0 +1,63 @@
+name: deploy-manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      service:
+        type: choice
+        required: true
+        description: Service
+        options: [ 'restaurants.api', 'schools.api', 'lunches.api', 'gateway.api' ]
+        
+      environment:
+        type: choice
+        required: true
+        description: Environment
+        options: [ 'development', 'production']
+        default: 'development'
+        
+      tag:
+        type: string
+        required: true
+        description: 'Tag to deploy'
+        default: 'latest'
+
+permissions:
+  id-token: write # needed for Azure CLI login
+  contents: read
+  packages: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    env:
+      ENV_SHORT: ${{ inputs.environment ==  'development' && 'dev' || 'prod' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 'Azure login'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # still need to switch this over to use web apps
+      - name: Deploy private GHCR image to Container App
+        if: false
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          containerAppName: api-weather-elkhorn-${{ env.ENV_SHORT }}-wus2 # api-weather-elkhorn-dev-wus2
+          resourceGroup: rg-elkhorn-${{ env.ENV_SHORT }}-wus2
+          imageToDeploy: ghcr.io/stormvale/${{ inputs.service }}:${{ inputs.tag }} # ghcr.io/stormvale/api.weather:pr-3

@@ -20,7 +20,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\src\Restaurants.Api\Restaurants.Api.csproj" />
+      <ProjectReference Include="..\..\..\src\Domain\Domain.csproj" />
+      <ProjectReference Include="..\..\..\src\services\Restaurants.Api\Restaurants.Api.csproj" />
     </ItemGroup>
 
 </Project>

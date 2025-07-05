@@ -11,7 +11,7 @@ builder.Services.AddOpenApi(o =>
         {
             Title = "Weather API",
             Version = "v1",
-            Description = "Weather API description.",
+            Description = "Weather API description",
             Contact = new OpenApiContact { Name = "Kevin Reid", Email = "kevin@email.com" },
             License = new OpenApiLicense { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") },
             TermsOfService = new Uri("https://opensource.org/licenses/MIT")
