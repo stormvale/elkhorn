@@ -1,5 +1,5 @@
-﻿using Contracts.Restaurant.Messages;
-using Contracts.Restaurant.Requests;
+﻿using Contracts.Restaurants.Messages;
+using Contracts.Restaurants.Requests;
 using Dapr.Client;
 using Restaurants.Api.Domain;
 using Restaurants.Api.EfCore;

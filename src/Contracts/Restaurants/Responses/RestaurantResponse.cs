@@ -1,6 +1,6 @@
 ﻿using Contracts.Common.Responses;
 
-namespace Contracts.Restaurant.Responses;
+namespace Contracts.Restaurants.Responses;
 
 public record RestaurantResponse(
     Guid Id,

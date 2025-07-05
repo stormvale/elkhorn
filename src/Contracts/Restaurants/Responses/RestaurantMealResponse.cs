@@ -1,4 +1,4 @@
-﻿namespace Contracts.Restaurant.Responses;
+﻿namespace Contracts.Restaurants.Responses;
 
 public record RestaurantMealResponse(
     Guid Id,

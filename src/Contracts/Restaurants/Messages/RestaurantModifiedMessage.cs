@@ -1,3 +1,3 @@
-﻿namespace Contracts.Restaurant.Messages;
+﻿namespace Contracts.Restaurants.Messages;
 
 public record RestaurantMenuModifiedMessage(Guid RestaurantId);

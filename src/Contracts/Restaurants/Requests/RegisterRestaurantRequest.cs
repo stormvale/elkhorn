@@ -1,14 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Contracts.Common.Responses;
 
-namespace Contracts.Restaurant.DTOs;
+namespace Contracts.Restaurants.Requests;
 
-public record MealModifierDto(
+public record RegisterRestaurantRequest(
 
     [Required]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 50 characters.")]
     string Name,
 
     [Required]
-    [Range(-10, 10, ErrorMessage = "PriceAdjustment must be between -10 and 10.")]
-    decimal PriceAdjustment
-);
+    AddressResponse Address,
+
+    [Required]
+    ContactResponse Contact);

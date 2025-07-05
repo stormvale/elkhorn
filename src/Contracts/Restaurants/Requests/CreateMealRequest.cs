@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Contracts.Restaurant.DTOs;
+using Contracts.Restaurants.DTOs;
 
-namespace Contracts.Restaurant.Requests;
+namespace Contracts.Restaurants.Requests;
 
 public record CreateMealRequest(
 

@@ -1,4 +1,4 @@
-﻿using Contracts.Restaurant.Responses;
+﻿using Contracts.Restaurants.Responses;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Restaurants.Api.EfCore;
 using Restaurants.Api.Extensions;

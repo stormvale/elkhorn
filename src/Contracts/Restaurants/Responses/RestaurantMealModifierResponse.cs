@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Contracts.Restaurant.Responses;
+namespace Contracts.Restaurants.Responses;
 
 public class RestaurantMealModifierResponse(string name, decimal priceAdjustment)
 {
