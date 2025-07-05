@@ -1,6 +1,6 @@
 ﻿using Contracts.Lunches.Messages;
 using Contracts.Lunches.Requests;
-using Contracts.Restaurant.Responses;
+using Contracts.Restaurants.Responses;
 using Contracts.Schools.Messages;
 using Contracts.Schools.Responses;
 using Dapr.Client;

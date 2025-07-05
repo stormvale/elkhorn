@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Contracts.Restaurant.Messages;
+namespace Contracts.Restaurants.Messages;
 
 public record RestaurantRegisteredMessage(
 

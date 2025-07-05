@@ -1,6 +1,6 @@
 ﻿
 using Contracts.Common.Responses;
-using Contracts.Restaurant.Responses;
+using Contracts.Restaurants.Responses;
 using Domain.Common;
 using Restaurants.Api.Domain;
 

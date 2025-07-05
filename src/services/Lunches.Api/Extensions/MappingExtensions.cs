@@ -1,5 +1,4 @@
 ﻿using Contracts.Lunches.Responses;
-using Contracts.Restaurant.Responses;
 using Lunches.Api.Domain;
 
 namespace Lunches.Api.Extensions;
