@@ -1,12 +1,12 @@
 name: api-gateway
 
 on: 
-  push:
-    branches: [ master ]
-    paths: [ 'src/Gateway.Api/**', 'src/ServiceDefaults/**' ]
-  pull_request:
-    branches: [ master ]
-    paths: [ 'src/Gateway.Api/**', 'src/ServiceDefaults/**' ]
+#  push:
+#    branches: [ master ]
+#    paths: [ 'src/Gateway.Api/**', 'src/ServiceDefaults/**' ]
+#  pull_request:
+#    branches: [ master ]
+#    paths: [ 'src/Gateway.Api/**', 'src/ServiceDefaults/**' ]
   workflow_dispatch:
 
 permissions:
