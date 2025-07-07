@@ -1,11 +1,11 @@
-import React from 'react';
 import { Box, Button, Stack } from '@mui/material';
-import { decrement, increment } from '@/features/counterSlice';
-import { useAppDispatch, useAppSelector } from '@/app/store';
+import { decrement, incrementAsync } from '@/features/counterSlice';
+import { AppDispatch, RootState } from '@/app/store';
+import { useDispatch, useSelector } from "react-redux";
 
 const Counter = () => {
-  const dispatch = useAppDispatch();
-  const count = useAppSelector((state) => state.counter.count);
+  const dispatch = useDispatch<AppDispatch>();
+  const count = useSelector((state: RootState) => state.counter.value);
 
   return (
     <Stack
@@ -48,7 +48,7 @@ const Counter = () => {
         variant="contained"
         sx={{ backgroundColor: 'primary.main' }}
         aria-label="Increment value"
-        onClick={() => dispatch(increment(1))}
+        onClick={() => dispatch(incrementAsync(1))}
       >
         +
       </Button>
