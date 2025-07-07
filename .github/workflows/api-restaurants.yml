@@ -3,10 +3,10 @@ name: api-restaurants
 on:
   push:
     branches: [ master ]
-    paths: [ 'src/Restaurants.Api/**', 'src/ServiceDefaults/**', 'src/Contracts/Restarants/**' ]
+    paths: [ 'src/services/Restaurants.Api/**', 'src/ServiceDefaults/**', 'src/Contracts/Restaurants/**' ]
   pull_request:
     branches: [ master ]
-    paths: [ 'src/Restaurants.Api/**', 'src/ServiceDefaults/**', 'src/Contracts/Restarants/**' ]
+    paths: [ 'src/services/Restaurants.Api/**', 'src/ServiceDefaults/**', 'src/Contracts/Restaurants/**' ]
   workflow_dispatch:
 
 permissions:

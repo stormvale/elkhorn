@@ -7,7 +7,7 @@ using Schools.Api.Features.Pac;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddCosmosDbContext<AppDbContext>("schoolsDb");
+builder.AddCosmosDbContext<AppDbContext>("elkhornDb", "elkhornDb");
 
 builder.Services.AddOpenApi(o =>
 {

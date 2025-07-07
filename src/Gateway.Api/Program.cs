@@ -1,6 +1,5 @@
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
-using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,23 +41,5 @@ app.UseRateLimiter();
 
 app.MapDefaultEndpoints();
 app.MapReverseProxy();
-
-app.MapScalarApiReference(options =>
-{
-    options.AddDocument("restaurants-api", routePattern: "https://localhost:7025/restaurants/openapi/v1.json");
-    options.AddDocument("schools-api", routePattern: "https://localhost:7025/schools/openapi/v1.json");
-    options.AddDocument("lunches-api", routePattern: "https://localhost:7025/lunches/openapi/v1.json");
-    options.AddDocument("orders-api", routePattern: "https://localhost:7025/orders/openapi/v1.json");
-    
-    options.Servers =
-    [
-        new ScalarServer("https://localhost:7025/restaurants", "Restaurants API"),
-        new ScalarServer("https://localhost:7025/schools", "Schools API"),
-        new ScalarServer("https://localhost:7025/lunches", "Lunches API"),
-        new ScalarServer("https://localhost:7025/orders", "Orders API")
-    ];
-    
-    options.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
-});
 
 app.Run();

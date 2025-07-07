@@ -7,7 +7,7 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddCosmosDbContext<AppDbContext>("restaurantsDb");
+builder.AddCosmosDbContext<AppDbContext>("elkhornDb", "elkhornDb");
 
 builder.Services.AddOpenApi(o =>
 {
