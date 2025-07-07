@@ -1,5 +1,6 @@
 using CommunityToolkit.Aspire.Hosting.Dapr;
 using Projects;
+using Scalar.Aspire;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -17,15 +18,14 @@ var cosmos = builder.AddAzureCosmosDB("cosmos")
 
 #pragma warning restore ASPIRECOSMOSDB001
 
-var restaurantsDb = cosmos.AddCosmosDatabase("restaurantsDb");
-var schoolsDb = cosmos.AddCosmosDatabase("schoolsDb");
-var lunchesDb = cosmos.AddCosmosDatabase("lunchesDb");
-var ordersDb = cosmos.AddCosmosDatabase("ordersDb");
+// normally we'd use a database per service, but to try to stay within the free tier limits on Azure,
+// we are using a single database with a container per service.
+var elkhornDb = cosmos.AddCosmosDatabase("elkhornDb");
 
-restaurantsDb.AddContainer("restaurants", "/id");
-schoolsDb.AddContainer("schools", "/id");
-lunchesDb.AddContainer("lunches", "/id");
-ordersDb.AddContainer("orders", "/id");
+elkhornDb.AddContainer("restaurants", "/id");
+elkhornDb.AddContainer("schools", "/id");
+elkhornDb.AddContainer("lunches", "/id");
+elkhornDb.AddContainer("orders", "/id");
 
 #endregion
 
@@ -52,19 +52,19 @@ var restaurantsApi = builder.AddProject<Restaurants_Api>("restaurants-api")
     .WithReference(stateStore)
     .WithReference(secretstore)
     .WithReference(pubSub)
-    .WithReference(restaurantsDb);
+    .WithReference(elkhornDb);
 
 var schoolsApi = builder.AddProject<Schools_Api>("schools-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
     .WithReference(pubSub)
-    .WithReference(schoolsDb);
+    .WithReference(elkhornDb);
 
 var lunchesApi = builder.AddProject<Lunches_Api>("lunches-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
     .WithReference(pubSub)
-    .WithReference(lunchesDb);
+    .WithReference(elkhornDb);
 
 // builder.AddProject<Projects.Cart_Api>("cart-api")
 //     .WithDaprSidecar()
@@ -75,7 +75,7 @@ var ordersApi = builder.AddProject<Orders_Api>("orders-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
     .WithReference(pubSub)
-    .WithReference(ordersDb);
+    .WithReference(elkhornDb);
 
 // builder.AddProject<Projects.Billing_Api>("billing-api")
 //     .WithDaprSidecar()
@@ -93,12 +93,23 @@ var gatewayApi = builder.AddProject<Gateway_Api>("gateway-api")
     .WithReference(schoolsApi).WaitFor(schoolsApi)
     .WithReference(lunchesApi).WaitFor(lunchesApi)
     .WithReference(ordersApi).WaitFor(ordersApi)
-    .WithExternalHttpEndpoints()
-    .WithUrlForEndpoint("https", url =>
+    .WithExternalHttpEndpoints();
+
+#region Scalar OpenApi documentation
+
+    var scalar = builder.AddScalarApiReference(options =>
     {
-        url.DisplayText = "Scalar";
-        url.Url = "/scalar";
+        options.WithTheme(ScalarTheme.Moon);
+        options.WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
     });
+
+    scalar
+        .WithApiReference(restaurantsApi, options => options.WithOpenApiRoutePattern("/openapi/v1.json"))
+        .WithApiReference(schoolsApi, options => options.WithOpenApiRoutePattern("/openapi/v1.json"))
+        .WithApiReference(lunchesApi, options => options.WithOpenApiRoutePattern("/openapi/v1.json"))
+        .WithApiReference(ordersApi, options => options.WithOpenApiRoutePattern("/openapi/v1.json"));
+
+#endregion
 
 builder.AddNpmApp("web-react-ts-mui", "../clients/web-react-ts-mui")
     .WithReference(gatewayApi)
