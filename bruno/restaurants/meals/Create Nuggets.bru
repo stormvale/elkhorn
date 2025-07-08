@@ -1,0 +1,32 @@
+meta {
+  name: Create Nuggets
+  type: http
+  seq: 2
+}
+
+post {
+  url: https://{{host.restaurants.api}}/{{restaurantId}}/meals
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "Name": "Chicken Nuggies",
+    "Price": 4.75,
+    "Modifiers": [
+      {
+        "Name": "Ketchup",
+        "PriceAdjustment": 0
+      },
+      {
+        "Name": "Honey-Mustard Sauce",
+        "PriceAdjustment": 0
+      },
+      {
+        "Name": "No Sauce",
+        "PriceAdjustment": 0
+      }
+    ]
+  }
+}

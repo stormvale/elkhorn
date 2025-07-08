@@ -25,7 +25,7 @@ public static class Register
                 new RestaurantRegisteredMessage(restaurant.Id, restaurant.Name), ct);
             
             return TypedResults.CreatedAtRoute(
-                restaurant.Id,
+                new { restaurantId = restaurant.Id },
                 routeName: GetById.RouteName,
                 routeValues: new { id = restaurant.Id }
             );

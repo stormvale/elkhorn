@@ -2,7 +2,7 @@
 
 namespace Contracts.Restaurants.Messages;
 
-public record RestaurantModifiedMessage(
+public record RestaurantDeletedMessage(
     
     [property: JsonPropertyName("restaurantId")]
     Guid RestaurantId);

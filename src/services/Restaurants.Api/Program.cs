@@ -41,12 +41,15 @@ app.MapSubscribeHandler();
 app.MapOpenApi();
 app.MapDefaultEndpoints();
 
-// endpoints
+// restaurant endpoints
 app.MapRegister();
 app.MapGetById();
 app.MapList();
+app.MapDelete();
 
+// restaurant meal endpoints
 var meals = app.MapGroup("{restaurantId:Guid}/meals");
 meals.MapCreateMeal();
+meals.MapDeleteMeal();
 
 await app.RunAsync();

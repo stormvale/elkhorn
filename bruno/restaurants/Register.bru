@@ -1,0 +1,33 @@
+meta {
+  name: Register
+  type: http
+  seq: 2
+}
+
+post {
+  url: https://{{host.restaurants.api}}/
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "McDonalds",
+    "contact": {
+      "name": "Ronald McDonald",
+      "email": "ronald@mcdoanlds.ca",
+      "phone": null,
+      "type": "Manager"
+    },
+    "address": {
+      "street": "123 Happy Place",
+      "city": "Vancouver",
+      "postCode": "12345",
+      "state": "BC"
+    }
+  }
+}
+
+vars:post-response {
+  restaurantId: res.body.restaurantId
+}
