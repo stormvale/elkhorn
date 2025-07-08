@@ -21,5 +21,5 @@ public static class GetById
         })
         .WithName(RouteName)
         .WithSummary("Get by Id");
-}
+    }
 }

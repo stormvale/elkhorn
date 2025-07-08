@@ -1,3 +1,11 @@
-﻿namespace Contracts.Schools.Messages;
+﻿using System.Text.Json.Serialization;
 
-public sealed record SchoolRegisteredMessage(Guid SchoolId, string Name);
+namespace Contracts.Schools.Messages;
+
+public sealed record SchoolRegisteredMessage(
+    
+    [property: JsonPropertyName("schoolId")]
+    Guid SchoolId,
+    
+    [property: JsonPropertyName("name")]
+    string Name);

@@ -1,0 +1,36 @@
+meta {
+  name: Create Burger
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://{{host.restaurants.api}}/{{restaurantId}}/meals
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "Name": "Burger",
+    "Price": 5.25,
+    "Modifiers": [
+      {
+        "Name": "Gluten-free bun",
+        "PriceAdjustment": 0.50
+      },
+      {
+        "Name": "No Tomato",
+        "PriceAdjustment": 0
+      },
+      {
+        "Name": "No Cheese",
+        "PriceAdjustment": -0.25
+      },
+      {
+        "Name": "Extra Cheese",
+        "PriceAdjustment": 0.25
+      }
+    ]
+  }
+}

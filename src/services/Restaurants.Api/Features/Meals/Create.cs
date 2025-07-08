@@ -1,5 +1,6 @@
 ﻿using Contracts.Restaurants.Messages;
 using Contracts.Restaurants.Requests;
+using Contracts.Restaurants.Responses;
 using Dapr.Client;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Restaurants.Api.Domain;
@@ -11,7 +12,7 @@ public static class CreateMeal
 {
     public static void MapCreateMeal(this RouteGroupBuilder group)
     {
-        group.MapPost("/", async Task<Results<Ok, ProblemHttpResult>> (Guid restaurantId, CreateMealRequest req, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
+        group.MapPost("/", async Task<Results<Ok<CreateMealResponse>, ProblemHttpResult>> (Guid restaurantId, CreateMealRequest req, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
         {
             var restaurant = await db.Restaurants.FindAsync([restaurantId], ct);
             if (restaurant is null)
@@ -29,9 +30,10 @@ public static class CreateMeal
             await db.SaveChangesAsync(ct);
             
             await dapr.PublishEventAsync("pubsub", "restaurant-events",
-                new RestaurantMenuModifiedMessage(restaurant.Id), ct);
-            
-            return TypedResults.Ok();
-        });
+                new RestaurantModifiedMessage(restaurant.Id), ct);
+
+            return TypedResults.Ok(new CreateMealResponse(meal.Id, restaurant.Id));
+        })
+        .WithSummary("Create Meal");;
     }
 }

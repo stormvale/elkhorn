@@ -1,0 +1,11 @@
+meta {
+  name: Delete
+  type: http
+  seq: 4
+}
+
+delete {
+  url: https://{{host.restaurants.api}}/{{restaurantId}}
+  body: none
+  auth: inherit
+}

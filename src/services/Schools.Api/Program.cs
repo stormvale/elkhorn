@@ -45,6 +45,7 @@ app.MapDefaultEndpoints();
 app.MapRegister();
 app.MapGetById();
 app.MapList();
+app.MapDelete();
 
 var pac = app.MapGroup("{schoolId:Guid}/pac");
 pac.MapCreateLunchItem();

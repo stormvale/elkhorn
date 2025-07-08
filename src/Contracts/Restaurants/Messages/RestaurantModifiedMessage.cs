@@ -1,3 +1,8 @@
-﻿namespace Contracts.Restaurants.Messages;
+﻿using System.Text.Json.Serialization;
 
-public record RestaurantMenuModifiedMessage(Guid RestaurantId);
+namespace Contracts.Restaurants.Messages;
+
+public record RestaurantModifiedMessage(
+    
+    [property: JsonPropertyName("restaurantId")]
+    Guid RestaurantId);

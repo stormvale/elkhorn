@@ -1,0 +1,11 @@
+meta {
+  name: GetById
+  type: http
+  seq: 3
+}
+
+get {
+  url: https://{{host.restaurants.api}}/{{restaurantId}}
+  body: none
+  auth: inherit
+}
