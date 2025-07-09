@@ -19,7 +19,7 @@ public static class DeleteMeal
             restaurant.RemoveMeal(mealId);
             await db.SaveChangesAsync(ct);
 
-            await dapr.PublishEventAsync("pubsub", "restaurant-events", new RestaurantModifiedMessage(restaurantId), ct);
+            await dapr.PublishEventAsync("pubsub", "restaurants-events", new RestaurantModifiedMessage(restaurantId), ct);
             
             return TypedResults.NoContent();
         })

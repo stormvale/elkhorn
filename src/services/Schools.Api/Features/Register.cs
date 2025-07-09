@@ -21,7 +21,7 @@ public static class Register
             await db.Schools.AddAsync(school, ct);
             await db.SaveChangesAsync(ct);
             
-            await dapr.PublishEventAsync("pubsub", "school-events",
+            await dapr.PublishEventAsync("pubsub", "schools-events",
                 new SchoolRegisteredMessage(school.Id, school.Name), ct);
             
             return TypedResults.CreatedAtRoute(

@@ -9,7 +9,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 #pragma warning disable ASPIRECOSMOSDB001
 // preview emulator
 
-var cosmos = builder.AddAzureCosmosDB("cosmos")
+var cosmos = builder.AddAzureCosmosDB("cosmos-db")
     .RunAsPreviewEmulator(config =>
     {
         config.WithDataExplorer();
