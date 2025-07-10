@@ -1,4 +1,4 @@
-name: api-restaurants
+name: api-lunches
 
 on:
   push:
@@ -148,10 +148,11 @@ jobs:
     environment: ${{ matrix.environment }}
 
     # only run on pushes to master (ie. merges into master)
-    if: (github.event_name == 'push') && (github.ref == 'refs/heads/master')
+    # if: (github.event_name == 'push') && (github.ref == 'refs/heads/master')
+    if: false
 
     env:
-      app_name_template: ca-restaurants-elkhorn-{0}-wus2
+      app_name_template: ca-lunches-elkhorn-{0}-wus2
 
     permissions:
       id-token: write # needed for az login

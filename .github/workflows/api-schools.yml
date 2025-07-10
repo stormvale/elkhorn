@@ -149,7 +149,7 @@ jobs:
 
     # only run on pushes to master (ie. merges into master)
     # if: (github.event_name == 'push') && (github.ref == 'refs/heads/master')
-    if: false # disabled for now
+    if: false
 
     env:
       app_name_template: ca-schools-elkhorn-{0}-wus2
