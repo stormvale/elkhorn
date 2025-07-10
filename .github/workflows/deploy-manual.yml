@@ -7,7 +7,7 @@ on:
         type: choice
         required: true
         description: Service
-        options: [ 'restaurants' ] # 'schools', 'lunches', 'gateway'
+        options: [ 'restaurants', 'schools' ] # 'lunches', 'gateway'
         
       environment:
         type: choice
