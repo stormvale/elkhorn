@@ -50,8 +50,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 'Deploy image to Azure Web apps'
-        uses: azure/webapps-deploy@v3
+      # - name: 'Deploy image to Azure Web apps'
+      #   uses: azure/webapps-deploy@v3
+      #   with:
+      #     app-name: app-${{ inputs.service }}-elkhorn-${{ env.ENV_SHORT }}-wus2
+      #     images: ghcr.io/stormvale/${{ inputs.service }}.api:${{ inputs.tag }} # eg. ghcr.io/stormvale/restaurants.api:pr-3
+
+      - name: Deploy to Azure Container App
+        uses: azure/container-apps-deploy-action@v1
         with:
-          app-name: app-${{ inputs.service }}-elkhorn-${{ env.ENV_SHORT }}-wus2
-          images: ghcr.io/stormvale/${{ inputs.service }}.api:${{ inputs.tag }} # eg. ghcr.io/stormvale/restaurants.api:pr-3
+          containerAppName: ${{ format('ca-{0}-elkhorn-{1}-wus2', inputs.service, env.ENV_SHORT) }} # eg. ca-restaurants-elkhorn-dev-wus2
+          imageToDeploy: ghcr.io/stormvale/${{ inputs.service }}.api:${{ inputs.tag }} # eg. ghcr.io/stormvale/restaurants.api:pr-3
