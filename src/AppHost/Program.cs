@@ -52,7 +52,7 @@ var restaurantsApi = builder.AddProject<Restaurants_Api>("restaurants-api")
     .WithReference(stateStore)
     .WithReference(secretstore)
     .WithReference(pubSub)
-    .WithReference(elkhornDb);
+    .WithReference(cosmos);
 
 var schoolsApi = builder.AddProject<Schools_Api>("schools-api")
     .WithDaprSidecar()

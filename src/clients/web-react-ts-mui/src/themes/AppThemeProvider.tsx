@@ -1,5 +1,7 @@
 import { ThemeProvider, createTheme, responsiveFontSizes } from '@mui/material/styles';
-import { useAppSelector } from '@/app/store';
+import type {} from '@mui/x-data-grid/themeAugmentation';
+import { RootState } from '@/app/store';
+import { useSelector } from "react-redux";
 import { PaletteMode } from '@mui/material';
 import React from 'react';
 
@@ -13,7 +15,6 @@ declare module '@mui/material/styles' {
   interface TypeGradient {
     [key: string]: string;
   }
-
   interface Palette {
     gradient: TypeGradient;
     text: TypeText2;
@@ -40,7 +41,6 @@ declare module '@mui/material/styles' {
     Red: TypeColor;
     Green: TypeColor;
   }
-
   interface TypeBackground {
     opposite: string;
   }
@@ -86,7 +86,7 @@ declare module '@mui/material/Typography' {
   }
 }
 export const AppThemeProvider: React.FC<Props> = ({ children }) => {
-  const mode = useAppSelector((state) => state.user.mode);
+  const mode = useSelector((state: RootState) => state.user.mode);
   const theme = responsiveFontSizes(
     createTheme({
       palette: {
@@ -244,6 +244,7 @@ export const AppThemeProvider: React.FC<Props> = ({ children }) => {
           display: 'block',
         },
       },
+
       components: {
         MuiCssBaseline: {
           styleOverrides: {
@@ -272,6 +273,18 @@ export const AppThemeProvider: React.FC<Props> = ({ children }) => {
             },
           },
         },
+        MuiDataGrid: {
+          styleOverrides: {
+            root: {
+              '& .MuiDataGrid-cell:focus': {
+                outline: 'none'
+              },
+              '& .MuiDataGrid-cell:focus-within': {
+                outline: 'none'
+              }
+            },
+          }
+        }
       },
     }),
   );
