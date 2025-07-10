@@ -178,7 +178,7 @@ jobs:
       - name: 'Az account show'
         run: az account show
 
-      # - name: Deploy image to Azure Web apps
+      # - name: Deploy to Azure Web Apps
       #   uses: azure/webapps-deploy@v3
       #   with:
       #     app-name: ${{ format(env.web_app_name, matrix.env_short) }}

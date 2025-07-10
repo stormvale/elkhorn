@@ -50,7 +50,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: 'Deploy image to Azure Web apps'
+      # - name: Deploy to Azure Web Apps
       #   uses: azure/webapps-deploy@v3
       #   with:
       #     app-name: app-${{ inputs.service }}-elkhorn-${{ env.ENV_SHORT }}-wus2
