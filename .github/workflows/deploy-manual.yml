@@ -61,3 +61,4 @@ jobs:
         with:
           containerAppName: ${{ format('ca-{0}-elkhorn-{1}-wus2', inputs.service, env.ENV_SHORT) }} # eg. ca-restaurants-elkhorn-dev-wus2
           imageToDeploy: ghcr.io/stormvale/${{ inputs.service }}.api:${{ inputs.tag }} # eg. ghcr.io/stormvale/restaurants.api:pr-3
+          resourceGroup: ${{ format('rg-elkhorn-{0}-wus2', env.ENV_SHORT) }} # eg. rg-elkhorn-dev-wus2
