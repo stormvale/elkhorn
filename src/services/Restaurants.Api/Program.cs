@@ -53,3 +53,5 @@ meals.MapCreateMeal();
 meals.MapDeleteMeal();
 
 await app.RunAsync();
+
+namespace Restaurants.Api { public interface IRestaurantApiAssemblyMarker; }

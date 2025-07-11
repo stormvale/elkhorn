@@ -58,13 +58,13 @@ var schoolsApi = builder.AddProject<Schools_Api>("schools-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
     .WithReference(pubSub)
-    .WithReference(elkhornDb);
+    .WithReference(cosmos);
 
 var lunchesApi = builder.AddProject<Lunches_Api>("lunches-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
     .WithReference(pubSub)
-    .WithReference(elkhornDb);
+    .WithReference(cosmos);
 
 // builder.AddProject<Projects.Cart_Api>("cart-api")
 //     .WithDaprSidecar()
@@ -75,7 +75,7 @@ var ordersApi = builder.AddProject<Orders_Api>("orders-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
     .WithReference(pubSub)
-    .WithReference(elkhornDb);
+    .WithReference(cosmos);
 
 // builder.AddProject<Projects.Billing_Api>("billing-api")
 //     .WithDaprSidecar()

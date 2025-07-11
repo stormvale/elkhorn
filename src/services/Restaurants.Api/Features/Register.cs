@@ -1,5 +1,6 @@
 ﻿using Contracts.Restaurants.Messages;
 using Contracts.Restaurants.Requests;
+using Contracts.Restaurants.Responses;
 using Dapr.Client;
 using Restaurants.Api.Domain;
 using Restaurants.Api.EfCore;
@@ -25,7 +26,7 @@ public static class Register
                 new RestaurantRegisteredMessage(restaurant.Id, restaurant.Name), ct);
             
             return TypedResults.CreatedAtRoute(
-                new { restaurantId = restaurant.Id },
+                new RegisterRestaurantResponse(restaurant.Id),
                 routeName: GetById.RouteName,
                 routeValues: new { id = restaurant.Id }
             );
