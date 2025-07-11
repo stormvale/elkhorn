@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using Contracts.Common.Responses;
+using Contracts.Common;
 using Contracts.Restaurants.Requests;
 using Contracts.Restaurants.Responses;
 using Microsoft.Azure.Cosmos;
@@ -34,8 +34,8 @@ public class RestaurantApiTests : IClassFixture<CosmosDbEmulatorFixture>
     public async Task PostRestaurant_ThenGetById()
     {
         var request = new RegisterRestaurantRequest("Test Restaurant",
-            new AddressResponse("street", "city", "postCode", "state"),
-            new ContactResponse("name", "email", "phone", "Manager")
+            new Address("street", "city", "postCode", "state"),
+            new Contact("name", "email", "phone", "Manager")
         );
 
         var postResult = await _restaurantsHttpClient.PostAsJsonAsync("/", request);

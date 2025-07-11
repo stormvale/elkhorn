@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Contracts.Common.Responses;
+namespace Contracts.Common;
 
-public class AddressResponse(string street, string city, string postCode, string state)
+public class Address(string street, string city, string postCode, string state)
 {
     [Required]
     [StringLength(50, MinimumLength = 10, ErrorMessage = "Street length must be between 10 and 50 characters.")]
@@ -19,7 +19,7 @@ public class AddressResponse(string street, string city, string postCode, string
     [StringLength(2, MinimumLength = 2, ErrorMessage = "State must be 2 characters.")]
     public string State { get; set; } = state;
 
-    public static AddressResponse Empty => new(string.Empty, string.Empty, string.Empty, string.Empty);
+    public static Address Empty => new(string.Empty, string.Empty, string.Empty, string.Empty);
 
     public override string ToString() => $"{Street}, {City}, {PostCode}, {State}";
 }

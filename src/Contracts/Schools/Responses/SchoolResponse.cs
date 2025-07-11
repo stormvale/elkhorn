@@ -1,11 +1,11 @@
-﻿using Contracts.Common.Responses;
+﻿using Contracts.Common;
 
 namespace Contracts.Schools.Responses;
 
 public sealed record SchoolResponse(
     Guid Id,
     string Name,
-    ContactResponse Contact,
-    AddressResponse Address,
+    Contact Contact,
+    Address Address,
     PacResponse Pac,
     uint Version);

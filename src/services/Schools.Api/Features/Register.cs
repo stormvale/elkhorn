@@ -15,8 +15,8 @@ public static class Register
         {
             var school = new School(Guid.CreateVersion7(),
                 req.Name,
-                req.Address.ToAddress(),
-                req.Contact.ToContact());
+                req.Address.ToDomainAddress(),
+                req.Contact.ToDomainContact());
             
             await db.Schools.AddAsync(school, ct);
             await db.SaveChangesAsync(ct);

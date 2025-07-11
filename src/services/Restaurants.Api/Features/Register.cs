@@ -16,8 +16,8 @@ public static class Register
         {
             var restaurant = new Restaurant(Guid.CreateVersion7(),
                 req.Name,
-                req.Address.ToAddress(),
-                req.Contact.ToContact());
+                req.Address.ToDomainAddress(),
+                req.Contact.ToDomainContact());
             
             await db.Restaurants.AddAsync(restaurant, ct);
             await db.SaveChangesAsync(ct);

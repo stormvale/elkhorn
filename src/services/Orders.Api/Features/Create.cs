@@ -16,7 +16,7 @@ public static class Create
             var order = new Order(
                 Guid.CreateVersion7(),
                 req.LunchId,
-                req.Contact.ToContact()
+                req.Contact.ToDomainContact()
             );
             
             await db.Orders.AddAsync(order, ct);
