@@ -29,11 +29,12 @@ public static class CreateMeal
             
             await db.SaveChangesAsync(ct);
             
-            await dapr.PublishEventAsync("pubsub", "restaurant-events",
+            await dapr.PublishEventAsync("pubsub", "restaurants-events",
                 new RestaurantModifiedMessage(restaurant.Id), ct);
 
             return TypedResults.Ok(new CreateMealResponse(meal.Id, restaurant.Id));
         })
-        .WithSummary("Create Meal");;
+        .WithSummary("Create Meal")
+        .WithTags("Meals");
     }
 }

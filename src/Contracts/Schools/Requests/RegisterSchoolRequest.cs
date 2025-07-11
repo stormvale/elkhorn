@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Contracts.Common.Responses;
+using Contracts.Common;
 
 namespace Contracts.Schools.Requests;
 
@@ -10,7 +10,7 @@ public record RegisterSchoolRequest(
     string Name,
 
     [Required]
-    AddressResponse Address,
+    Address Address,
 
     [Required]
-    ContactResponse Contact);
+    Contact Contact);

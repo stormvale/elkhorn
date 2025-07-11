@@ -1,5 +1,6 @@
 ﻿using Contracts.Restaurants.Messages;
 using Contracts.Restaurants.Requests;
+using Contracts.Restaurants.Responses;
 using Dapr.Client;
 using Restaurants.Api.Domain;
 using Restaurants.Api.EfCore;
@@ -15,20 +16,22 @@ public static class Register
         {
             var restaurant = new Restaurant(Guid.CreateVersion7(),
                 req.Name,
-                req.Address.ToAddress(),
-                req.Contact.ToContact());
+                req.Address.ToDomainAddress(),
+                req.Contact.ToDomainContact());
             
             await db.Restaurants.AddAsync(restaurant, ct);
             await db.SaveChangesAsync(ct);
             
-            await dapr.PublishEventAsync("pubsub", "restaurant-events",
+            await dapr.PublishEventAsync("pubsub", "restaurants-events",
                 new RestaurantRegisteredMessage(restaurant.Id, restaurant.Name), ct);
             
             return TypedResults.CreatedAtRoute(
-                new { restaurantId = restaurant.Id },
+                new RegisterRestaurantResponse(restaurant.Id),
                 routeName: GetById.RouteName,
                 routeValues: new { id = restaurant.Id }
             );
-        }).WithSummary("Register");
+        })
+        .WithSummary("Register")
+        .WithTags("Restaurants");
     }
 }

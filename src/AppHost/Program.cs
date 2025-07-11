@@ -9,7 +9,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 #pragma warning disable ASPIRECOSMOSDB001
 // preview emulator
 
-var cosmos = builder.AddAzureCosmosDB("cosmos")
+var cosmos = builder.AddAzureCosmosDB("cosmos-db")
     .RunAsPreviewEmulator(config =>
     {
         config.WithDataExplorer();
@@ -52,19 +52,19 @@ var restaurantsApi = builder.AddProject<Restaurants_Api>("restaurants-api")
     .WithReference(stateStore)
     .WithReference(secretstore)
     .WithReference(pubSub)
-    .WithReference(elkhornDb);
+    .WithReference(cosmos);
 
 var schoolsApi = builder.AddProject<Schools_Api>("schools-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
     .WithReference(pubSub)
-    .WithReference(elkhornDb);
+    .WithReference(cosmos);
 
 var lunchesApi = builder.AddProject<Lunches_Api>("lunches-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
     .WithReference(pubSub)
-    .WithReference(elkhornDb);
+    .WithReference(cosmos);
 
 // builder.AddProject<Projects.Cart_Api>("cart-api")
 //     .WithDaprSidecar()
@@ -75,7 +75,7 @@ var ordersApi = builder.AddProject<Orders_Api>("orders-api")
     .WithDaprSidecar()
     .WithReference(stateStore)
     .WithReference(pubSub)
-    .WithReference(elkhornDb);
+    .WithReference(cosmos);
 
 // builder.AddProject<Projects.Billing_Api>("billing-api")
 //     .WithDaprSidecar()

@@ -15,7 +15,6 @@ permissions:
 
 env:
   project_name: Restaurants.Api
-  web_app_name: app-restaurants-elkhorn-{0}-wus2
 
 jobs:
   build-test:
@@ -151,6 +150,9 @@ jobs:
     # only run on pushes to master (ie. merges into master)
     if: (github.event_name == 'push') && (github.ref == 'refs/heads/master')
 
+    env:
+      app_name_template: ca-restaurants-elkhorn-{0}-wus2
+
     permissions:
       id-token: write # needed for az login
       pull-requests: write
@@ -166,23 +168,30 @@ jobs:
 
     steps:
       - name: Show deploy info
-        run: echo deploying '${{ needs.docker-build-tag-push.outputs.image_name }}' to '${{ format(env.web_app_name, matrix.env_short) }}'
+        run: echo deploying '${{ needs.docker-build-tag-push.outputs.image_name }}' to '${{ format(env.app_name_template, matrix.env_short) }}'
 
-      - name: 'Azure login'
+      - name: Azure login
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       
-      - name: 'Az account show'
+      - name: Az account show
         run: az account show
 
-      - name: 'Deploy image to Azure Web apps'
-        uses: azure/webapps-deploy@v3
+      # - name: Deploy to Azure Web Apps
+      #  uses: azure/webapps-deploy@v3
+      #  with:
+      #    app-name: ${{ format(env.web_app_name, matrix.env_short) }}
+      #    images: ${{ needs.docker-build-tag-push.outputs.image_name }}
+          
+      - name: Deploy to Azure Container App
+        uses: azure/container-apps-deploy-action@v1
         with:
-          app-name: ${{ format(env.web_app_name, matrix.env_short) }}
-          images: ${{ needs.docker-build-tag-push.outputs.image_name }}
+          containerAppName: ${{ format(env.app_name_template, matrix.env_short) }}
+          resourceGroup: ${{ format('rg-elkhorn-{0}-wus2', matrix.env_short) }}
+          imageToDeploy: ${{ needs.docker-build-tag-push.outputs.image_name }}
 
       - name: Update PR
         uses: actions/github-script@v7
@@ -194,5 +203,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'ℹ️ New image **${{ needs.docker-build-tag-push.outputs.image_name }}** was deployed to web app **${{ format(env.web_app_name, matrix.env_short) }}**'
+              body: 'ℹ️ New image **${{ needs.docker-build-tag-push.outputs.image_name }}** was deployed to web app **${{ format(env.app_name_template, matrix.env_short) }}**'
             })

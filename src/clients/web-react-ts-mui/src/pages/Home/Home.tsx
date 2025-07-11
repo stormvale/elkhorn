@@ -1,7 +1,6 @@
 import { Typography, Stack, Container } from '@mui/material';
 import TemplateTester from '@/components/TemplateTester/TemplateTester';
 import Counter from '@/components/Counter/Counter';
-import RestaurantsList from "@/components/Restaurants/RestaurantsList.tsx";
 
 const Home = () => {
   return (
@@ -14,9 +13,8 @@ const Home = () => {
           React + TS + Vite + Redux + RTK + MUI + RRD + Prettier
         </Typography>
       </Stack>
-      <RestaurantsList />
-      {/*<TemplateTester />*/}
-      {/*<Counter />*/}
+      <TemplateTester />
+      <Counter />
     </Container>
   );
 };

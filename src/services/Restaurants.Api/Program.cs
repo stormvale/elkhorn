@@ -7,7 +7,7 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddCosmosDbContext<AppDbContext>("elkhornDb", "elkhornDb");
+builder.AddCosmosDbContext<AppDbContext>("cosmos-db", "elkhornDb");
 
 builder.Services.AddOpenApi(o =>
 {
@@ -53,3 +53,5 @@ meals.MapCreateMeal();
 meals.MapDeleteMeal();
 
 await app.RunAsync();
+
+namespace Restaurants.Api { public interface IRestaurantApiAssemblyMarker; }

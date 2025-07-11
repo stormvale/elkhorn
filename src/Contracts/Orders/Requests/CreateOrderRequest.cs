@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Contracts.Common.Responses;
+using Contracts.Common;
 
 namespace Contracts.Orders.Requests;
 
@@ -9,5 +9,5 @@ public record CreateOrderRequest(
     Guid LunchId,
         
     [Required]
-    ContactResponse Contact
+    Contact Contact
 );

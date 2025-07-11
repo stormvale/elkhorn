@@ -1,12 +1,13 @@
 import { changeMode } from '@/features/user/userSlice';
 import { Stack, Box, Typography, IconButton, TypographyVariant, SxProps, Theme } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
-import { useAppDispatch, useAppSelector } from '@/app/store';
+import { AppDispatch, RootState } from '@/app/store';
+import { useDispatch, useSelector } from "react-redux";
 import { JSX } from "react";
 
 const TemplateTester = () => {
-  const dispatch = useAppDispatch();
-  const mode = useAppSelector((state) => state.user.mode);
+  const dispatch = useDispatch<AppDispatch>();
+  const mode = useSelector((state: RootState) => state.user.mode);
 
   const colors = [
     {

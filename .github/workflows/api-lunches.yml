@@ -1,12 +1,12 @@
-name: api-weather
+name: api-lunches
 
 on:
   push:
     branches: [ master ]
-    tags: [ 'v*.*.*' ] # publish semver tags as releases.
+    paths: [ 'src/services/Lunches.Api/**', 'src/ServiceDefaults/**', 'src/Contracts/Lunches/**' ]
   pull_request:
     branches: [ master ]
-    paths: [ 'src/API.Weather/**' ]
+    paths: [ 'src/services/Lunches.Api/**', 'src/ServiceDefaults/**', 'src/Contracts/Lunches/**' ]
   workflow_dispatch:
 
 permissions:
@@ -14,8 +14,7 @@ permissions:
   packages: write # needed to publish image to ghcr
 
 env:
-  project_name: API.Weather
-  container_app_name: api-weather-elkhorn-{0}-wus2
+  project_name: Lunches.Api
 
 jobs:
   build-test:
@@ -31,10 +30,10 @@ jobs:
           dotnet-version: '9.0'
 
       - name: Restore dependencies
-        run: dotnet restore src/${{ env.project_name }}
+        run: dotnet restore src/services/${{ env.project_name }}
 
       - name: Build project
-        run: dotnet build src/${{ env.project_name }} --configuration Release --no-restore
+        run: dotnet build src/services/${{ env.project_name }} --configuration Release --no-restore
 
       - name: Run tests
         run: dotnet test test/unit/${{ env.project_name }}.Tests --configuration Release --collect:"XPlat Code Coverage" --logger trx
@@ -108,6 +107,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # use github references & events to generate metadata
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -132,7 +132,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true # should we always push?
-          context: src/${{ env.project_name }}
+          file: src/services/${{ env.project_name }}/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
@@ -146,11 +146,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: [docker-build-tag-push]
     environment: ${{ matrix.environment }}
-    
+
     # only run on pushes to master (ie. merges into master)
     # if: (github.event_name == 'push') && (github.ref == 'refs/heads/master')
-    
-    if: false # disabling automatic deployments for now
+    if: false
+
+    env:
+      app_name_template: ca-lunches-elkhorn-{0}-wus2
 
     permissions:
       id-token: write # needed for az login
@@ -167,23 +169,29 @@ jobs:
 
     steps:
       - name: Show deploy info
-        run: echo deploying ${{ needs.docker-build-tag-push.outputs.image_name }} to ${{ format(env.container_app_name, matrix.env_short) }}
+        run: echo deploying '${{ needs.docker-build-tag-push.outputs.image_name }}' to '${{ format(env.app_name_template, matrix.env_short) }}'
 
-      - name: 'Azure login'
+      - name: Azure login
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       
-      - name: 'Az account show'
+      - name: Az account show
         run: az account show
 
-      - name: Deploy to Container App
+      # - name: Deploy to Azure Web Apps
+      #  uses: azure/webapps-deploy@v3
+      #  with:
+      #    app-name: ${{ format(env.web_app_name, matrix.env_short) }}
+      #    images: ${{ needs.docker-build-tag-push.outputs.image_name }}
+          
+      - name: Deploy to Azure Container App
         uses: azure/container-apps-deploy-action@v1
         with:
-          containerAppName: ${{ format(env.container_app_name, matrix.env_short) }}
-          resourceGroup: rg-elkhorn-dev-wus2
+          containerAppName: ${{ format(env.app_name_template, matrix.env_short) }}
+          resourceGroup: ${{ format('rg-elkhorn-{0}-wus2', matrix.env_short) }}
           imageToDeploy: ${{ needs.docker-build-tag-push.outputs.image_name }}
 
       - name: Update PR
@@ -196,5 +204,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'ℹ️ New image **${{ needs.docker-build-tag-push.outputs.image_name }}** was deployed to container app **${{ format(env.container_app_name, matrix.env_short) }}**'
+              body: 'ℹ️ New image **${{ needs.docker-build-tag-push.outputs.image_name }}** was deployed to web app **${{ format(env.app_name_template, matrix.env_short) }}**'
             })

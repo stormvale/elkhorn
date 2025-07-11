@@ -17,6 +17,8 @@ public static class List
                 .ToList()
                 .AsReadOnly();
             
-        }).WithSummary("List");
+        })
+        .WithSummary("List")
+        .WithTags("Restaurants");
     }
 }

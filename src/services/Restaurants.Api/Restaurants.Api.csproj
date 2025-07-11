@@ -33,4 +33,8 @@
     <ProjectReference Include="..\..\ServiceDefaults\ServiceDefaults.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Restaurants.Api.IntegrationTests" />
+  </ItemGroup>
+
 </Project>

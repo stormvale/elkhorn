@@ -20,7 +20,7 @@ public static class Delete
             db.Schools.Remove(restaurant);
             await db.SaveChangesAsync(ct);
 
-            await dapr.PublishEventAsync("pubsub", "school-events", new SchoolDeletedMessage(id), ct);
+            await dapr.PublishEventAsync("pubsub", "schools-events", new SchoolDeletedMessage(id), ct);
             
             return TypedResults.NoContent();
         })

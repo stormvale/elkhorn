@@ -3,12 +3,9 @@ using Domain.Common;
 
 namespace Orders.Api.Domain;
 
-// saga? (Placed, PaymentReceived, Complete, Canceled, ...?)
+// saga? dapr workflow? (Placed, PaymentReceived, Complete, Canceled, ...?)
 public class Order : AggregateRoot
 {
-    /// <summary>
-    /// Currently, an Order is specifically for a Lunch. This may change in the future to include other things. 
-    /// </summary>
     public Order(Guid id, Guid lunchId, Contact parent) : base(id)
     {
         LunchId = lunchId;

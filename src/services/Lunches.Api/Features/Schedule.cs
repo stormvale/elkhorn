@@ -41,7 +41,7 @@ public static class Schedule
             await db.Lunches.AddAsync(lunch, ct);
             await db.SaveChangesAsync(ct);
             
-            await dapr.PublishEventAsync("pubsub", "lunch-events",
+            await dapr.PublishEventAsync("pubsub", "lunches-events",
                 new LunchScheduledMessage(lunch.Id, lunch.Date, school.Name, restaurant.Name), ct);
             
             return TypedResults.CreatedAtRoute(

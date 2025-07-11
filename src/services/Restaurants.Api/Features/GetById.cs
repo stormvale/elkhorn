@@ -20,6 +20,7 @@ public static class GetById
                 : TypedResults.Ok(result.ToRestaurantResponse());
         })
         .WithName(RouteName)
-        .WithSummary("Get by Id");
+        .WithSummary("Get by Id")
+        .WithTags("Restaurants");
     }
 }
