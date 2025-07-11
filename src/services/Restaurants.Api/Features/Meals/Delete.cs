@@ -23,6 +23,7 @@ public static class DeleteMeal
             
             return TypedResults.NoContent();
         })
-        .WithSummary("Delete Meal");
+        .WithSummary("Delete Meal")
+        .WithTags("Meals");
     }
 }

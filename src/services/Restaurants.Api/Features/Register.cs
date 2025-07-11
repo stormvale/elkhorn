@@ -30,6 +30,8 @@ public static class Register
                 routeName: GetById.RouteName,
                 routeValues: new { id = restaurant.Id }
             );
-        }).WithSummary("Register");
+        })
+        .WithSummary("Register")
+        .WithTags("Restaurants");
     }
 }
