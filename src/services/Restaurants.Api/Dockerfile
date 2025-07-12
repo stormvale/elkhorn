@@ -27,3 +27,6 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Restaurants.Api.dll"]
+
+LABEL org.opencontainers.image.description="REST API for querying and managing Restaurants, which provide hot-lunch Meals for Schools."
+LABEL org.opencontainers.image.licenses="['CC-BY-NC-ND-4.0']"
