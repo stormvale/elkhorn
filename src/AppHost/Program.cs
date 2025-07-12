@@ -31,38 +31,34 @@ elkhornDb.AddContainer("orders", "/id");
 
 #region Dapr components
 
-var stateStore = builder.AddDaprStateStore("statestore");
+var daprOptions = new DaprComponentOptions
+{
+    LocalPath = "components/"
+};
 
+var secretstore = builder.AddDaprComponent("secretstore", "secretstores.local.file", daprOptions);
+var statestore = builder.AddDaprComponent("statestore", "state.redis", daprOptions);
+var email = builder.AddDaprComponent("email", "bindings.smtp", daprOptions);
 var pubSub = builder.AddDaprPubSub("pubsub");
-
-var email = builder.AddDaprComponent("email", "bindings.smtp", new DaprComponentOptions
-{
-    LocalPath = "components/"
-});
-
-var secretstore = builder.AddDaprComponent("secretstore", "secretstores.local.file", new DaprComponentOptions
-{
-    LocalPath = "components/"
-});
 
 #endregion
 
 var restaurantsApi = builder.AddProject<Restaurants_Api>("restaurants-api")
     .WithDaprSidecar()
-    .WithReference(stateStore)
+    .WithReference(statestore)
     .WithReference(secretstore)
     .WithReference(pubSub)
     .WithReference(cosmos);
 
 var schoolsApi = builder.AddProject<Schools_Api>("schools-api")
     .WithDaprSidecar()
-    .WithReference(stateStore)
+    .WithReference(statestore)
     .WithReference(pubSub)
     .WithReference(cosmos);
 
 var lunchesApi = builder.AddProject<Lunches_Api>("lunches-api")
     .WithDaprSidecar()
-    .WithReference(stateStore)
+    .WithReference(statestore)
     .WithReference(pubSub)
     .WithReference(cosmos);
 
@@ -73,7 +69,7 @@ var lunchesApi = builder.AddProject<Lunches_Api>("lunches-api")
 
 var ordersApi = builder.AddProject<Orders_Api>("orders-api")
     .WithDaprSidecar()
-    .WithReference(stateStore)
+    .WithReference(statestore)
     .WithReference(pubSub)
     .WithReference(cosmos);
 
@@ -84,7 +80,7 @@ var ordersApi = builder.AddProject<Orders_Api>("orders-api")
 
 builder.AddProject<Notifications_Api>("notifications-api")
     .WithDaprSidecar()
-    .WithReference(stateStore)
+    .WithReference(statestore)
     .WithReference(pubSub)
     .WithReference(email);
 
