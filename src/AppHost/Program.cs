@@ -114,4 +114,11 @@ builder.AddNpmApp("web-react-ts-mui", "../clients/web-react-ts-mui")
     .WithExternalHttpEndpoints()
     .PublishAsDockerFile();
 
+builder.AddNpmApp("react-redux-vite", "../clients/react-redux-vite")
+    .WithReference(gatewayApi)
+    .WithEnvironment("BROWSER", "none")
+    .WithHttpEndpoint(env: "VITE_PORT", name: "vite-http")
+    .WithExternalHttpEndpoints()
+    .PublishAsDockerFile();
+
 builder.Build().Run();
