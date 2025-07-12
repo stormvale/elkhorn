@@ -1,21 +1,20 @@
-import { AppBar, Toolbar, Typography, IconButton } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import { Typography, Box } from '@mui/material';
 import { ThemeToggle } from '../features/theme/ThemeToggle';
 
-interface HeaderProps {
-  onMenuClick: () => void;
-}
-
-export const Header = ({ onMenuClick }: HeaderProps) => (
-  <AppBar position="fixed">
-    <Toolbar>
-      <IconButton color="inherit" edge="start" onClick={onMenuClick} sx={{ mr: 2 }}>
-        <MenuIcon />
-      </IconButton>
-      <Typography variant="h6" sx={{ flexGrow: 1 }}>
-        Project: Elkhorn
-      </Typography>
-      <ThemeToggle />
-    </Toolbar>
-  </AppBar>
+export const Header = () => (
+  <Box
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      py: 2,
+      px: 3,
+      borderBottom: 1,
+      borderColor: 'divider',
+      bgcolor: 'background.paper',
+    }}
+  >
+    <Typography variant="h6">Project: Elkhorn</Typography>
+    <ThemeToggle />
+  </Box>
 );

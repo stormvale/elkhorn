@@ -107,6 +107,7 @@ var gatewayApi = builder.AddProject<Gateway_Api>("gateway-api")
 
 #endregion
 
+// 
 builder.AddNpmApp("web-react-ts-mui", "../clients/web-react-ts-mui")
     .WithReference(gatewayApi)
     .WithEnvironment("BROWSER", "none")

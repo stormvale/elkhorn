@@ -1,24 +1,20 @@
 import { Drawer, Toolbar, List, ListItemText, ListSubheader, ListItemButton } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 
-interface SidebarProps {
-  open: boolean;
-  onClose: () => void;
-  pinned?: boolean;
-  drawerWidth?: number;
-}
+const drawerWidth = 240;
 
-export const Sidebar = ({
-  open,
-  onClose,
-  pinned = false,
-  drawerWidth = 240,
-}: SidebarProps) => (
+export const Sidebar = () => (
   <Drawer
-    variant={pinned ? 'persistent' : 'temporary'}
-    open={open}
-    onClose={onClose}
-    sx={{ '& .MuiDrawer-paper': { width: drawerWidth } }}
+    variant="permanent"
+    sx={{
+      width: drawerWidth,
+      flexShrink: 0,
+      '& .MuiDrawer-paper': {
+        width: drawerWidth,
+        boxSizing: 'border-box',
+      },
+    }}
+    open
   >
     <Toolbar />
 
@@ -29,8 +25,8 @@ export const Sidebar = ({
       <ListItemButton component={RouterLink} to="/quotes">
         <ListItemText primary="Quotes" />
       </ListItemButton>
-      <ListItemButton component={RouterLink} to="/about">
-        <ListItemText primary="About" />
+      <ListItemButton component={RouterLink} to="/theme">
+        <ListItemText primary="Theme" />
       </ListItemButton>
     </List>
 
