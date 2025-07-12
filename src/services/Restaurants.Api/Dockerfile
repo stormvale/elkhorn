@@ -11,7 +11,16 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
 COPY ["src/services/Restaurants.Api/Restaurants.Api.csproj", "src/services/Restaurants.Api/"]
+COPY ["src/Contracts/Contracts.csproj", "src/Contracts/"]
+COPY ["src/Domain/Domain.csproj", "src/Domain/"]
+COPY ["src/ServiceDefaults/ServiceDefaults.csproj", "src/ServiceDefaults/"]
+
+# the solution is using centralized package management. the Directory.Packages.props file contains the package versions
+COPY ["Directory.Packages.props", "."]
+
+# this will just restore the packages
 RUN dotnet restore "./src/services/Restaurants.Api/Restaurants.Api.csproj"
 COPY . .
 WORKDIR "/src/src/services/Restaurants.Api"

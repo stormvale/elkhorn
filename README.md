@@ -8,10 +8,14 @@ for managing restaurants, schools, lunches, and orders, built with .NET, Dapr, A
 
 - **src/**: Main source code
   - **AppHost/**: .NET Aspire host for running locally
-  - **services/**: API microservices (Restaurants, Lunches, Notifications, etc.)
+  - **services/**: API microservices
   - **Domain/**: Shared domain classes and abstractions
-  - **Contracts/**:  Shared API contracts & Dapr message contracts
-  - **clients/web-react-ts-mui/**: React + TypeScript web client
+  - **Contracts/**: Shared API contracts & Dapr message contracts
+  - **clients/**: Web clients (UI)
+- **test/**: Tests
+  - **unit/**: Unit tests. Should be one test project per microservice
+  - **integration/**: Integration tests (TestContainers)
+  - **architecture/**: *coming soon*
 
 ## Getting Started
 
@@ -33,16 +37,17 @@ for managing restaurants, schools, lunches, and orders, built with .NET, Dapr, A
    ```sh
    dapr init
    ```
-   (`dapr_*` containers should be running.)
+   (verify that the `dapr_*` containers are running.)
+
 
 3. **Run AppHost**
    ```sh
    dotnet run --project src/AppHost/AppHost.csproj
    ```
 
-4. **Launch the Aspire Dashboard**
+4. **Navigate to the Aspire Dashboard**
     - The OpenApi documentation can be viewed using the 'Scalar API Reference' URL. (also available for each service at `/openapi/v1.json`)
     - CosmodDb Data Explorer can be accessed using the 'Data Explorer' URL.
-    - The React client can be launched using the URL for the 'web-react-ts-mui' resource.
+    - The React clients can be launched using the URL.
 
 ---
