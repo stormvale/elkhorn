@@ -45,7 +45,7 @@ jobs:
           name: test-results-${{ env.project_name }}
           path: |
             test/**/TestResults/*.trx
-            test/**/TestResults/**/coverage.cobertura.xml
+            test/**/TestResults/*/coverage.cobertura.xml
           retention-days: 1
 
   publish-results:

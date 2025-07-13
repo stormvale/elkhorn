@@ -45,7 +45,7 @@ jobs:
           name: test-results-${{ env.project_name }}
           path: |
             test/**/TestResults/*.trx
-            test/**/TestResults/**/coverage.cobertura.xml
+            test/**/TestResults/*/coverage.cobertura.xml
           retention-days: 1
 
   publish-results:
@@ -83,7 +83,7 @@ jobs:
           hide_branch_rate: false
           hide_complexity: false
           indicators: true
-          output: file
+          output: both # GitHub Action log and file
           thresholds: "50 70"
 
       - name: Publish coverage report
