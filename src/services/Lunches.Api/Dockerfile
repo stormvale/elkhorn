@@ -20,6 +20,9 @@ COPY ["src/ServiceDefaults/ServiceDefaults.csproj", "src/ServiceDefaults/"]
 # the solution is using centralized package management. the Directory.Packages.props file contains the package versions
 COPY ["Directory.Packages.props", "."]
 
+# the Directory.Build.props file contains some common build properties, including TargetFramework
+COPY ["Directory.Build.props", "Directory.Build.props"]
+
 # this will just restore the packages
 RUN dotnet restore "./src/services/Lunches.Api/Lunches.Api.csproj"
 

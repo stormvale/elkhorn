@@ -1,14 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>002e3c2b-1e94-4677-a7a9-c297e383e82f</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>..\..\..</DockerfileContext>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.Cosmos" />
     <PackageReference Include="Dapr.AspNetCore" />
