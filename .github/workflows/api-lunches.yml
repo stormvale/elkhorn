@@ -89,7 +89,8 @@ jobs:
       - name: Publish coverage report
         uses: marocchino/sticky-pull-request-comment@v2
         with:
-          recreate: true
+          # recreate: true
+          header: test-results-${{ env.project_name }}
           path: code-coverage-results.md
 
   docker-build-tag-push:
