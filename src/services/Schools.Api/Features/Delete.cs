@@ -1,6 +1,9 @@
 ﻿using Contracts.Schools.Messages;
 using Dapr.Client;
+using Domain.Results;
+using Schools.Api.DomainErrors;
 using Schools.Api.EfCore;
+using Schools.Api.Extensions;
 
 namespace Schools.Api.Features;
 
@@ -10,20 +13,21 @@ public static class Delete
     {
         app.MapDelete("/{id:Guid}", async Task<IResult> (Guid id, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
         {
-            var restaurant = await db.Schools.FindAsync([id], ct);
-            if (restaurant is null)
+            var school = await db.Schools.FindAsync([id], ct);
+            if (school is null)
             {
-                return TypedResults.NotFound();
+                return Result.Failure(SchoolErrors.NotFound(id)).ToProblemDetails();
             }
             
             // 'ExecuteDelete' and 'ExecuteDeleteAsync' are not supported by the CosmosDb provider
-            db.Schools.Remove(restaurant);
+            db.Schools.Remove(school);
             await db.SaveChangesAsync(ct);
 
             await dapr.PublishEventAsync("pubsub", "schools-events", new SchoolDeletedMessage(id), ct);
             
             return TypedResults.NoContent();
         })
-        .WithSummary("Delete");
+        .WithSummary("Delete")
+        .WithTags("Schools");
     }
 }

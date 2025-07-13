@@ -3,6 +3,8 @@ using Schools.Api.Domain;
 
 namespace Schools.Api.EfCore;
 
+// TODO: add an IDbContextFactory
+
 public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<School> Schools { get; set; }
@@ -12,8 +14,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         modelBuilder.Entity<School>().ToContainer("schools")
             .HasPartitionKey(x => x.Id);
 
-        modelBuilder.Entity<School>().Property(x => x.Name)
-            .HasMaxLength(100); // to avoid ef mapping this as ntext or varchar(max)
+        modelBuilder.Entity<School>().Property(x => x.Name).HasMaxLength(100);
+
+        // owned types are stored as nested JSON inside the parent document
+        modelBuilder.Entity<School>().OwnsOne(x => x.Pac);
     }
 }
 

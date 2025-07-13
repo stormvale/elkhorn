@@ -1,5 +1,6 @@
 ﻿using Contracts.Restaurants.Responses;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Domain.Results;
+using Restaurants.Api.DomainErrors;
 using Restaurants.Api.EfCore;
 using Restaurants.Api.Extensions;
 
@@ -11,16 +12,18 @@ public static class GetById
 
     public static void MapGetById(this WebApplication app)
     {
-        app.MapGet("/{id:Guid}", async Task<Results<Ok<RestaurantResponse>, NotFound>> (Guid id, AppDbContext db, CancellationToken ct) =>
+        app.MapGet("/{id:Guid}", async (Guid id, AppDbContext db, CancellationToken ct) =>
         {
-            var result = await db.Restaurants.FindAsync([id], ct);
-
-            return result is null
-                ? TypedResults.NotFound()
-                : TypedResults.Ok(result.ToRestaurantResponse());
+            var restaurant = await db.Restaurants.FindAsync([id], ct);
+            
+            return restaurant is null 
+                ? Result.Failure(RestaurantErrors.NotFound(id)).ToProblemDetails()
+                : TypedResults.Ok(restaurant.ToRestaurantResponse());
         })
         .WithName(RouteName)
         .WithSummary("Get by Id")
-        .WithTags("Restaurants");
+        .WithTags("Restaurants")
+        .Produces<RestaurantResponse>()
+        .Produces(StatusCodes.Status404NotFound);
     }
 }

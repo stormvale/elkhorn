@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Restaurants.Api.EfCore;
 using Restaurants.Api.Features;
@@ -8,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.AddCosmosDbContext<AppDbContext>("cosmos-db", "elkhornDb");
+builder.EnrichCosmosDbContext<AppDbContext>();
 
 builder.Services.AddOpenApi(o =>
 {
@@ -31,10 +33,12 @@ builder.Services.AddOpenApi(o =>
 });
 
 builder.Services.AddDaprClient();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
 //app.UseHttpsRedirection();
+//app.UseExceptionHandler();
 app.UseCloudEvents();
 app.MapSubscribeHandler();
 

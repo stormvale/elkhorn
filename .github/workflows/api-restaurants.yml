@@ -45,7 +45,7 @@ jobs:
           name: test-results-${{ env.project_name }}
           path: |
             test/**/TestResults/*.trx
-            test/**/TestResults/**/coverage.cobertura.xml
+            test/**/TestResults/*/coverage.cobertura.xml
           retention-days: 1
 
   publish-results:
@@ -83,13 +83,14 @@ jobs:
           hide_branch_rate: false
           hide_complexity: false
           indicators: true
-          output: file
+          output: both # GitHub Action log and file
           thresholds: "50 70"
 
       - name: Publish coverage report
         uses: marocchino/sticky-pull-request-comment@v2
         with:
-          recreate: true
+          # recreate: true
+          header: test-results-${{ env.project_name }}
           path: code-coverage-results.md
 
   docker-build-tag-push:
@@ -115,10 +116,16 @@ jobs:
           images: ghcr.io/stormvale/${{ env.project_name }} # docker action will handle the lowercase stuff
           flavor: latest=auto
           tags: |
-            type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
+            type=ref,event=pr
+            type=ref,event=tag
+            type=sha
             type=raw,value=latest,enable={{is_default_branch}}
+          labels: |
+            org.opencontainers.image.title=${{ env.project_name }}
+            org.opencontainers.image.vendor=stormvale
+            org.opencontainers.image.licenses=['AGPL-3.0-or-later', 'CC-BY-NC-4.0']
 
       - name: Login to GHCR
         uses: docker/login-action@v3
@@ -136,10 +143,11 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      # imageName=${{ fromJSON(steps.build-push.outputs.metadata)['image.name'] }}
       - name: 'Set output: imageName'
         id: get-build-name
         run: |
-          imageName=${{ fromJSON(steps.build-push.outputs.metadata)['image.name'] }}
+          imageName=ghcr.io/stormvale/restaurants.api:${{github.sha}}
           echo "image_name=${imageName}" >> "$GITHUB_OUTPUT"
 
   deploy:

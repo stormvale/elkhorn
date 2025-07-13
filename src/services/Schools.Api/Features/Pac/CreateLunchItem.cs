@@ -1,6 +1,8 @@
-﻿using Contracts.Schools.Requests;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Contracts.Schools.Pac.Requests;
+using Domain.Results;
+using Schools.Api.DomainErrors;
 using Schools.Api.EfCore;
+using Schools.Api.Extensions;
 
 namespace Schools.Api.Features.Pac;
 
@@ -8,22 +10,24 @@ public static class CreateLunchItem
 {
     public static void MapCreateLunchItem(this RouteGroupBuilder group)
     {
-        group.MapPost("/lunch-items", async Task<Results<Ok, ProblemHttpResult>> (Guid schoolId, CreateLunchItemRequest req, AppDbContext db, CancellationToken ct) =>
+        group.MapPost("/pac/lunch-items", async (Guid schoolId, CreateLunchItemRequest req, AppDbContext db, CancellationToken ct) =>
         {
             var school = await db.Schools.FindAsync([schoolId], ct);
             if (school is null)
             {
-                return TypedResults.Problem(
-                    detail: $"School with Id {schoolId} was not found",
-                    statusCode: StatusCodes.Status404NotFound,
-                    title: "School not found");
+                return Result.Failure(SchoolErrors.NotFound(schoolId)).ToProblemDetails();
             }
             
-            school.Pac.AddLunchItem(req.Name, req.Price);
+            var result = school.Pac.AddLunchItem(req.Name, req.Price);
+            if (result.IsFailure)
+            {
+                return result.ToProblemDetails();
+            }
             
             await db.SaveChangesAsync(ct);
-            
             return TypedResults.Ok();
-        });
+        })
+        .WithSummary("Create Lunch Item")
+        .WithTags("Pac");
     }
 }

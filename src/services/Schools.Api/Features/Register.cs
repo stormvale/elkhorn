@@ -1,6 +1,7 @@
 ﻿using Contracts.Schools.Messages;
 using Contracts.Schools.Requests;
 using Dapr.Client;
+using SchoolHub.Contracts.Schools.Responses;
 using Schools.Api.Domain;
 using Schools.Api.EfCore;
 using Schools.Api.Extensions;
@@ -13,11 +14,17 @@ public static class Register
     {
         app.MapPost("/", async (RegisterSchoolRequest req, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
         {
-            var school = new School(Guid.CreateVersion7(),
+            var createSchoolResult = School.Create(Guid.CreateVersion7(),
                 req.Name,
                 req.Address.ToDomainAddress(),
                 req.Contact.ToDomainContact());
+
+            if (createSchoolResult.IsFailure)
+            {
+                return createSchoolResult.ToProblemDetails();
+            }
             
+            var school = createSchoolResult.Value!;
             await db.Schools.AddAsync(school, ct);
             await db.SaveChangesAsync(ct);
             
@@ -25,10 +32,13 @@ public static class Register
                 new SchoolRegisteredMessage(school.Id, school.Name), ct);
             
             return TypedResults.CreatedAtRoute(
-                school.Id,
+                new RegisterSchoolResponse(school.Id),
                 routeName: GetById.RouteName,
                 routeValues: new { id = school.Id }
             );
-        }).WithSummary("Register");
+        })
+        .WithSummary("Register")
+        .WithTags("Schools")
+        .Produces(StatusCodes.Status201Created);
     }
 }

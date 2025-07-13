@@ -45,7 +45,7 @@ jobs:
           name: test-results-${{ env.project_name }}
           path: |
             test/**/TestResults/*.trx
-            test/**/TestResults/**/coverage.cobertura.xml
+            test/**/TestResults/*/coverage.cobertura.xml
           retention-days: 1
 
   publish-results:
@@ -89,7 +89,8 @@ jobs:
       - name: Publish coverage report
         uses: marocchino/sticky-pull-request-comment@v2
         with:
-          recreate: true
+          # recreate: true
+          header: test-results-${{ env.project_name }}
           path: code-coverage-results.md
 
   docker-build-tag-push:

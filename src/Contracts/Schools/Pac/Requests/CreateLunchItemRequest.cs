@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Contracts.Schools.Requests;
+namespace Contracts.Schools.Pac.Requests;
 
 public record CreateLunchItemRequest(
 
