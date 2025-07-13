@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.AddCosmosDbContext<AppDbContext>("cosmos-db", "elkhornDb");
+builder.EnrichCosmosDbContext<AppDbContext>();
 
 builder.Services.AddOpenApi(o =>
 {
