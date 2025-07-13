@@ -16,7 +16,8 @@ public static class List
             return result.Select(x => x.ToSchoolResponse())
                 .ToList()
                 .AsReadOnly();
-            
-        }).WithSummary("List");
+        })
+        .WithSummary("List")
+        .WithTags("Schools");
     }
 }

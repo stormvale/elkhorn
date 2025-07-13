@@ -1,6 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 using Domain.Abstractions;
 using Domain.Common;
+using Domain.Results;
+using Schools.Api.DomainErrors;
 
 namespace Schools.Api.Domain;
 
@@ -16,17 +18,22 @@ public sealed class Pac : Entity
     public Contact Chairperson { get; set; }
     public List<LunchItem> LunchItems { get; set; } = [];
     
-    public void AddLunchItem(string name, decimal price)
+    public Result AddLunchItem(string name, decimal price)
     {
         if (LunchItems.Any(x => x.Name == name))
         {
-            throw new InvalidOperationException($"Lunch item with name {name} already exists.");
+            return Result.Failure(PacErrors.LunchItemAlreadyExists(name));
         }
         
         LunchItems.Add(new LunchItem(name, price));
+        return Result.Success();
     }
 
-    public void RemoveLunchItem(string name) => LunchItems.RemoveAll(x => x.Name == name);
+    public Result RemoveLunchItem(string name)
+    {
+        LunchItems.RemoveAll(x => x.Name == name);
+        return Result.Success();
+    }
 }
 
 public record LunchItem(string Name, decimal Price);

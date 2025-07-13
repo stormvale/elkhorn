@@ -1,5 +1,6 @@
-﻿using Contracts.Schools.Responses;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Domain.Results;
+using Schools.Api.Domain;
+using Schools.Api.DomainErrors;
 using Schools.Api.EfCore;
 using Schools.Api.Extensions;
 
@@ -11,15 +12,18 @@ public static class GetById
 
     public static void MapGetById(this WebApplication app)
     {
-        app.MapGet("/{id:Guid}", async Task<Results<Ok<SchoolResponse>, NotFound>> (Guid id, AppDbContext db, CancellationToken ct) =>
+        app.MapGet("/{id:Guid}", async (Guid id, AppDbContext db, CancellationToken ct) =>
         {
-            var result = await db.Schools.FindAsync([id], ct);
-
-            return result is null
-                ? TypedResults.NotFound()
-                : TypedResults.Ok(result.ToSchoolResponse());
+            var school = await db.Schools.FindAsync([id], ct);
+            
+            return school is null 
+                ? Result.Failure(SchoolErrors.NotFound(id)).ToProblemDetails()
+                : TypedResults.Ok(school.ToSchoolResponse());
         })
         .WithName(RouteName)
-        .WithSummary("Get by Id");
-}
+        .WithSummary("Get by Id")
+        .WithTags("Schools")
+        .Produces<School>()
+        .Produces(StatusCodes.Status404NotFound);
+    }
 }

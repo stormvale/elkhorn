@@ -1,6 +1,9 @@
 ﻿using Contracts.Restaurants.Messages;
 using Dapr.Client;
+using Domain.Results;
+using Restaurants.Api.DomainErrors;
 using Restaurants.Api.EfCore;
+using Restaurants.Api.Extensions;
 
 namespace Restaurants.Api.Features;
 
@@ -13,7 +16,7 @@ public static class Delete
             var restaurant = await db.Restaurants.FindAsync([id], ct);
             if (restaurant is null)
             {
-                return TypedResults.NotFound();
+                return Result.Failure(RestaurantErrors.NotFound(id)).ToProblemDetails();
             }
             
             // 'ExecuteDelete' and 'ExecuteDeleteAsync' are not supported by the CosmosDb provider
@@ -25,6 +28,8 @@ public static class Delete
             return TypedResults.NoContent();
         })
         .WithSummary("Delete")
-        .WithTags("Restaurants");
+        .WithTags("Restaurants")
+        .Produces(StatusCodes.Status204NoContent)
+        .Produces(StatusCodes.Status404NotFound);
     }
 }
