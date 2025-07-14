@@ -20,6 +20,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: development
 
+    env:
+      VITE_RESTAURANTS_API_URL: ${{ secrets.VITE_RESTAURANTS_API_URL }}
+
+    # Vite loads environment variables at build time. Also, environment variables that already
+    # exist when Vite is executed have the highest priority and will not be overwritten by .env
+    # files. Any environment variables prefixed with VITE_ are made available by Vite under
+    # then 'import.meta.env' object.
+
     steps:
       - uses: actions/checkout@v4
 
@@ -37,4 +45,3 @@ jobs:
           action: "upload"
           app_location: "./src/clients/react-redux-vite"
           output_location: "dist"
-          app_build_command: vite build --mode development # dev environment on Azure
