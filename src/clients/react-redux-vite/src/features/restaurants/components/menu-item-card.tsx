@@ -1,9 +1,9 @@
 import React from 'react';
 import { Card, CardContent, Typography, Button } from '@mui/material';
-import { MenuItem } from '../restaurantsApiSlice';
+import { RestaurantMealResponse } from '../api/apiSlice-generated';
 
 interface Props {
-  item: MenuItem;
+  item: RestaurantMealResponse;
   onRemove: () => void;
 }
 

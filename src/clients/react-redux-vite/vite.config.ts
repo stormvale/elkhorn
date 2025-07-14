@@ -10,10 +10,15 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    base: "./", // not 100% sure if this is correct...
 
     server: {
       open: true,
       port: parseInt(env.VITE_PORT) // this comes from the Aspire Host
+    },
+
+    hmr: { // hot module reload
+      port: parseInt(env.VITE_PORT)
     },
 
     test: {

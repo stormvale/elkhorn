@@ -8,7 +8,7 @@ namespace Restaurants.Api.Features;
 
 public static class GetById
 {
-    public const string RouteName = "GetById";
+    public const string RouteName = "GetRestaurantById";
 
     public static void MapGetById(this WebApplication app)
     {
@@ -21,7 +21,7 @@ public static class GetById
                 : TypedResults.Ok(restaurant.ToRestaurantResponse());
         })
         .WithName(RouteName)
-        .WithSummary("Get by Id")
+        .WithSummary("Get Restaurant by Id")
         .WithTags("Restaurants")
         .Produces<RestaurantResponse>()
         .Produces(StatusCodes.Status404NotFound);

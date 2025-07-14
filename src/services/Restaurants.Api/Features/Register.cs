@@ -31,7 +31,8 @@ public static class Register
                 routeValues: new { id = restaurant.Id }
             );
         })
-        .WithSummary("Register")
+        .WithName("RegisterRestaurant")
+        .WithSummary("Register new Restaurant")
         .WithTags("Restaurants");
     }
 }

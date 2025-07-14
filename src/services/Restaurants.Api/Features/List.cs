@@ -12,13 +12,15 @@ public static class List
         app.MapGet("/", async Task<IReadOnlyList<RestaurantResponse>> (AppDbContext db, CancellationToken ct) =>
         {
             var result = await db.Restaurants.ToListAsync(ct);
-            
+
             return result.Select(x => x.ToRestaurantResponse())
                 .ToList()
                 .AsReadOnly();
-            
+
         })
-        .WithSummary("List")
-        .WithTags("Restaurants");
+        .WithName("ListRestaurants")
+        .WithSummary("List all Restaurants")
+        .WithTags("Restaurants")
+        .Produces<List<RestaurantResponse>>();
     }
 }
