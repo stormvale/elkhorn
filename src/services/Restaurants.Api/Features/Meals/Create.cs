@@ -34,7 +34,8 @@ public static class CreateMeal
 
             return TypedResults.Ok(new CreateMealResponse(meal.Id, restaurant.Id));
         })
-        .WithSummary("Create Meal")
+        .WithName("CreateRestaurantMeal")
+        .WithSummary("Create Restaurant Meal")
         .WithTags("Meals");
     }
 }

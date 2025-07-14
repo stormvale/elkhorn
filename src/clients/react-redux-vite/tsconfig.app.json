@@ -24,5 +24,5 @@
     "noUncheckedSideEffectImports": true,
     "types": ["vitest/globals"]
   },
-  "include": ["src", "Routing.tsx"]
+  "include": ["src", "Routing.tsx", "openapi"]
 }

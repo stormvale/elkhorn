@@ -1,5 +1,5 @@
 import { Box, Card, CardContent, Divider, List, ListItem, Typography } from '@mui/material';
-import { useGetRestaurantByIdQuery } from '../restaurantsApiSlice';
+import { useGetRestaurantByIdQuery } from '../api/apiSlice';
 import MenuItemCard from './menu-item-card';
 
 export const RestaurantDetail = ({ id }: { id: string | null }) => {

@@ -27,7 +27,8 @@ public static class Delete
             
             return TypedResults.NoContent();
         })
-        .WithSummary("Delete")
+        .WithName("DeleteRestaurant")
+        .WithSummary("Delete Restaurant")
         .WithTags("Restaurants")
         .Produces(StatusCodes.Status204NoContent)
         .Produces(StatusCodes.Status404NotFound);
