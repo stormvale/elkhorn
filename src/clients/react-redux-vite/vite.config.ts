@@ -11,6 +11,10 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     base: "./", // not 100% sure if this is correct...
+    
+    build: {
+      outDir: "dist",
+    },
 
     server: {
       open: true,

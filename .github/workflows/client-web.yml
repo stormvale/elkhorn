@@ -33,4 +33,4 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "./src/clients/react-redux-vite"
-          output_location: "build" # Built app content directory - optional
+          output_location: "dist" # Built app content directory - optional
