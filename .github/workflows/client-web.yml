@@ -21,7 +21,8 @@ jobs:
     environment: development
 
     env:
-      VITE_RESTAURANTS_API_URL: ${{ secrets.VITE_RESTAURANTS_API_URL }}
+      VITE_MODE: development_az # which .env file to use
+      # VITE_RESTAURANTS_API_URL: ${{ secrets.VITE_RESTAURANTS_API_URL }}
 
     # Vite loads environment variables at build time. Also, environment variables that already
     # exist when Vite is executed have the highest priority and will not be overwritten by .env
