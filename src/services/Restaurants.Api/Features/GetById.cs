@@ -1,5 +1,6 @@
 ﻿using Contracts.Restaurants.Responses;
 using Domain.Results;
+using Microsoft.AspNetCore.Mvc;
 using Restaurants.Api.DomainErrors;
 using Restaurants.Api.EfCore;
 using Restaurants.Api.Extensions;
@@ -24,6 +25,6 @@ public static class GetById
         .WithSummary("Get Restaurant by Id")
         .WithTags("Restaurants")
         .Produces<RestaurantResponse>()
-        .Produces(StatusCodes.Status404NotFound);
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
     }
 }

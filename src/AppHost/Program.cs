@@ -107,7 +107,7 @@ var gatewayApi = builder.AddProject<Gateway_Api>("gateway-api")
 
 #endregion
 
-// 
+// this was the first iteration of the web app (no longer used)
 builder.AddNpmApp("web-react-ts-mui", "../clients/web-react-ts-mui")
     .WithReference(gatewayApi)
     .WithEnvironment("BROWSER", "none")
@@ -117,8 +117,9 @@ builder.AddNpmApp("web-react-ts-mui", "../clients/web-react-ts-mui")
 
 builder.AddNpmApp("react-redux-vite", "../clients/react-redux-vite")
     .WithReference(gatewayApi)
+    .WithHttpEndpoint(name: "web", port: 57575, isProxied: false) // fixed port
+    .WithEnvironment("VITE_PORT", "57575")
     .WithEnvironment("BROWSER", "none")
-    .WithHttpEndpoint(env: "VITE_PORT", name: "vite-http")
     .WithExternalHttpEndpoints()
     .PublishAsDockerFile();
 

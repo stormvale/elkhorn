@@ -1,9 +1,10 @@
 import { BrowserRouter } from 'react-router-dom';
 import { Box, CssBaseline } from '@mui/material';
-import Routes from './routes';
-import { Header } from './components/Header';
-import { Sidebar } from './components/Sidebar';
 import { AppThemeProvider } from './features/theme/AppThemeProvider';
+import Routes from './routes';
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
+import NotificationSnackbar from './features/notifications/notificationSnackbar';
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
           </Box>
         </Box>
       </BrowserRouter>
+      <NotificationSnackbar />
     </AppThemeProvider>
   );
 };

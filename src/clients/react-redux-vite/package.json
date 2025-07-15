@@ -21,6 +21,8 @@
     "api-gen:restaurants": "npx @rtk-query/codegen-openapi openapi/openapi-config-restaurants.ts"
   },
   "dependencies": {
+    "@azure/msal-browser": "^4.15.0",
+    "@azure/msal-react": "^3.0.15",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.2.0",

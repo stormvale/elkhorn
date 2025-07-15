@@ -1,7 +1,7 @@
 import { Typography, Box } from '@mui/material';
 import { ThemeToggle } from '../features/theme/ThemeToggle';
 
-export const Header = () => (
+const Header = () =>
   <Box
     sx={{
       display: 'flex',
@@ -17,4 +17,6 @@ export const Header = () => (
     <Typography variant="h6">Project: Elkhorn</Typography>
     <ThemeToggle />
   </Box>
-);
+
+
+export default Header;

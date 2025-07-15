@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Restaurants.Api.EfCore;
@@ -31,6 +32,22 @@ builder.Services.AddOpenApi(o =>
     // required if using Scalar.AspNetCore extensions package
     o.AddScalarTransformers();
 });
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        // The Authority is the URL of the trusted issuer (ie. Entra tenant) that the API uses to validate incoming access tokens.
+        // We are using the 'issuer' value from the OpenID Connect metadata document for the App.
+        // I think we may be able to also use https://login.microsoftonline.com/<TENANT_ID> => not tried yet.
+        options.Authority = "https://97919892-78d9-482f-a52e-55bfd7ae7c95.ciamlogin.com/97919892-78d9-482f-a52e-55bfd7ae7c95/v2.0";
+        
+        // The Audience is the unique identifier of the API that the access token is intended for. In our case, this is the client Id
+        // of the Restaurants API app registered in Microsoft Entra.
+        options.Audience = "f776afca-bc47-4fee-9c85-e86ee08578f5";
+    });
+
+// Authorization policies go here...
+builder.Services.AddAuthorizationBuilder();
 
 builder.Services.AddDaprClient();
 builder.Services.AddProblemDetails();

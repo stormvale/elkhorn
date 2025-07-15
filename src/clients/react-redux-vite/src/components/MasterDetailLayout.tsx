@@ -8,10 +8,10 @@ interface MasterDetailLayoutProps {
 export const MasterDetailLayout = ({ master, detail }: MasterDetailLayoutProps) => (
   <Box sx={{ flexGrow: 1, p: 2 }}>
     <Grid container spacing={2}>
-      <Grid size={7}>
+      <Grid size={3}>
         {master}
       </Grid>
-      <Grid size={5}>
+      <Grid size={9}>
         {detail}
       </Grid>
     </Grid>
