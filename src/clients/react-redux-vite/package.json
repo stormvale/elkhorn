@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "tsc -b && vite build",
+    "build:az-dev": "tsc -b && vite build --mode development_az",
     "dev": "vite --open",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
