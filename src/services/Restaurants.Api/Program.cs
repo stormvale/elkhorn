@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Restaurants.Api.EfCore;
 using Restaurants.Api.Features;
@@ -44,10 +43,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         // The Audience is the unique identifier of the API that the access token is intended for. In our case, this is the client Id
         // of the Restaurants API app registered in Microsoft Entra.
         options.Audience = "f776afca-bc47-4fee-9c85-e86ee08578f5";
+
+        options.IncludeErrorDetails = true;
     });
 
 // Authorization policies go here...
 builder.Services.AddAuthorizationBuilder();
+
+builder.Services.AddCors(options =>
+    options.AddDefaultPolicy(policyBuilder => policyBuilder
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+    )
+);
 
 builder.Services.AddDaprClient();
 builder.Services.AddProblemDetails();
@@ -56,6 +65,7 @@ var app = builder.Build();
 
 //app.UseHttpsRedirection();
 //app.UseExceptionHandler();
+app.UseCors();
 app.UseCloudEvents();
 app.MapSubscribeHandler();
 

@@ -6,10 +6,10 @@ export const emptyApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_RESTAURANTS_API_URL,
     prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.accessToken;
+      const token = (getState() as RootState).auth.token;
 
       if (token) {
-        headers.set('Authorization', 'Bearer ${token}');
+        headers.set('Authorization', `Bearer ${token}`);
       }
 
       return headers;

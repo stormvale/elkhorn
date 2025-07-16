@@ -5,7 +5,6 @@ import { RestaurantDetail } from "./components/detail"
 import { RestaurantList } from "./components/list"
 
 export const Restaurants = (): JSX.Element | null => {
-  
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   return (

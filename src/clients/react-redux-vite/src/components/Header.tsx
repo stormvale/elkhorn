@@ -1,5 +1,6 @@
-import { Typography, Box } from '@mui/material';
+import { Typography, Box, Stack } from '@mui/material';
 import { ThemeToggle } from '../features/theme/ThemeToggle';
+import { HeaderLogout } from '../features/auth/HeaderLogout';
 
 const Header = () =>
   <Box
@@ -15,7 +16,10 @@ const Header = () =>
     }}
   >
     <Typography variant="h6">Project: Elkhorn</Typography>
-    <ThemeToggle />
+    <Stack direction="row" spacing={2} alignItems="center">
+      <HeaderLogout />
+      <ThemeToggle />
+    </Stack>
   </Box>
 
 

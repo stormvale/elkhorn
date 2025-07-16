@@ -9,7 +9,7 @@ interface Props {
 
 const MenuItemCard: React.FC<Props> = ({ item, onRemove }) => {
   return (
-    <Card key={item.id} sx={{ width: '100%' }}>
+    <Card sx={{ width: '100%' }}>
       <CardContent>
         <Typography variant="subtitle1">{item.name}</Typography>
         <Typography variant="body2">Price: ${item.price.toFixed(2)}</Typography>

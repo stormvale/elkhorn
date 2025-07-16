@@ -29,7 +29,7 @@ export const RestaurantDetail = ({ id }: { id: string | null }) => {
       <Typography variant="h6">Menu</Typography>
       <Stack spacing={2}>
         {menu.map((item: any) => (
-            <MenuItemCard item={item} onRemove={() => console.log('removed meal') } />
+            <MenuItemCard key={item.name} item={item} onRemove={() => console.log('removed meal') } />
         ))}
       </Stack>
 

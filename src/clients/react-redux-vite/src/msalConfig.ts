@@ -7,8 +7,18 @@ import { Configuration, LogLevel, PublicClientApplication } from "@azure/msal-br
 export const msalConfig: Configuration = {
     auth: {
       clientId: "c062b71e-d6d3-41df-8e9c-f70929e77d1e",
+
+      // the authority is specifically the Elkhorn tenant
       authority: "https://97919892-78d9-482f-a52e-55bfd7ae7c95.ciamlogin.com/97919892-78d9-482f-a52e-55bfd7ae7c95/v2.0",
-      redirectUri: "http://localhost:57575/signin-oidc"
+
+      // This must match exactly one of the URIs registered in Microsoft Entra => App Registration => Authentication.
+      redirectUri: "http://localhost:57575/signin-oidc",
+
+      // the page to navigate after logout.
+      postLogoutRedirectUri: '/login',
+
+      // If true, will navigate back to the original request location before processing the auth code response.
+      navigateToLoginRequestUrl: false, 
     },
     cache: {
       cacheLocation: "localStorage",
@@ -41,17 +51,21 @@ export const msalConfig: Configuration = {
 
 export const msalInstance = new PublicClientApplication(msalConfig);
 
+/**
+ * Scopes you add here will be requested during sign-in. By default, MSAL.js will add
+ * OIDC scopes (openid, profile, email) to any login request. For more information about OIDC scopes, visit: 
+ * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes
+ */
 export const loginRequest = {
     scopes: [
-        "User.Read", // Example scope for Microsoft Graph API
         "api://f776afca-bc47-4fee-9c85-e86ee08578f5/RestaurantsApi.All"
     ]
 };
 
-export const protectedResources = {
-  graphApi: {
-    endpoint: "https://graph.microsoft.com/v1.0/me",
-    scopes: ["User.Read"],
-  }
-  // configurations for other protected APIs...
+/**
+ * Add here the scopes to request when obtaining an access token for MS Graph API. For more information, see:
+ * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/resources-and-scopes.md
+ */
+export const graphConfig = {
+    graphMeEndpoint: "https://graph.microsoft.com/v1.0/me",
 };

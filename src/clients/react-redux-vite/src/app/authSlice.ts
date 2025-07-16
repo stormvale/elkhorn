@@ -6,13 +6,15 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
  */
 
 interface AuthState {
-  accessToken: string | null;
   user: any | null;
+  token: string | null;
+  isAuthenticated: boolean;
 }
 
 const initialState: AuthState = {
-  accessToken: null,
   user: null,
+  token: null,
+  isAuthenticated: false
 };
 
 export const authSlice = createSlice({
@@ -23,15 +25,21 @@ export const authSlice = createSlice({
       state,
       action: PayloadAction<{ accessToken: string; user: any }>
     ) => {
-      state.accessToken = action.payload.accessToken;
-      state.user = action.payload.user;
+      // tenantProfiles is not serializable and should not be stored in Redux state
+      const { tenantProfiles, ...userWithoutTenantProfiles } = action.payload.user;
+
+      state.user = userWithoutTenantProfiles;
+      state.token = action.payload.accessToken;
+      state.isAuthenticated = true;
     },
     clearCredentials: (state) => {
-      state.accessToken = null;
       state.user = null;
+      state.token = null;
+      state.isAuthenticated = false;
     },
   },
 });
 
 export const { setCredentials, clearCredentials } = authSlice.actions;
+
 export default authSlice.reducer;
