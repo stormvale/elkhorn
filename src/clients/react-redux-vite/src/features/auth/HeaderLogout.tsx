@@ -9,23 +9,17 @@ export const HeaderLogout = () => {
   const dispatch = useAppDispatch()
   const { instance } = useMsal();
   const user_name = useSelector((state: RootState) => state.auth.user?.name);
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
-  if (!isAuthenticated) {
-    return null; // Don't render if not authenticated
-  }
-  
-  const handleLogoutPopup = () => {
-    instance.logout()
-      .then(() => {
-        dispatch(clearCredentials());
-      }).catch((error) => console.error(error));
+  const handleLogout = () => {
+    instance.logoutPopup()
+      .then(() => dispatch(clearCredentials()))
+      .catch(error => console.error('Logout error:', error));
   };
 
   return (
     <Stack direction="row" spacing={2} alignItems="center">
       <Typography variant="h5">{user_name}</Typography>
-      <Button onClick={() => handleLogoutPopup()} color="warning">
+      <Button onClick={() => handleLogout()} color="warning">
         Logout
       </Button>
     </Stack>

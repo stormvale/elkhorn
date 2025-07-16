@@ -1,8 +1,10 @@
-import { Configuration, LogLevel, PublicClientApplication } from "@azure/msal-browser";
+import { BrowserCacheLocation, Configuration, LogLevel, PublicClientApplication } from "@azure/msal-browser";
 
 // MSAL uses response_type=code and does not support other responseTypes, as the recommended
 // and more secure flow for single-page applications (SPAs) is the Authorization Code Flow
 // with PKCE (Proof Key for Code Exchange), which uses response_type=code.
+
+// TODO: consider moving this file to 'auth' directory
 
 export const msalConfig: Configuration = {
     auth: {
@@ -21,7 +23,7 @@ export const msalConfig: Configuration = {
       navigateToLoginRequestUrl: false, 
     },
     cache: {
-      cacheLocation: "localStorage",
+      cacheLocation: BrowserCacheLocation.LocalStorage,
       storeAuthStateInCookie: false
     },
     system: {
