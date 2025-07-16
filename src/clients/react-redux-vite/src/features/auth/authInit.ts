@@ -3,11 +3,24 @@ import { useDispatch } from 'react-redux';
 import { useMsal } from '@azure/msal-react';
 import { tokenStorage } from '../../utils/tokenStorage';
 import { restoreAuthStateFromLocalStorage, setCredentials } from '../../app/authSlice';
-
+import { MSALTokenClaims } from '../../types/MSALTokenClaims';
+import { User } from '../../types/user';
 
 export const useAuthInit = () => {
   const dispatch = useDispatch();
   const { instance, accounts } = useMsal();
+
+  // Helper function to create User object from MSAL account and claims
+  const createUserFromMSAL = (account: any, claims?: MSALTokenClaims): User => {
+    return {
+      id: claims?.oid || account.localAccountId || '',
+      email: claims?.email || account.username || '',
+      name: claims?.name || account.name || '',
+      username: claims?.preferred_username || account.username || '',
+      roles: claims?.roles || [],
+      tenantId: claims?.tid || account.tenantId,
+    };
+  };
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -28,15 +41,20 @@ export const useAuthInit = () => {
             };
             
             const response = await instance.acquireTokenSilent(silentRequest);
-            // Handle successful silent token acquisition
-            // we would need to dispatch setCredentials here with the new token
+            const account = response.account || accounts[0];
+            const claims = response.idTokenClaims as MSALTokenClaims;
+            const user = createUserFromMSAL(account, claims);
+
+            dispatch(setCredentials({
+              accessToken: response.accessToken,
+              user: user
+            }));
           } catch (error) {
             console.error('Silent token acquisition failed:', error);
             tokenStorage.clearAuthData();
           }
         } else {
-          // No valid auth data anywhere
-          tokenStorage.clearAuthData();
+          tokenStorage.clearAuthData(); // No valid auth data anywhere
         }
       } catch (error) {
         console.error('Auth initialization error:', error);

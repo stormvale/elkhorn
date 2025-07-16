@@ -8,15 +8,7 @@ import { setAuthError, setCredentials } from '../../app/authSlice';
 import { showNotification } from '../notifications/notificationSlice';
 import { User } from '../../types/user';
 import MicrosoftIcon from '@mui/icons-material/Microsoft';
-
-interface MSALTokenClaims {
-  preferred_username?: string;
-  name?: string;
-  email?: string;
-  oid?: string;
-  tid?: string;
-  roles?: string[];
-}
+import { MSALTokenClaims } from '../../types/MSALTokenClaims';
 
 const LoginPage: React.FC = () => {
   const { instance } = useMsal();
