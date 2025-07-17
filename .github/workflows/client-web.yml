@@ -21,6 +21,7 @@ jobs:
       - uses: actions/checkout@v4
         
       - name: Build manually
+        working-directory: ./src/clients/react-redux-vite
         run: |
           npm ci
           npm run build:az-dev
