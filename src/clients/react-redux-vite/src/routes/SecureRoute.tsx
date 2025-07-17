@@ -26,8 +26,7 @@ export const SecureRoute = ({ children, allowedRoles }: SecureRouteProps) => {
     }
 
     // check if user has ANY of the allowed roles
-    const hasAllowedRole = user.roles.some(userRole =>
-      allowedRoles.includes(userRole)
+    const hasAllowedRole = user.roles.some((userRole: string) => allowedRoles.includes(userRole)
     );
 
     if (!hasAllowedRole) {

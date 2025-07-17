@@ -3,8 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useMsal } from '@azure/msal-react';
 import { tokenStorage } from '../../utils/tokenStorage';
 import { restoreAuthStateFromLocalStorage, setCredentials } from '../../app/authSlice';
-import { MSALTokenClaims } from '../../types/MSALTokenClaims';
-import { User } from '../../types/user';
+import { MSALTokenClaims, User } from '../../types';
 
 export const useAuthInit = () => {
   const dispatch = useDispatch();

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { User } from '../types/user';
 import { tokenStorage } from '../utils/tokenStorage';
+import { User } from '../types';
 
 // Initialize state from localStorage
 const initializeAuthState = (): AuthState => {

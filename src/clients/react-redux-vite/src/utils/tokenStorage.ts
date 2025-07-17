@@ -1,4 +1,4 @@
-import { User } from "../types/user";
+import { User } from "../types";
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 const USER_KEY = 'user';

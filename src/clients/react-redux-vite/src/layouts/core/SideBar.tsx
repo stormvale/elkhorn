@@ -66,7 +66,7 @@ const Sidebar: React.FC = () => {
 
     // Check if user has required roles
     if (route.allowedRoles.length > 0 && user) {
-      return user.roles.some(userRole => route.allowedRoles.includes(userRole));
+      return user.roles.some((userRole: string) => route.allowedRoles.includes(userRole));
     }
 
     return true;

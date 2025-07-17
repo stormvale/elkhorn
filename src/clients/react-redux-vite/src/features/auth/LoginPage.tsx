@@ -6,9 +6,8 @@ import { Container, Typography, Button, Box } from '@mui/material';
 import { useAppDispatch } from '../../app/hooks';
 import { setAuthError, setCredentials } from '../../app/authSlice';
 import { showNotification } from '../notifications/notificationSlice';
-import { User } from '../../types/user';
 import MicrosoftIcon from '@mui/icons-material/Microsoft';
-import { MSALTokenClaims } from '../../types/MSALTokenClaims';
+import { MSALTokenClaims, User } from '../../types';
 
 const LoginPage: React.FC = () => {
   const { instance } = useMsal();
