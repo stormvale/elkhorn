@@ -2,7 +2,7 @@ import LoginPage from '../features/auth/LoginPage';
 import HomePage from '../features/home/HomePage';
 import { Restaurants } from '../features/restaurants/Restaurants';
 import { Quotes } from '../features/quotes/Quotes';
-import TemplateTester from '../features/theme/TemplateTester';
+import TemplateTester from '../theme/TemplateTester';
 
 interface RouteConfig {
   path: string;

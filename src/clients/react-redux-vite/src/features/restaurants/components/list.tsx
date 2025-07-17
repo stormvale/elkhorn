@@ -1,7 +1,7 @@
 import { Paper, Stack, Typography } from '@mui/material';
 import { useListRestaurantsQuery } from '../api/apiSlice';
 import { RestaurantResponse } from '../api/apiSlice-generated';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 interface RestaurantListProps {
   onSelected: (id: string | null) => void;
@@ -26,7 +26,7 @@ export const RestaurantList = ({ onSelected, selectedId }: RestaurantListProps) 
 
   return (
     <Stack spacing={2}>
-      {data.map((restaurant: RestaurantResponse, index) => (
+      {data.map((restaurant: RestaurantResponse) => (
         <Paper
           key={restaurant.id}
           elevation={1}
@@ -39,7 +39,10 @@ export const RestaurantList = ({ onSelected, selectedId }: RestaurantListProps) 
             transition: 'all 0.2s ease-in-out',
             '&:hover': {
               elevation: 2,
-              backgroundColor: selectedId === restaurant.id ? 'primary.light' : 'action.hover',
+              backgroundColor: (theme) =>
+                selectedId === restaurant.id
+                  ? theme.palette.primary.light
+                  : theme.palette.action.hover
             }
           }}
           onClick={() => handleItemClick(restaurant.id)}

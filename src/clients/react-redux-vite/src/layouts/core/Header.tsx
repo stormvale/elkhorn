@@ -3,7 +3,6 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   Box,
   Avatar,
   Menu,
@@ -12,7 +11,7 @@ import {
 import { useMsal } from '@azure/msal-react';
 import { useAppDispatch } from '../../app/hooks';
 import { clearCredentials } from '../../app/authSlice';
-import { ThemeToggle } from '../../features/theme/ThemeToggle';
+import { ThemeToggle } from '../../theme/ThemeToggle';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
 

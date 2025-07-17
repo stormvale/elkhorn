@@ -1,7 +1,7 @@
 import { Stack, Box, Typography, TypographyVariant, SxProps, Theme } from '@mui/material';
 import { useSelector } from "react-redux";
 import { JSX } from "react";
-import { RootState } from '../../app/store';
+import { RootState } from '../app/store';
 
 const TemplateTester = () => {
   const mode = useSelector((state: RootState) => state.theme.mode);

@@ -2,7 +2,6 @@ import { Alert, Box, Card, CardContent, Divider, IconButton, Stack, Typography }
 import { useDeleteRestaurantMutation, useGetRestaurantByIdQuery } from '../api/apiSlice';
 import { Delete } from '@mui/icons-material';
 import MenuItemCard from './menu-item-card';
-import { useEffect } from 'react';
 import { showNotification } from '../../notifications/notificationSlice';
 import { useAppDispatch } from '../../../app/hooks';
 
@@ -14,21 +13,9 @@ interface RestaurantDetailProps {
 export const RestaurantDetail = ({ id, onDeleted }: RestaurantDetailProps) => {
   const dispatch = useAppDispatch();
 
-  // don't run if id is null
   const { data, isLoading, error } = useGetRestaurantByIdQuery(id!, { skip: !id });
   
-  const [deleteRestaurant, { 
-    isLoading: isDeleting, 
-    isSuccess: deleteSuccess 
-  }] = useDeleteRestaurantMutation();
-
-  // // Clear selection when delete is successful
-  // useEffect(() => {
-  //   if (deleteSuccess) {
-  //     onDeleted();
-  //     dispatch(showNotification({ message: 'Restaurant was deleted', severity: 'info' }));
-  //   }
-  // }, [deleteSuccess, onDeleted]);
+  const [deleteRestaurant, { isLoading: isDeleting  }] = useDeleteRestaurantMutation();
 
   // If nothing is selected, show a prompt
   if (!id) {
