@@ -31,11 +31,6 @@ builder.Services.AddReverseProxy()
         });
     });
 
-// {
-//     "RequestHeader": "Authorization",
-//     "Set": "Bearer {access_token}"
-// }
-
 // need to forward authentication headers to proxied api's
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -48,7 +43,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.IncludeErrorDetails = true;
     });
 
-//builder.Services.AddAuthorization();
+builder.Services.AddAuthorization();
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -74,11 +69,24 @@ builder.Services.AddCors(options =>
 );
 
 var app = builder.Build();
-app.UseCors();
-app.UseHttpsRedirection();
 
-// app.UseAuthentication();
-// app.UseAuthorization();
+app.UseHttpsRedirection();
+app.UseCors();
+
+// Handle preflight OPTIONS requests globally
+app.Use(async (context, next) =>
+{
+    if (context.Request.Method == "OPTIONS")
+    {
+        context.Response.StatusCode = StatusCodes.Status204NoContent;
+        await context.Response.CompleteAsync();
+        return;
+    }
+    await next();
+});
+
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseRateLimiter();
 
 app.MapDefaultEndpoints();

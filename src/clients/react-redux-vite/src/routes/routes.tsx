@@ -1,5 +1,8 @@
 import LoginPage from '../features/auth/LoginPage';
 import HomePage from '../features/home/HomePage';
+import { Restaurants } from '../features/restaurants/Restaurants';
+import { Quotes } from '../features/quotes/Quotes';
+import TemplateTester from '../features/theme/TemplateTester';
 
 interface RouteConfig {
   path: string;
@@ -26,6 +29,24 @@ const routes: RouteConfig[] = [
     element: <HomePage />,
     requiresAuth: true,
     allowedRoles: ['User'],
+  },
+  {
+    path: '/restaurants',
+    element: <Restaurants />,
+    requiresAuth: true,
+    allowedRoles: ['User', 'Admin'],
+  },
+  {
+    path: '/quotes',
+    element: <Quotes />,
+    requiresAuth: true,
+    allowedRoles: ['User'],
+  },
+  {
+    path: '/theme',
+    element: <TemplateTester />,
+    requiresAuth: true,
+    allowedRoles: ['User', 'Admin'],
   }
 ];
 
