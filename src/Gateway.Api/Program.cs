@@ -1,47 +1,19 @@
-using System.Net.Http.Headers;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.IdentityModel.Tokens;
-using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-// add and configure reverse proxy
+// add and configure YARP from the appsettings.json configuration
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
-    .AddServiceDiscoveryDestinationResolver()
-    .AddTransforms(builderContext =>
-    {
-        builderContext.AddRequestTransform(transformContext =>
-        {
-            Console.WriteLine("Received transformContext");
-            Console.WriteLine(transformContext.ToString());
-            
-            var authHeader = transformContext.HttpContext.Request.Headers.Authorization;
-            if (!string.IsNullOrEmpty(authHeader))
-            {
-                transformContext.ProxyRequest.Headers.Authorization = AuthenticationHeaderValue.Parse(authHeader);
-            }
-            
-            Console.WriteLine(transformContext.ToString());
-            return ValueTask.CompletedTask;
-        });
-    });
+    .AddServiceDiscoveryDestinationResolver();
 
-// need to forward authentication headers to proxied api's
+// YARP forwards most HTTP Headers automatically, including the Authorization header.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.Authority = "https://97919892-78d9-482f-a52e-55bfd7ae7c95.ciamlogin.com/97919892-78d9-482f-a52e-55bfd7ae7c95/v2.0";
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateAudience = false // forwarded tokens are not for us
-        };
-        options.IncludeErrorDetails = true;
-    });
+    .AddJwtBearer(opt => builder.Configuration.Bind("JwtBearerOptions", opt));
 
 builder.Services.AddAuthorization();
 
@@ -59,12 +31,14 @@ builder.Services.AddRateLimiter(options =>
     });
 });
 
-// need to configure CORS to allow clients to call this API
+// We need to configure CORS to allow clients to call this API.
+// This "default" policy can be applied on routes in the YARP config.
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(corsPolicyBuilder => corsPolicyBuilder
-        .AllowAnyOrigin()
         .AllowAnyMethod()
         .AllowAnyHeader()
+        .AllowCredentials() // needed for JWT tokens
+        .SetIsOriginAllowed(origin => true)
     )
 );
 
