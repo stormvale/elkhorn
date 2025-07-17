@@ -6,6 +6,8 @@ import { BrowserCacheLocation, Configuration, LogLevel, PublicClientApplication 
 
 // TODO: consider moving this file to 'auth' directory
 
+const isLocal = window.location.hostname === 'localhost';
+
 export const msalConfig: Configuration = {
     auth: {
       clientId: "c062b71e-d6d3-41df-8e9c-f70929e77d1e",
@@ -14,7 +16,10 @@ export const msalConfig: Configuration = {
       authority: "https://97919892-78d9-482f-a52e-55bfd7ae7c95.ciamlogin.com/97919892-78d9-482f-a52e-55bfd7ae7c95/v2.0",
 
       // This must match exactly one of the URIs registered in Microsoft Entra => App Registration => Authentication.
-      redirectUri: "http://localhost:57575/signin-oidc",
+      redirectUri: isLocal
+      ? 'http://localhost:57575/signin-oidc'
+      : 'https://calm-dune-09478071e-15.westus2.1.azurestaticapps.net/signin-oidc',
+
 
       // the page to navigate after logout.
       postLogoutRedirectUri: '/login',
