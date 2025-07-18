@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "tsc -b && vite build",
-    "build:az-dev": "tsc -b && vite build --mode development_az",
+    "build:az-dev": "tsc -b && vite build --minify --mode development_az",
     "dev": "vite --open",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
@@ -21,17 +21,18 @@
     "api-gen:restaurants": "npx @rtk-query/codegen-openapi openapi/openapi-config-restaurants.ts"
   },
   "dependencies": {
+    "@azure/msal-browser": "^4.15.0",
+    "@azure/msal-react": "^3.0.15",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
     "@mui/x-data-grid": "^8.6.0",
     "@reduxjs/toolkit": "^2.6.1",
-    "axios": "^1.10.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-redux": "^9.2.0",
-    "react-router-dom": "^7.6.0"
+    "react-router-dom": "^7.7.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.23.0",
@@ -56,7 +57,7 @@
     "prettier": "^3.5.3",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.29.0",
-    "vite": "^7.0.4",
+    "vite": "^7.0.5",
     "vitest": "^3.1.1"
   }
 }

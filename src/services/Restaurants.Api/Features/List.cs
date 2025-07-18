@@ -9,14 +9,12 @@ public static class List
 {
     public static void MapList(this WebApplication app)
     {
-        app.MapGet("/", async Task<IReadOnlyList<RestaurantResponse>> (AppDbContext db, CancellationToken ct) =>
+        app.MapGet("/", async (AppDbContext db, CancellationToken ct) =>
         {
-            var result = await db.Restaurants.ToListAsync(ct);
-
-            return result.Select(x => x.ToRestaurantResponse())
-                .ToList()
-                .AsReadOnly();
-
+            return await db.Restaurants
+                .AsNoTracking()
+                .Select(x => x.ToRestaurantResponse()) 
+                .ToListAsync(ct);
         })
         .WithName("ListRestaurants")
         .WithSummary("List all Restaurants")

@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { IconButton } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import { toggleDarkMode } from './themeSlice';
-import { RootState } from '../../app/store';
+import { RootState } from '../app/store';
 
 export const ThemeToggle = () => {
   const dispatch = useDispatch();

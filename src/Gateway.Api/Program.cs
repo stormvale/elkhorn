@@ -1,14 +1,21 @@
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-// add and configure reverse proxy
+// add and configure YARP from the appsettings.json configuration
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
     .AddServiceDiscoveryDestinationResolver();
+
+// YARP forwards most HTTP Headers automatically, including the Authorization header.
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(opt => builder.Configuration.Bind("JwtBearerOptions", opt));
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -24,12 +31,14 @@ builder.Services.AddRateLimiter(options =>
     });
 });
 
-// need to configure CORS to allow clients to call this API
+// We need to configure CORS to allow clients to call this API.
+// This "default" policy can be applied on routes in the YARP config.
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(corsPolicyBuilder => corsPolicyBuilder
-        .AllowAnyOrigin()
         .AllowAnyMethod()
         .AllowAnyHeader()
+        .AllowCredentials() // needed for JWT tokens
+        .SetIsOriginAllowed(origin => true)
     )
 );
 
@@ -37,9 +46,24 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseCors();
+
+// Handle preflight OPTIONS requests globally
+app.Use(async (context, next) =>
+{
+    if (context.Request.Method == "OPTIONS")
+    {
+        context.Response.StatusCode = StatusCodes.Status204NoContent;
+        await context.Response.CompleteAsync();
+        return;
+    }
+    await next();
+});
+
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseRateLimiter();
 
 app.MapDefaultEndpoints();
-app.MapReverseProxy();
+app.MapReverseProxy().RequireAuthorization();
 
 app.Run();

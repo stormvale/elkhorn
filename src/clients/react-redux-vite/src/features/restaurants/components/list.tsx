@@ -1,26 +1,64 @@
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { Box } from '@mui/material';
+import { Paper, Stack, Typography } from '@mui/material';
 import { useListRestaurantsQuery } from '../api/apiSlice';
 import { RestaurantResponse } from '../api/apiSlice-generated';
+import { useEffect } from 'react';
 
-const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', width: 200 },
-  { field: 'name', headerName: 'Name', flex: 1 },
-  { field: 'contact', headerName: 'Contact', flex: 2, valueGetter: (_value, row: RestaurantResponse) => row.contact.name },
-  { field: 'city', headerName: 'City', flex: 1, valueGetter: (_value, row: RestaurantResponse) => row.address.city },
-];
+interface RestaurantListProps {
+  onSelected: (id: string | null) => void;
+  selectedId: string | null;
+}
 
-export const RestaurantList = ({ onSelect }: { onSelect: (id: string) => void }) => {
-  const { data = [], isLoading } = useListRestaurantsQuery();
+export const RestaurantList = ({ onSelected, selectedId }: RestaurantListProps) => {
+  const { data = [] } = useListRestaurantsQuery();
+  //const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  // Clear selection if selected item no longer exists in the list
+  useEffect(() => {
+    if (selectedId && !data.find(restaurant => restaurant.id === selectedId)) {
+        onSelected(null);
+    }
+  }, [data, selectedId, onSelected]);
+
+  const handleItemClick = (restaurantId: string) => {
+    // Toggle selection: if already selected, deselect; otherwise select
+    onSelected(selectedId === restaurantId ? null : restaurantId);
+  };
+
   return (
-    <Box sx={{ height: 400 }}>
-      <DataGrid
-        rows={data}
-        columns={columns}
-        getRowId={(r) => r.id}
-        onRowClick={(params) => onSelect(params.row.id)}
-        loading={isLoading}
-      />
-    </Box>
+    <Stack spacing={2}>
+      {data.map((restaurant: RestaurantResponse) => (
+        <Paper
+          key={restaurant.id}
+          elevation={1}
+          sx={{
+            padding: 2,
+            cursor: 'pointer',
+            backgroundColor: selectedId === restaurant.id ? 'primary.light' : 'background.paper',
+            borderColor: 'primary.main',
+            borderLeft: selectedId === restaurant.id ? 3 : 0,
+            transition: 'all 0.2s ease-in-out',
+            '&:hover': {
+              elevation: 2,
+              backgroundColor: (theme) =>
+                selectedId === restaurant.id
+                  ? theme.palette.primary.light
+                  : theme.palette.action.hover
+            }
+          }}
+          onClick={() => handleItemClick(restaurant.id)}
+        >
+          <Typography variant="h6">{restaurant.name}</Typography>
+          <Typography variant="body2" color="text.secondary">
+            {restaurant.address?.city}
+          </Typography>
+        </Paper>
+      ))}
+
+      {data.length === 0 && (
+        <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
+          No restaurants found
+        </Typography>
+      )}
+    </Stack>
   );
 };

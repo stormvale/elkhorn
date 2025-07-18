@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Restaurants.Api.EfCore;
 using Restaurants.Api.Features;
@@ -32,6 +32,20 @@ builder.Services.AddOpenApi(o =>
     o.AddScalarTransformers();
 });
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(opt => builder.Configuration.Bind("JwtBearerOptions", opt));
+
+// Authorization policies go here...
+builder.Services.AddAuthorizationBuilder();
+
+builder.Services.AddCors(options =>
+    options.AddDefaultPolicy(policyBuilder => policyBuilder
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+    )
+);
+
 builder.Services.AddDaprClient();
 builder.Services.AddProblemDetails();
 
@@ -39,6 +53,7 @@ var app = builder.Build();
 
 //app.UseHttpsRedirection();
 //app.UseExceptionHandler();
+app.UseCors();
 app.UseCloudEvents();
 app.MapSubscribeHandler();
 

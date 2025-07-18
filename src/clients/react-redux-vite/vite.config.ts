@@ -14,6 +14,15 @@ export default defineConfig(({ mode }) => {
     
     build: {
       outDir: "dist",
+      sourcemap: false, // disable source maps in production
+      rollupOptions: {
+      output: {
+        manualChunks: undefined,  // prevent code splitting
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name].[ext]'
+      }
+    }
     },
 
     server: {

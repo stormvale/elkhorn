@@ -1,4 +1,5 @@
 import js from "@eslint/js"
+import react from 'eslint-plugin-react'
 import vitestPlugin from "@vitest/eslint-plugin"
 import prettierConfig from "eslint-config-prettier/flat"
 import reactPlugin from "eslint-plugin-react"
@@ -75,7 +76,11 @@ const eslintConfig = config(
           ],
         },
       ],
-    },
+
+      // not sure about these last 2
+      ...react.configs.recommended.rules,
+      ...react.configs['jsx-runtime'].rules
+    }
   },
 
   prettierConfig,

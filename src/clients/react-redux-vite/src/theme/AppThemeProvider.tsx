@@ -3,7 +3,7 @@ import type {} from '@mui/x-data-grid/themeAugmentation';
 import { useSelector } from "react-redux";
 import { PaletteMode } from '@mui/material';
 import React from 'react';
-import { RootState } from '../../app/store';
+import { RootState } from '../app/store';
 
 type Props = {
   children?: React.ReactNode;
@@ -129,15 +129,21 @@ export const AppThemeProvider: React.FC<Props> = ({ children }) => {
           Lighter: '#7FF77F',
           Lightest: '#E5FFE5',
         },
+
         background: {
           default: mode === 'dark' ? '#000000' : '#FCFBFA',
           opposite: mode === 'dark' ? '#FCFBFA' : '#000000',
           paper: mode === 'dark' ? '#131313' : '#FCFCFC',
         },
+
         text: {
           primary: mode === 'dark' ? '#FFFFFF' : '#000000',
           secondary: '#999999',
           disabled: '#C3C1BD',
+        },
+
+        action: {
+          hover: mode === 'dark' ? 'rgba(255, 255, 255, 0.16)' : 'rgba(0, 0, 0, 0.04)'
         },
 
         grey: {
@@ -289,5 +295,9 @@ export const AppThemeProvider: React.FC<Props> = ({ children }) => {
     }),
   );
 
-  return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
+  return (
+    <ThemeProvider theme={theme}>
+      {children}
+    </ThemeProvider>
+  );
 };

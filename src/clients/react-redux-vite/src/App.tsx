@@ -1,22 +1,19 @@
 import { BrowserRouter } from 'react-router-dom';
-import { Box, CssBaseline } from '@mui/material';
-import Routes from './routes';
-import { Header } from './components/Header';
-import { Sidebar } from './components/Sidebar';
-import { AppThemeProvider } from './features/theme/AppThemeProvider';
+import { CssBaseline } from '@mui/material';
+import { AppThemeProvider } from './theme/AppThemeProvider';
+import NotificationSnackbar from './features/notifications/notificationSnackbar';
+import AppRouter from './routes/AppRouter';
+import { useAuthInit } from './features/auth/authInit';
 
 const App = () => {
+  useAuthInit();
+  
   return (
     <AppThemeProvider>
       <CssBaseline />
+      <NotificationSnackbar />
       <BrowserRouter>
-        <Box sx={{ display: 'flex' }}>
-          <Sidebar />
-          <Box component="main" sx={{ flexGrow: 1, minHeight: '100vh', bgcolor: 'background.default' }}>
-            <Header />
-            <Routes />
-          </Box>
-        </Box>
+        <AppRouter />
       </BrowserRouter>
     </AppThemeProvider>
   );

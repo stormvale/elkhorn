@@ -1,0 +1,36 @@
+meta {
+  name: Create Wrap
+  type: http
+  seq: 3
+}
+
+post {
+  url: https://{{host.restaurants.api}}/{{restaurantId}}/meals
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "Name": "Chicken Wrap",
+    "Price": 5.00,
+    "Modifiers": [
+      {
+        "Name": "No Lettuce",
+        "PriceAdjustment": 0
+      },
+      {
+        "Name": "No Tomato",
+        "PriceAdjustment": -0.25
+      },
+      {
+        "Name": "No Sauce",
+        "PriceAdjustment": 0
+      }
+    ]
+  }
+}
+
+vars:post-response {
+  mealId: res.body.mealId
+}
