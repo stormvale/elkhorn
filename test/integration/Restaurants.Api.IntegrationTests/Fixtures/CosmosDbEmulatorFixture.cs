@@ -1,4 +1,5 @@
 ﻿using DotNet.Testcontainers.Builders;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
 using Testcontainers.CosmosDb;
 
@@ -16,40 +17,46 @@ public sealed class CosmosDbEmulatorFixture : IAsyncLifetime
 
     public string ConnectionString => _cosmosContainer.GetConnectionString()
         .Replace("https://", "http://"); // there is no SSL => no https
-    
+
+    public CosmosClient CosmosClient { get; private set; } = null!;
+
     public async Task InitializeAsync()
     {
         await _cosmosContainer.StartAsync();
-        await CreateDatabaseIfNotExists().ConfigureAwait(false);
+
+        CosmosClient = CreateCosmosClient();
+        
+        await CreateDatabaseIfNotExists(CosmosClient).ConfigureAwait(false);
     }
 
-    public async Task DisposeAsync() => await _cosmosContainer.DisposeAsync();
-    
-    /// <summary>
-    /// Configure Azure Cosmos SDK client options for SSL bypass
-    /// </summary>
-    private static void ConfigureCosmosClientOptions(CosmosClientBuilder cosmosOptions)
+    public async Task DisposeAsync()
     {
-        cosmosOptions.WithConnectionModeGateway()
+        await _cosmosContainer.DisposeAsync();
+    }
+
+    /// <summary>
+    /// Creates an Azure Cosmos SDK client with SSL bypassed
+    /// </summary>
+    private CosmosClient CreateCosmosClient()
+    {
+        var cosmosOptionsBuilder = new CosmosClientBuilder(ConnectionString)
+            .WithConnectionModeGateway()
             .WithLimitToEndpoint(true)
             .WithHttpClientFactory(() => new HttpClient(new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback =
                     HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
             }));
+        
+        return cosmosOptionsBuilder.Build();
     }
-
+    
     /// <summary>
     /// Create the Cosmos database and containers if they don't exist
     /// </summary>
-    private async Task CreateDatabaseIfNotExists()
+    private static async Task CreateDatabaseIfNotExists(CosmosClient cosmosClient)
     {
-        var cosmosOptionsBuilder = new CosmosClientBuilder(ConnectionString);
-        ConfigureCosmosClientOptions(cosmosOptionsBuilder);
-        
-        using var client = cosmosOptionsBuilder.Build();
-        
-        var database = await client.CreateDatabaseIfNotExistsAsync("TestDb");
+        var database = await cosmosClient.CreateDatabaseIfNotExistsAsync("TestDb");
         
         // create container (same container name as configured for DbContext)
         await database.Database.CreateContainerIfNotExistsAsync(

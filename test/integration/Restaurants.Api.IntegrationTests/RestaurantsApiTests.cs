@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using Contracts.Common;
 using Contracts.Restaurants.Requests;
 using Contracts.Restaurants.Responses;
+using Microsoft.Azure.Cosmos;
 using Restaurants.Api.IntegrationTests.Extensions;
 using Restaurants.Api.IntegrationTests.Factories;
 using Restaurants.Api.IntegrationTests.Fixtures;
@@ -14,7 +15,7 @@ namespace Restaurants.Api.IntegrationTests;
 public class RestaurantApiTests : IClassFixture<CosmosDbEmulatorFixture>, IDisposable
 {
     private readonly HttpClient _restaurantsHttpClient;
-    //private readonly CosmosClient _cosmosClient;
+    private readonly CosmosClient _cosmosClient;
 
     public RestaurantApiTests(CosmosDbEmulatorFixture cosmos)
     {
@@ -22,18 +23,11 @@ public class RestaurantApiTests : IClassFixture<CosmosDbEmulatorFixture>, IDispo
         
         _restaurantsHttpClient = factory.CreateClient();
         _restaurantsHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", "test-token");
-
-        // var options = new CosmosClientOptions
-        // {
-        //     ConnectionMode = ConnectionMode.Gateway,
-        //     HttpClientFactory = () => cosmos.Container.HttpClient
-        // };
-        //
-        // _cosmosClient = new CosmosClient(cosmos.ConnectionString, options);
+        _cosmosClient = cosmos.CosmosClient;
     }
 
     [Fact]
-    public async Task PostRestaurant_ThenGetById()
+    public async Task WhenRegisterRequestIsValid_ResponseIsCorrect_RestaurantIsPersistedToDb()
     {
         var request = new RegisterRestaurantRequest("Test Restaurant",
             new Address("123 test street", "city", "123456", "TS"),
@@ -49,7 +43,17 @@ public class RestaurantApiTests : IClassFixture<CosmosDbEmulatorFixture>, IDispo
         var postResponse = await postResult.Content.ReadFromJsonAsync<RegisterRestaurantResponse>();
         postResponse.ShouldNotBeNull();
         postResponse.RestaurantId.ShouldNotBe(Guid.Empty);
+        
+        // fetch resource directly from Cosmos DB
+        var container = _cosmosClient.GetContainer("TestDb", "restaurants");
+        var cosmosResponse = await container.ReadItemAsync<dynamic>(
+            postResponse.RestaurantId.ToString(), 
+            new PartitionKey(postResponse.RestaurantId.ToString()));
 
+        // verify the persisted data
+        ((string)cosmosResponse.Resource["Name"]).ShouldBe(request.Name);
+        ((string)cosmosResponse.Resource["Address"]["Street"]).ShouldBe(request.Address.Street);
+        
         // GET request to the GetById endpoint
         var getResult = await _restaurantsHttpClient.GetAsync(postResponse.RestaurantId.ToString());
         getResult.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -64,6 +68,6 @@ public class RestaurantApiTests : IClassFixture<CosmosDbEmulatorFixture>, IDispo
     public void Dispose()
     {
         _restaurantsHttpClient.Dispose();
-        // _cosmosClient.Dispose();
+        _cosmosClient.Dispose();
     }
 }
