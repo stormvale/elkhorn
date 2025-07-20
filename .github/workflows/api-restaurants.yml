@@ -70,6 +70,7 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: (!cancelled())
         with:
+          comment_title: ${{ env.project_name }} test results
           check_name: test-results-${{ env.project_name }}
           files: |
             TestResults/**/*.trx
@@ -92,6 +93,7 @@ jobs:
         with:
           # recreate: true
           header: test-results-${{ env.project_name }}
+          message: ${{ env.project_name }} coverage report
           path: code-coverage-results.md
 
   docker-build-tag-push:
