@@ -8,13 +8,13 @@ namespace Schools.Api.Extensions;
 public static class MappingExtensions
 {
     public static Contact ToDomainContact(this Contracts.Common.Contact dto) => 
-        new(dto.Name, dto.Email, dto.Phone, Enum.Parse<ContactType>(dto.Type));
+        new(dto.Name, dto.Email, dto.Phone, Enum.Parse<ContactType>(dto.Type.ToString()));
 
     public static Address ToDomainAddress(this Contracts.Common.Address addressDto) =>
         new(addressDto.Street, addressDto.City, addressDto.PostCode, addressDto.State);
 
     private static Contracts.Common.Contact ToResponse(this Contact contact) => 
-        new(contact.Name, contact.Email, contact.Phone, Enum.GetName(contact.Type)!);
+        new(contact.Name, contact.Email, contact.Phone, Enum.Parse<Contracts.Common.ContactType>(contact.Type.ToString()));
 
     private static Contracts.Common.Address ToResponse(this Address address) =>
         new(address.Street, address.City, address.PostCode, address.State);

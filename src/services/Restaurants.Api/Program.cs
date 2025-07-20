@@ -1,15 +1,20 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Restaurants.Api.EfCore;
 using Restaurants.Api.Features;
 using Restaurants.Api.Features.Meals;
 using Scalar.AspNetCore;
+using ServiceDefaults.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.AddCosmosDbContext<AppDbContext>("cosmos-db", "elkhornDb");
 builder.EnrichCosmosDbContext<AppDbContext>();
+
+// if using multiple exception handlers, the order here matters
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddOpenApi(o =>
 {
@@ -47,18 +52,28 @@ builder.Services.AddCors(options =>
 );
 
 builder.Services.AddDaprClient();
-builder.Services.AddProblemDetails();
+builder.Services.AddProblemDetails(opt =>
+{
+    opt.CustomizeProblemDetails = ctx =>
+        ctx.ProblemDetails.Extensions.TryAdd("requestId", ctx.HttpContext.TraceIdentifier);
+});
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    // enum values will be serialized as strings
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 var app = builder.Build();
 
 //app.UseHttpsRedirection();
-//app.UseExceptionHandler();
 app.UseCors();
 app.UseCloudEvents();
-app.MapSubscribeHandler();
+app.UseExceptionHandler();
 
 app.MapOpenApi();
 app.MapDefaultEndpoints();
+app.MapSubscribeHandler();
 
 // restaurant endpoints
 app.MapRegister();

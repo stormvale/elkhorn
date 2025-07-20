@@ -3,12 +3,16 @@ using Scalar.AspNetCore;
 using Schools.Api.EfCore;
 using Schools.Api.Features;
 using Schools.Api.Features.Pac;
+using ServiceDefaults.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.AddCosmosDbContext<AppDbContext>("cosmos-db", "elkhornDb");
 builder.EnrichCosmosDbContext<AppDbContext>();
+
+// if using multiple exception handlers, the order here matters
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddOpenApi(o =>
 {
@@ -32,17 +36,21 @@ builder.Services.AddOpenApi(o =>
 });
 
 builder.Services.AddDaprClient();
-builder.Services.AddProblemDetails();
+builder.Services.AddProblemDetails(opt =>
+{
+    opt.CustomizeProblemDetails = ctx =>
+        ctx.ProblemDetails.Extensions.TryAdd("requestId", ctx.HttpContext.TraceIdentifier);
+});
 
 var app = builder.Build();
 
 //app.UseHttpsRedirection();
-app.UseExceptionHandler();
 app.UseCloudEvents();
-app.MapSubscribeHandler();
+app.UseExceptionHandler();
 
 app.MapOpenApi();
 app.MapDefaultEndpoints();
+app.MapSubscribeHandler();
 
 // endpoints
 app.MapRegister();
