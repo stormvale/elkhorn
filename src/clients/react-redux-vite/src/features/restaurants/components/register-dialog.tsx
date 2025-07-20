@@ -140,10 +140,8 @@ export const RegisterRestaurantDialog: React.FC<RegisterRestaurantDialogProps> =
           <Box 
             sx={{ 
               display: 'grid', 
-              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)'}, //, md: 'repeat(3, 1fr)' },
-              gap: 3,
-              //maxWidth: "800px",
-              //mx: "auto" // center the grid
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)'},
+              gap: 3
             }}
           >
             {/* Restaurant Name */}

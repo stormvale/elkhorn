@@ -42,11 +42,16 @@ public sealed class CosmosDbEmulatorFixture : IAsyncLifetime
         var cosmosOptionsBuilder = new CosmosClientBuilder(ConnectionString)
             .WithConnectionModeGateway()
             .WithLimitToEndpoint(true)
-            .WithHttpClientFactory(() => new HttpClient(new HttpClientHandler
+            .WithHttpClientFactory(() =>
             {
-                ServerCertificateCustomValidationCallback =
-                    HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-            }));
+                var httpClientHandler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback =
+                        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
+                
+                return new HttpClient(httpClientHandler);
+            });
         
         return cosmosOptionsBuilder.Build();
     }

@@ -32,11 +32,8 @@ public class FakeDaprClient : DaprClient
         return Task.CompletedTask;
     }
 
-    public override Task PublishEventAsync<TData>(string pubsubName, string topicName, TData data, Dictionary<string, string> metadata = null, CancellationToken ct = default)
-    {
-        PublishEventAsync(pubsubName, topicName, data, ct);
-        return Task.CompletedTask;
-    }
+    public override async Task PublishEventAsync<TData>(string pubsubName, string topicName, TData data, Dictionary<string, string> metadata = null, CancellationToken ct = default)
+        => await PublishEventAsync(pubsubName, topicName, data, ct);
 
     public override Task PublishEventAsync(string pubsubName, string topicName, CancellationToken ct = default)
         => throw new NotImplementedException("Method not needed for tests");
