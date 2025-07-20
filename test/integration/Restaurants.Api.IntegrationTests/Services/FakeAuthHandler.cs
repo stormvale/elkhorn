@@ -7,14 +7,14 @@ using Microsoft.Extensions.Options;
 namespace Restaurants.Api.IntegrationTests.Services;
 
 /// <summary>
-/// Mock Authentication Pipeline
+/// Fake AuthenticationHandler
 /// This bypasses Entra ID and enables testing protected endpoints as if the user were authenticated.
 ///   - replace the real authentication scheme with a test scheme
 ///   - injects fake claims (e.g. user ID, roles) to simulate authenticated users.
 /// </summary>
-public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+public class FakeAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
-    public TestAuthHandler(
+    public FakeAuthHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
@@ -30,7 +30,7 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
 
         var identity = new ClaimsIdentity(claims, "Test");
         var principal = new ClaimsPrincipal(identity);
-        var ticket = new AuthenticationTicket(principal, "Test");
+        var ticket = new AuthenticationTicket(principal, "FakeAuth");
 
         return Task.FromResult(AuthenticateResult.Success(ticket));
     }

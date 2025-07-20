@@ -16,7 +16,7 @@ namespace Restaurants.Api.IntegrationTests.Services;
 ///   - random exceptions/delays to simulate failure scenarios or latency.
 /// </summary>
 [SuppressMessage("Naming", "CA1725:Parameter names should match base declaration")]
-public class TestDaprClient : DaprClient
+public class FakeDaprClient : DaprClient
 {
     public IReadOnlyList<(string pubsub, string topic, object data)> PublishedEvents => _publishedEvents;
     public IReadOnlyDictionary<(string store, string key), object> StateStore => _stateStore;

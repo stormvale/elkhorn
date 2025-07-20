@@ -1,4 +1,5 @@
 ﻿using DotNet.Testcontainers.Builders;
+using Microsoft.Azure.Cosmos.Fluent;
 using Testcontainers.CosmosDb;
 
 namespace Restaurants.Api.IntegrationTests.Fixtures;
@@ -13,10 +14,47 @@ public sealed class CosmosDbEmulatorFixture : IAsyncLifetime
         .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(8081))
         .Build();
 
-    // there is no SSL => no https
-    public string ConnectionString => _cosmosContainer.GetConnectionString().Replace("https://", "http://");
+    public string ConnectionString => _cosmosContainer.GetConnectionString()
+        .Replace("https://", "http://"); // there is no SSL => no https
     
-    public async Task InitializeAsync() => await _cosmosContainer.StartAsync();
+    public async Task InitializeAsync()
+    {
+        await _cosmosContainer.StartAsync();
+        await CreateDatabaseIfNotExists().ConfigureAwait(false);
+    }
 
     public async Task DisposeAsync() => await _cosmosContainer.DisposeAsync();
+    
+    /// <summary>
+    /// Configure Azure Cosmos SDK client options for SSL bypass
+    /// </summary>
+    private static void ConfigureCosmosClientOptions(CosmosClientBuilder cosmosOptions)
+    {
+        cosmosOptions.WithConnectionModeGateway()
+            .WithLimitToEndpoint(true)
+            .WithHttpClientFactory(() => new HttpClient(new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback =
+                    HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            }));
+    }
+
+    /// <summary>
+    /// Create the Cosmos database and containers if they don't exist
+    /// </summary>
+    private async Task CreateDatabaseIfNotExists()
+    {
+        var cosmosOptionsBuilder = new CosmosClientBuilder(ConnectionString);
+        ConfigureCosmosClientOptions(cosmosOptionsBuilder);
+        
+        using var client = cosmosOptionsBuilder.Build();
+        
+        var database = await client.CreateDatabaseIfNotExistsAsync("TestDb");
+        
+        // create container (same container name as configured for DbContext)
+        await database.Database.CreateContainerIfNotExistsAsync(
+            id: "restaurants",
+            partitionKeyPath: "/id",
+            throughput: 400);
+    }
 }

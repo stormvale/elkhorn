@@ -25,44 +25,54 @@ public class RestaurantApiFactory(string cosmosConnectionString) : WebApplicatio
         //  tells the Cosmos DB SDK to skip certificate validation when connecting to the Cosmos DB Emulator
         AppContext.SetSwitch("Microsoft.Azure.Cosmos.AllowEmulatorUseWithoutLocalCertificate", true);
         
-        builder.ConfigureServices(services =>
+        builder.ConfigureTestServices(services =>
         {
-            // remove everything related to ef core
-            var descriptorsToRemove = services.Where(d =>
-                    d.ServiceType.FullName?.Contains("EntityFrameworkCore") == true ||
-                    d.ServiceType.FullName?.Contains("AppDbContext") == true).ToList();
-            foreach (var descriptor in descriptorsToRemove) services.Remove(descriptor);
-            
-            services.AddDbContext<AppDbContext>(options =>
-            {
-                options.UseCosmos(cosmosConnectionString, "TestDb", ConfigureEfCoreCosmosOptions);
-            });
-            
-            InitializeCosmosDb().GetAwaiter().GetResult();
+            ConfigureEfCore(services);
+
+            ConfigureFakeAuthentication(services);
             
             // replace Dapr client with a TestDaprClient fake
             services.RemoveAll<DaprClient>();
-            services.AddSingleton<DaprClient>(new TestDaprClient());
-        });
-
-        builder.ConfigureTestServices(services =>
-        {
-            // using a test auth scheme with known claims
-            services.AddAuthentication("Test")
-                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
-
-            services.Configure<AuthenticationOptions>(options =>
-            {
-                options.DefaultAuthenticateScheme = "Test";
-                options.DefaultChallengeScheme = "Test";
-            });
+            services.AddSingleton<DaprClient>(new FakeDaprClient());
         });
     }
-    
+
+    /// <summary>
+    /// Replaces the EF Core configuration with one configured for the TestDb and also no SSL
+    /// </summary>
+    private void ConfigureEfCore(IServiceCollection services)
+    {
+        // remove everything related to ef core
+        var descriptorsToRemove = services.Where(d =>
+            d.ServiceType.FullName?.Contains("EntityFrameworkCore") == true ||
+            d.ServiceType.FullName?.Contains("AppDbContext") == true).ToList();
+        
+        foreach (var descriptor in descriptorsToRemove) services.Remove(descriptor);
+        
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseCosmos(cosmosConnectionString, "TestDb", ConfigureCosmosDbContextNoSSL));
+    }
+
+    /// <summary>
+    /// Adds a fake authentication scheme using a fake authentication handler
+    /// </summary>
+    private static void ConfigureFakeAuthentication(IServiceCollection services)
+    {
+        // using a test auth scheme with known claims
+        services.AddAuthentication("FakeAuth")
+            .AddScheme<AuthenticationSchemeOptions, FakeAuthHandler>("FakeAuth", options => { });
+
+        services.Configure<AuthenticationOptions>(options =>
+        {
+            options.DefaultAuthenticateScheme = "FakeAuth";
+            options.DefaultChallengeScheme = "FakeAuth";
+        });
+    }
+
     /// <summary>
     /// Configure EF Core Cosmos options for SSL bypass
     /// </summary>
-    private static void ConfigureEfCoreCosmosOptions(CosmosDbContextOptionsBuilder cosmosOptions)
+    private static void ConfigureCosmosDbContextNoSSL(CosmosDbContextOptionsBuilder cosmosOptions)
     {
         cosmosOptions.ConnectionMode(ConnectionMode.Gateway);
         cosmosOptions.LimitToEndpoint();
@@ -71,38 +81,5 @@ public class RestaurantApiFactory(string cosmosConnectionString) : WebApplicatio
             ServerCertificateCustomValidationCallback =
                 HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
         }));
-    }
-    
-    /// <summary>
-    /// Configure Azure Cosmos SDK client options for SSL bypass
-    /// </summary>
-    private static void ConfigureCosmosClientOptions(CosmosClientBuilder cosmosOptions)
-    {
-        cosmosOptions.WithConnectionModeGateway()
-            .WithLimitToEndpoint(true)
-            .WithHttpClientFactory(() => new HttpClient(new HttpClientHandler
-            {
-                ServerCertificateCustomValidationCallback =
-                    HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-            }));
-    }
-
-    /// <summary>
-    /// Create the Cosmos database and containers if they don't exist
-    /// </summary>
-    private async Task InitializeCosmosDb()
-    {
-        var cosmosOptionsBuilder = new CosmosClientBuilder(cosmosConnectionString);
-        ConfigureCosmosClientOptions(cosmosOptionsBuilder);
-        
-        using var client = cosmosOptionsBuilder.Build();
-        
-        var database = await client.CreateDatabaseIfNotExistsAsync("TestDb");
-        
-        // create container (same container name as configured for DbContext)
-        await database.Database.CreateContainerIfNotExistsAsync(
-            id: "restaurants",
-            partitionKeyPath: "/id",
-            throughput: 400);
     }
 }
