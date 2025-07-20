@@ -1,12 +1,9 @@
-﻿using System.Diagnostics;
-using System.Text.Json.Serialization;
-using Dapr.Client;
+﻿using Dapr.Client;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,8 +13,15 @@ using Restaurants.Api.IntegrationTests.Services;
 
 namespace Restaurants.Api.IntegrationTests.Factories;
 
-public class RestaurantApiFactory(string cosmosConnectionString) : WebApplicationFactory<IRestaurantApiAssemblyMarker>
+public class RestaurantApiFactory(string cosmosCosmosConnectionString) : WebApplicationFactory<IRestaurantApiAssemblyMarker>
 {
+    private readonly Lazy<HttpClient> _httpClient = new(() => new HttpClient(HttpClientHandler));
+    
+    private static readonly HttpClientHandler HttpClientHandler = new()
+    {
+        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    };
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Development");
@@ -50,7 +54,7 @@ public class RestaurantApiFactory(string cosmosConnectionString) : WebApplicatio
         foreach (var descriptor in descriptorsToRemove) services.Remove(descriptor);
         
         services.AddDbContext<AppDbContext>(options =>
-            options.UseCosmos(cosmosConnectionString, "TestDb", ConfigureCosmosDbContextNoSSL));
+            options.UseCosmos(cosmosCosmosConnectionString, "TestDb", ConfigureCosmosDbContextNoSSL));
     }
 
     /// <summary>
@@ -72,14 +76,23 @@ public class RestaurantApiFactory(string cosmosConnectionString) : WebApplicatio
     /// <summary>
     /// Configure EF Core Cosmos options for SSL bypass
     /// </summary>
-    private static void ConfigureCosmosDbContextNoSSL(CosmosDbContextOptionsBuilder cosmosOptions)
+    private void ConfigureCosmosDbContextNoSSL(CosmosDbContextOptionsBuilder cosmosOptions)
     {
         cosmosOptions.ConnectionMode(ConnectionMode.Gateway);
         cosmosOptions.LimitToEndpoint();
-        cosmosOptions.HttpClientFactory(() => new HttpClient(new HttpClientHandler
+        cosmosOptions.HttpClientFactory(() => _httpClient.Value);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            ServerCertificateCustomValidationCallback =
-                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-        }));
+            if (_httpClient.IsValueCreated)
+            {
+                _httpClient.Value.Dispose();
+            }
+            HttpClientHandler.Dispose();
+        }
+        base.Dispose(disposing);
     }
 }
