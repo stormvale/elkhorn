@@ -36,10 +36,20 @@ jobs:
         run: dotnet build src/services/${{ env.project_name }} --configuration Release --no-restore
 
       - name: Unit tests
-        run: dotnet test test/unit/${{ env.project_name }}.Tests --configuration Release --collect:"XPlat Code Coverage" --logger trx
+        run: dotnet test test/unit/${{ env.project_name }}.Tests --configuration Release --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory test/results/unit
 
       - name: Integration tests
-        run: dotnet test test/integration/${{ env.project_name }}.IntegrationTests --configuration Release --collect:"XPlat Code Coverage" --logger trx
+        run: dotnet test test/integration/${{ env.project_name }}.IntegrationTests --configuration Release --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory test/results/integration
+
+      - name: Merge coverage reports
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.1.23
+        with:
+          reports: |
+            test/results/unit/*/coverage.cobertura.xml;
+            test/results/integration/*/coverage.cobertura.xml;
+          targetdir: test/results/coverage-merged
+          reporttypes: Cobertura
+          tag: '${{ github.run_number }}_${{ github.run_id }}'
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -47,8 +57,8 @@ jobs:
         with:
           name: test-results-${{ env.project_name }}
           path: |
-            test/**/TestResults/*.trx
-            test/**/TestResults/*/coverage.cobertura.xml
+            test/results/*/*.trx
+            test/results/coverage-merged
           retention-days: 1
 
   publish-results:
