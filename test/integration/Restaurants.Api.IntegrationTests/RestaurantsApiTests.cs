@@ -68,6 +68,5 @@ public class RestaurantApiTests : IClassFixture<CosmosDbEmulatorFixture>, IDispo
     public void Dispose()
     {
         _restaurantsHttpClient.Dispose();
-        _cosmosClient.Dispose();
     }
 }

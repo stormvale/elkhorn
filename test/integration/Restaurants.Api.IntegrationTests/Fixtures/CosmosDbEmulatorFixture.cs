@@ -32,6 +32,7 @@ public sealed class CosmosDbEmulatorFixture : IAsyncLifetime
     public async Task DisposeAsync()
     {
         await _cosmosContainer.DisposeAsync();
+        CosmosClient.Dispose();
     }
 
     /// <summary>
