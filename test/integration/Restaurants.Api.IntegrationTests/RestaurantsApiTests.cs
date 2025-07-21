@@ -2,12 +2,14 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Contracts.Common;
+using Contracts.Restaurants.Messages;
 using Contracts.Restaurants.Requests;
 using Contracts.Restaurants.Responses;
 using Microsoft.Azure.Cosmos;
 using Restaurants.Api.IntegrationTests.Extensions;
 using Restaurants.Api.IntegrationTests.Factories;
 using Restaurants.Api.IntegrationTests.Fixtures;
+using Restaurants.Api.IntegrationTests.Services;
 using Shouldly;
 
 namespace Restaurants.Api.IntegrationTests;
@@ -16,7 +18,8 @@ public class RestaurantApiTests : IClassFixture<CosmosDbEmulatorFixture>, IDispo
 {
     private readonly HttpClient _restaurantsHttpClient;
     private readonly CosmosClient _cosmosClient;
-
+    private readonly FakeDaprClient _fakeDaprClient;
+    
     public RestaurantApiTests(CosmosDbEmulatorFixture cosmos)
     {
         var factory = new RestaurantApiFactory(cosmos.ConnectionString);
@@ -24,6 +27,7 @@ public class RestaurantApiTests : IClassFixture<CosmosDbEmulatorFixture>, IDispo
         _restaurantsHttpClient = factory.CreateClient();
         _restaurantsHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", "test-token");
         _cosmosClient = cosmos.CosmosClient;
+        _fakeDaprClient = factory.FakeDaprClient;
     }
 
     [Fact]
@@ -43,6 +47,12 @@ public class RestaurantApiTests : IClassFixture<CosmosDbEmulatorFixture>, IDispo
         var postResponse = await postResult.Content.ReadFromJsonAsync<RegisterRestaurantResponse>();
         postResponse.ShouldNotBeNull();
         postResponse.RestaurantId.ShouldNotBe(Guid.Empty);
+        
+        // inspect messages sent via Dapr
+        _fakeDaprClient.PublishedEvents.Count.ShouldBe(1);
+        var message = _fakeDaprClient.PublishedEvents[0].data as RestaurantRegisteredMessage;
+        message.ShouldNotBeNull();
+        message.RestaurantId.ShouldBe(postResponse.RestaurantId);
         
         // fetch resource directly from Cosmos DB
         var container = _cosmosClient.GetContainer("TestDb", "restaurants");

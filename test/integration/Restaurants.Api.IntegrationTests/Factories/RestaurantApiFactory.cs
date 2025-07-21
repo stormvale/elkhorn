@@ -21,6 +21,8 @@ public class RestaurantApiFactory(string cosmosCosmosConnectionString) : WebAppl
     {
         ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
     };
+    
+    public FakeDaprClient FakeDaprClient { get; private set; }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -32,12 +34,8 @@ public class RestaurantApiFactory(string cosmosCosmosConnectionString) : WebAppl
         builder.ConfigureTestServices(services =>
         {
             ConfigureEfCore(services);
-
             ConfigureFakeAuthentication(services);
-            
-            // replace Dapr client with a TestDaprClient fake
-            services.RemoveAll<DaprClient>();
-            services.AddSingleton<DaprClient>(new FakeDaprClient());
+            ConfigureFakeDapr(services);
         });
     }
 
@@ -71,6 +69,16 @@ public class RestaurantApiFactory(string cosmosCosmosConnectionString) : WebAppl
             options.DefaultAuthenticateScheme = "FakeAuth";
             options.DefaultChallengeScheme = "FakeAuth";
         });
+    }
+    
+    /// <summary>
+    /// Replaces the DaprClient with a fake for testing purposes
+    /// </summary>
+    private void ConfigureFakeDapr(IServiceCollection services)
+    {
+        services.RemoveAll<DaprClient>();
+        FakeDaprClient = new FakeDaprClient();
+        services.AddSingleton<DaprClient>(FakeDaprClient);
     }
 
     /// <summary>

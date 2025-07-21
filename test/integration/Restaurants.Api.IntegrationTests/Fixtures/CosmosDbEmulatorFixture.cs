@@ -1,4 +1,5 @@
-﻿using DotNet.Testcontainers.Builders;
+﻿using System.Net;
+using DotNet.Testcontainers.Builders;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
 using Testcontainers.CosmosDb;
@@ -26,7 +27,7 @@ public sealed class CosmosDbEmulatorFixture : IAsyncLifetime
 
         CosmosClient = CreateCosmosClient();
         
-        await CreateDatabaseIfNotExists(CosmosClient).ConfigureAwait(false);
+        await CreateDatabaseIfNotExistsWithRetry(CosmosClient).ConfigureAwait(false);
     }
 
     public async Task DisposeAsync()
@@ -69,5 +70,30 @@ public sealed class CosmosDbEmulatorFixture : IAsyncLifetime
             id: "restaurants",
             partitionKeyPath: "/id",
             throughput: 400);
+    }
+    
+    private static async Task CreateDatabaseIfNotExistsWithRetry(CosmosClient cosmosClient)
+    {
+        const int maxRetries = 3;
+        
+        for (var attempt = 1; attempt <= maxRetries; attempt++)
+        {
+            try
+            {
+                var database = await cosmosClient.CreateDatabaseIfNotExistsAsync("TestDb");
+                
+                await database.Database.CreateContainerIfNotExistsAsync(
+                    id: "restaurants",
+                    partitionKeyPath: "/id",
+                    throughput: 400);
+                    
+                break;
+            }
+            catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.InternalServerError)
+            {
+                if (attempt == maxRetries) throw; 
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
+        }
     }
 }
