@@ -1,9 +1,9 @@
 name: client-web
 
 on:
-#  push:
-#    branches: [ master ]
-#    paths: [ 'src/clients/react-redux-vite/**' ]
+  push:
+    branches: [ master ]
+    paths: [ 'src/clients/react-redux-vite/**' ]
   pull_request:
     branches: [ master ]
     paths: [ 'src/clients/react-redux-vite/**' ]

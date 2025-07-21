@@ -35,8 +35,11 @@ jobs:
       - name: Build project
         run: dotnet build src/services/${{ env.project_name }} --configuration Release --no-restore
 
-      - name: Run tests
+      - name: Unit tests
         run: dotnet test test/unit/${{ env.project_name }}.Tests --configuration Release --collect:"XPlat Code Coverage" --logger trx
+
+      - name: Integration tests
+        run: dotnet test test/integration/${{ env.project_name }}.IntegrationTests --configuration Release --collect:"XPlat Code Coverage" --logger trx
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -70,6 +73,8 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: (!cancelled())
         with:
+          comment_title: ${{ env.project_name }} test results
+          check_name: test-results-${{ env.project_name }}
           files: |
             TestResults/**/*.trx
 
@@ -91,6 +96,7 @@ jobs:
         with:
           # recreate: true
           header: test-results-${{ env.project_name }}
+          message: ${{ env.project_name }} coverage report
           path: code-coverage-results.md
 
   docker-build-tag-push:

@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Common;
 
@@ -17,7 +16,7 @@ public record Contact(
     string? Phone,
 
     [Required]
-    ContactType Type = ContactType.Unknown
+    ContactType Type = ContactType.Contact
 )
 {
     public override string ToString() => $"{Name} ({Type})";
@@ -25,8 +24,8 @@ public record Contact(
 
 public enum ContactType
 {
-    [Description("Unknown")] Unknown,
-    [Description("Manager")] Manager,
-    [Description("Parent")] Parent,
-    [Description("Principal")] Principal
+    Contact,
+    Parent,
+    Manager,
+    Principal
 }
