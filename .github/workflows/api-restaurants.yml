@@ -35,8 +35,11 @@ jobs:
       - name: Build project
         run: dotnet build src/services/${{ env.project_name }} --configuration Release --no-restore
 
-      - name: Run tests
+      - name: Unit tests
         run: dotnet test test/unit/${{ env.project_name }}.Tests --configuration Release --collect:"XPlat Code Coverage" --logger trx
+
+      - name: Integration tests
+        run: dotnet test test/integration/${{ env.project_name }}.IntegrationTests --configuration Release --collect:"XPlat Code Coverage" --logger trx
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
