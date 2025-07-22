@@ -108,10 +108,11 @@ var gatewayApi = builder.AddProject<Gateway_Api>("gateway-api")
 #endregion
 
 // this was the first iteration of the web app (no longer used)
-builder.AddNpmApp("web-react-ts-mui", "../clients/web-react-ts-mui")
+builder.AddNpmApp("test-ui", "../clients/test-ui")
     .WithReference(gatewayApi)
+    .WithHttpEndpoint(name: "web", port: 54321, isProxied: false) // fixed port
+    .WithEnvironment("VITE_PORT", "54321")
     .WithEnvironment("BROWSER", "none")
-    .WithHttpEndpoint(env: "VITE_PORT", name: "vite-http")
     .WithExternalHttpEndpoints()
     .PublishAsDockerFile();
 

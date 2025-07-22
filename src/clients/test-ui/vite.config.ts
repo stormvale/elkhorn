@@ -6,9 +6,11 @@ export default defineConfig(({ mode }) => {
   
   return {
     plugins: [react()],
+
     server: {
       port: parseInt(env.VITE_PORT) // this comes from the Aspire Host
     },
+
     css: {
       preprocessorOptions: {
         scss: {
@@ -16,6 +18,7 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+    
     resolve: {
       alias: {
         '@/app': '/src/app',
