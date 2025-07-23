@@ -6,15 +6,14 @@ import {
   Box,
   Avatar,
   Menu,
-  MenuItem,
-  Chip
+  MenuItem
 } from '@mui/material';
 import { ThemeToggle } from '../../theme/ThemeToggle';
-import { useAuthenticatedUser, useSchoolContext, useLogout } from '../../hooks/useApp';
+import { useAuthenticatedUser, useLogout } from '../../hooks/useApp';
+import SchoolChip from '../../components/SchoolChip';
 
 const Header: React.FC = () => {
   const { user } = useAuthenticatedUser();
-  const { currentSchool } = useSchoolContext();
   const { logout } = useLogout();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
@@ -27,11 +26,7 @@ const Header: React.FC = () => {
   };
 
   const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+    await logout();
     handleClose();
   };
 
@@ -48,19 +43,8 @@ const Header: React.FC = () => {
           Project: Elkhorn
         </Typography>
         
-        {/* Show current school context */}
-        {currentSchool && (
-          <Chip 
-            label={currentSchool.name}
-            size="small"
-            variant="outlined"
-            sx={{ 
-              bgcolor: 'rgba(255, 255, 255, 0.1)',
-              color: 'white',
-              borderColor: 'rgba(255, 255, 255, 0.3)'
-            }}
-          />
-        )}
+        {/* Show current school context with switcher */}
+        <SchoolChip />
         
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <ThemeToggle />

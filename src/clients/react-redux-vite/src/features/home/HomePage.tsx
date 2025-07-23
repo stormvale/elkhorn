@@ -1,11 +1,12 @@
 import { Typography, Stack, Container, Card, CardContent, Button, Box, Chip, Avatar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuthenticatedUser, useSchoolContext, useLogout } from '../../hooks/useApp';
+import SchoolChip from '../../components/SchoolChip';
 
 const Home = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthenticatedUser();
-  const { currentSchool, hasMultipleSchools } = useSchoolContext();
+  const { currentSchool } = useSchoolContext();
   const { logout } = useLogout();
 
   // If not authenticated, redirect to auth landing
@@ -20,10 +21,6 @@ const Home = () => {
     } catch (error) {
       console.error('Logout failed:', error);
     }
-  };
-
-  const handleSwitchSchool = () => {
-    navigate('/school-selector?mode=switch');
   };
 
   const getUserRoleDisplay = () => {
@@ -81,20 +78,7 @@ const Home = () => {
                 Current School Context:
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                <Chip 
-                  label={currentSchool.name}
-                  color="primary"
-                  variant="filled"
-                />
-                {hasMultipleSchools && (
-                  <Button 
-                    size="small" 
-                    variant="text" 
-                    onClick={handleSwitchSchool}
-                  >
-                    Switch School
-                  </Button>
-                )}
+                <SchoolChip variant="filled" />
               </Box>
               
               {currentSchool.children && currentSchool.children.length > 0 && (
