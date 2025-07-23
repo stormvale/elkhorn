@@ -6,8 +6,12 @@ import {
   FormControl, RadioGroup, FormControlLabel, Radio, 
   CircularProgress, Box, Alert 
 } from '@mui/material';
+import { useAppDispatch } from '../../app/hooks';
+import { setCurrentSchool } from '../../app/authSlice';
+import { useSchoolContext } from '../../hooks/useApp';
 import { userService } from '../../services/userService';
-import { schoolContextService } from '../../services/schoolContextService';
+
+import { UserSchoolDto } from '../users/api/apiSlice-generated';
 
 interface School {
   id: string;
@@ -17,6 +21,8 @@ interface School {
 const SchoolSelector = () => {
   const { accounts } = useMsal();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { currentSchool, availableSchools } = useSchoolContext();
   const [searchParams] = useSearchParams();
   const [schools, setSchools] = useState<School[]>([]);
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>('');
@@ -32,27 +38,25 @@ const SchoolSelector = () => {
   useEffect(() => {
     const loadSchools = async () => {
       try {
-        let availableSchools: School[];
+        let schoolsToShow: School[];
         
         if (isSwitching) {
-          // User is switching schools - only show their linked schools
-          const userSchools = schoolContextService.getUserSchools();
-          availableSchools = userSchools.map(school => ({
+          // User is switching schools - use available schools from Redux
+          schoolsToShow = availableSchools.map(school => ({
             id: school.id,
             name: school.name
           }));
           
           // Pre-select current school
-          const currentSchool = schoolContextService.getCurrentSchool();
           if (currentSchool) {
             setSelectedSchoolId(currentSchool.id);
           }
         } else {
           // New user - show all available schools
-          availableSchools = await userService.getAvailableSchools();
+          schoolsToShow = await userService.getAvailableSchools();
         }
         
-        setSchools(availableSchools);
+        setSchools(schoolsToShow);
       } catch (error) {
         console.error('Failed to load schools:', error);
         setError('Failed to load available schools. Please try again.');
@@ -62,9 +66,16 @@ const SchoolSelector = () => {
     };
 
     loadSchools();
-  }, [isSwitching]);
+  }, [isSwitching, availableSchools, currentSchool]);
 
   const handleSelectSchool = async () => {
+    console.log('SchoolSelector handleSelectSchool:', { 
+      selectedSchoolId, 
+      isSwitching, 
+      schoolsCount: schools.length,
+      availableSchoolsCount: availableSchools.length 
+    });
+
     if (!selectedSchoolId) {
       setError('Please select a school before continuing.');
       return;
@@ -79,20 +90,36 @@ const SchoolSelector = () => {
     setError('');
 
     try {
+      console.log('About to process school selection...');
+      
       if (isSwitching) {
         // User is switching between their existing schools
-        await schoolContextService.switchSchool(selectedSchoolId);
+        console.log('Switching to existing school:', selectedSchoolId);
+        const selectedSchool = availableSchools.find(s => s.id === selectedSchoolId);
+        if (selectedSchool) {
+          console.log('Dispatching setCurrentSchool for switch:', selectedSchool);
+          dispatch(setCurrentSchool(selectedSchool));
+        }
       } else {
         // New user selecting their first school. When api is ready, link school:
         // await userService.linkSchoolToUser(tokenResponse.accessToken, selectedSchoolId);
 
-        // Set up local school context for new user
+        console.log('Setting school for new user:', selectedSchoolId);
+        // Set up Redux school context for new user
         const selectedSchool = schools.find(s => s.id === selectedSchoolId);
         if (selectedSchool) {
-          schoolContextService.setCurrentSchool(selectedSchoolId);
+          // Create a UserSchoolDto-compatible object
+          const schoolDto: UserSchoolDto = {
+            id: selectedSchool.id,
+            name: selectedSchool.name,
+            children: [] // Empty for now, will be populated when profile is fetched
+          };
+          console.log('Dispatching setCurrentSchool for new user:', schoolDto);
+          dispatch(setCurrentSchool(schoolDto));
         }
       }
 
+      console.log('Navigating to /home');
       // Navigate to home
       navigate('/home');
       

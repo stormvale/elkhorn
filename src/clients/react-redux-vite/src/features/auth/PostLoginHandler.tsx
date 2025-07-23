@@ -1,41 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMsal } from '@azure/msal-react';
 import { Container, Typography, CircularProgress, Box } from '@mui/material';
-import { schoolContextService } from '../../services/schoolContextService';
+import { useAppDispatch } from '../../app/hooks';
+import { setSchoolContext } from '../../app/authSlice';
 import { useProfileQuery } from '../users/api/apiSlice';
 
 const PostLoginHandler = () => {
-  const { accounts } = useMsal();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [status, setStatus] = useState('Checking your profile...');
 
   // This will auto-fetch when component mounts
   const { data: userProfile, isLoading, error } = useProfileQuery();
 
-  console.log('PostLoginHandler render:', { 
-    userProfile: !!userProfile, 
-    isLoading, 
-    error: error ? 'present' : 'none',
-    accountsLength: accounts.length 
-  });
-
-  useEffect(() => {
-    console.log('PostLoginHandler accounts effect:', accounts.length);
-    if (accounts.length === 0) {
-      navigate('/');
-      return;
-    }
-  }, [accounts, navigate]);
-
   // Handle the profile query results in a separate useEffect
   useEffect(() => {
-    console.log('PostLoginHandler profile effect:', { 
-      isLoading, 
-      hasError: !!error, 
-      hasProfile: !!userProfile 
-    });
-
     if (isLoading) {
       setStatus('Loading your profile...');
       return;
@@ -56,29 +35,11 @@ const PostLoginHandler = () => {
     }
 
     if (userProfile) {
-      console.log('User profile loaded:', userProfile);
-      
       if (userProfile.schools && userProfile.schools.length > 0) {
         setStatus('Setting up your school context...');
-        
-        const setupSchoolContext = async () => {
-          try {
-            await schoolContextService.initialize();
-            
-            // use the first school as the current context
-            const firstSchool = userProfile.schools[0];
-            sessionStorage.setItem('schoolId', firstSchool.id);
-            
-            navigate('/home');
-          } catch (error) {
-            setStatus('Failed to set up school context');
-            setTimeout(() => navigate('/school-selector'), 1000);
-          }
-        };
-
-        setupSchoolContext();
+        dispatch(setSchoolContext({ schools: userProfile.schools }));
+        navigate('/home');
       } else {
-        // User has no schools linked - go to school selector
         setStatus('Welcome! Let\'s get you connected to a school...');
         setTimeout(() => navigate('/school-selector'), 1000);
       }

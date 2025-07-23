@@ -34,11 +34,11 @@ public static class GetProfile
                 "Bob Admin",
                 new[]
                 {
-                    new UserSchoolDto("291", "Rock City", [
-                        new ChildDto("child1", "Billy", "K")
+                    new UserSchoolDto("291", "Rock City Elementary", [
+                        new ChildDto("child1", "Billy", "Kindergarten")
                     ]),
-                    new UserSchoolDto("299", "Uplands", [
-                        new ChildDto("child2", "Sammy", "3")
+                    new UserSchoolDto("299", "Uplands Park Elementary", [
+                        new ChildDto("child2", "Sammy", "3rd Grade")
                     ])
                 },
                 DateTime.UtcNow);

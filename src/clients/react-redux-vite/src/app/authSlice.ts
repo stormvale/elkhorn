@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { tokenStorage } from '../utils/tokenStorage';
 import { User } from '../types';
+import { UserSchoolDto } from '../features/users/api/apiSlice-generated';
 
 // Initialize state from localStorage
 const initializeAuthState = (): AuthState => {
@@ -13,6 +14,8 @@ const initializeAuthState = (): AuthState => {
       user,
       accessToken,
       error: null,
+      currentSchool: null, // Will be set separately
+      availableSchools: [],
     };
   } else {
     tokenStorage.clearAuthData();
@@ -21,6 +24,8 @@ const initializeAuthState = (): AuthState => {
       user: null,
       accessToken: null,
       error: null,
+      currentSchool: null,
+      availableSchools: [],
     };
   }
 };
@@ -34,10 +39,15 @@ const initialState: AuthState = initializeAuthState();
 
 
 interface AuthState {
+  // Authentication
   isAuthenticated: boolean;
   user: User | null;
   accessToken: string | null;
   error: string | null;
+  
+  // School Context
+  currentSchool: UserSchoolDto | null;
+  availableSchools: UserSchoolDto[];
 }
 
 interface SetCredentialsPayload {
@@ -66,7 +76,37 @@ export const authSlice = createSlice({
       state.user = null;
       state.accessToken = null;
       state.error = null;
+      state.currentSchool = null;
+      state.availableSchools = [];
       tokenStorage.clearAuthData();
+    },
+
+    setSchoolContext: (state, action: PayloadAction<{ schools: UserSchoolDto[], currentSchoolId?: string }>) => {
+      const { schools, currentSchoolId } = action.payload;
+      state.availableSchools = schools;
+      
+      // Set current school if provided
+      if (currentSchoolId) {
+        const school = schools.find(s => s.id === currentSchoolId);
+        state.currentSchool = school || null;
+      } else {
+        // otherwise try to restore from session storage
+        const storedSchoolId = sessionStorage.getItem('schoolId') ;
+        if (storedSchoolId) {
+          const school = schools.find(s => s.id === storedSchoolId);
+          state.currentSchool = school || null;
+        }
+        else{
+          // otherwise just use the first school
+          state.currentSchool = schools[0] || null;
+        }
+      }
+    },
+
+    setCurrentSchool: (state, action: PayloadAction<UserSchoolDto>) => {
+      const school = action.payload;
+      state.currentSchool = school;
+      sessionStorage.setItem('schoolId', school.id);
     },
 
     setAuthError: (state, action: PayloadAction<string>) => {
@@ -85,6 +125,8 @@ export const authSlice = createSlice({
         state.isAuthenticated = false;
         state.user = null;
         state.accessToken = null;
+        state.currentSchool = null;
+        state.availableSchools = [];
         tokenStorage.clearAuthData();
       }
     }
@@ -95,7 +137,9 @@ export const {
   setCredentials,
   clearCredentials,
   setAuthError,
-  restoreAuthStateFromLocalStorage 
+  restoreAuthStateFromLocalStorage,
+  setSchoolContext,
+  setCurrentSchool 
 } = authSlice.actions;
 
 export default authSlice.reducer;

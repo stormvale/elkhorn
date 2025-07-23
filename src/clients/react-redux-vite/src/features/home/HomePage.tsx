@@ -1,47 +1,22 @@
 import { Typography, Stack, Container, Card, CardContent, Button, Box, Chip, Avatar } from '@mui/material';
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMsal } from '@azure/msal-react';
-import { schoolContextService } from '../../services/schoolContextService';
-import { UserSchoolDto } from '../users/api/apiSlice-generated';
+import { useAuthenticatedUser, useSchoolContext, useLogout } from '../../hooks/useApp';
 
 const Home = () => {
-  const { instance, accounts } = useMsal();
   const navigate = useNavigate();
-  const [currentSchool, setCurrentSchool] = useState<UserSchoolDto | null>(null);
-  const [userName, setUserName] = useState<string>('');
-  const [userRoles, setUserRoles] = useState<string[]>([]);
+  const { user, isAuthenticated } = useAuthenticatedUser();
+  const { currentSchool, hasMultipleSchools } = useSchoolContext();
+  const { logout } = useLogout();
 
-  useEffect(() => {
-    const initializeUserData = async () => {
-      if (accounts.length > 0) {
-        const account = accounts[0];
-        setUserName(account.name || account.username || 'Unknown User');
-        
-        // Extract roles from the account's ID token claims
-        const roles = account.idTokenClaims?.roles || account.idTokenClaims?.['extension_Roles'] || [];
-        setUserRoles(Array.isArray(roles) ? roles : []);
-
-        try {
-          await schoolContextService.initialize();
-          const school = schoolContextService.getCurrentSchool();
-          setCurrentSchool(school);
-        } catch (error) {
-          console.error('Failed to initialize school context:', error);
-        }
-      } else {
-        // No user logged in, redirect to auth landing
-        navigate('/');
-      }
-    };
-
-    initializeUserData();
-  }, [accounts, navigate]);
+  // If not authenticated, redirect to auth landing
+  if (!isAuthenticated) {
+    navigate('/');
+    return null;
+  }
 
   const handleLogout = async () => {
     try {
-      schoolContextService.clear();
-      await instance.logoutRedirect({postLogoutRedirectUri: '/' });
+      await logout();
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -52,16 +27,16 @@ const Home = () => {
   };
 
   const getUserRoleDisplay = () => {
-    if (userRoles.length > 0) {
-      return userRoles.join(', ');
+    if (user?.roles && user.roles.length > 0) {
+      return user.roles.join(', ');
     }
     return 'no roles assigned';
   };
 
-  if (!accounts.length) {
+  if (!user) {
     return (
       <Container sx={{ py: 2, textAlign: 'center' }}>
-        <Typography variant="h4">Loading...</Typography>
+        <Typography variant="h4">Loading user information...</Typography>
       </Container>
     );
   }
@@ -88,11 +63,11 @@ const Home = () => {
         <CardContent>
           <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
             <Avatar sx={{ bgcolor: 'primary.main' }}>
-              {userName.charAt(0).toUpperCase()}
+              {user.name.charAt(0).toUpperCase()}
             </Avatar>
             <Box>
               <Typography variant="h6" component="h2">
-                {userName}
+                {user.name}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 {getUserRoleDisplay()}
@@ -111,7 +86,7 @@ const Home = () => {
                   color="primary"
                   variant="filled"
                 />
-                {schoolContextService.hasMultipleSchools() && (
+                {hasMultipleSchools && (
                   <Button 
                     size="small" 
                     variant="text" 
@@ -128,7 +103,7 @@ const Home = () => {
                     Your Children:
                   </Typography>
                   <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                    {currentSchool.children.map((child) => (
+                    {currentSchool.children.map((child: any) => (
                       <Chip 
                         key={child.id}
                         label={`${child.name} - ${child.grade}`}

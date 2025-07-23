@@ -28,12 +28,17 @@ const AuthRedirect = () => {
               username: response.account.username || response.account.name || '',
               email: response.account.username,
               name: response.account.name || '',
-              roles: [] // Will be populated from API
+              roles: Array.isArray(response.account.idTokenClaims?.roles) 
+                ? response.account.idTokenClaims.roles 
+                : Array.isArray(response.account.idTokenClaims?.['extension_Roles'])
+                  ? response.account.idTokenClaims['extension_Roles']
+                  : []
             };
             
             console.log('Storing credentials in Redux:', { 
               hasToken: !!response.accessToken, 
-              user: user.username 
+              user: user.username,
+              roles: user.roles
             });
             
             dispatch(setCredentials({
