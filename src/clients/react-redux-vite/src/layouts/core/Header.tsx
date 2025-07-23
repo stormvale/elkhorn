@@ -10,7 +10,6 @@ import {
 } from '@mui/material';
 import { ThemeToggle } from '../../theme/ThemeToggle';
 import { useAuthenticatedUser, useLogout } from '../../hooks/useApp';
-import SchoolChip from '../../components/SchoolChip';
 
 const Header: React.FC = () => {
   const { user } = useAuthenticatedUser();

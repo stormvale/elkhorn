@@ -1,15 +1,12 @@
-import { Typography, Stack, Container, Card, CardContent, Button, Box, Chip, Avatar } from '@mui/material';
+import { Typography, Stack, Container, Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useAuthenticatedUser, useSchoolContext, useLogout } from '../../hooks/useApp';
-import SchoolChip from '../../components/SchoolChip';
+import { useAuthenticatedUser, useLogout } from '../../hooks/useApp';
 
 const Home = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthenticatedUser();
-  const { currentSchool } = useSchoolContext();
   const { logout } = useLogout();
 
-  // If not authenticated, redirect to auth landing
   if (!isAuthenticated) {
     navigate('/');
     return null;
@@ -21,13 +18,6 @@ const Home = () => {
     } catch (error) {
       console.error('Logout failed:', error);
     }
-  };
-
-  const getUserRoleDisplay = () => {
-    if (user?.roles && user.roles.length > 0) {
-      return user.roles.join(', ');
-    }
-    return 'no roles assigned';
   };
 
   if (!user) {

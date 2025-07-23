@@ -8,48 +8,41 @@ export const apiBase = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_RESTAURANTS_API_URL,
     prepareHeaders: async (headers, { getState }) => {
+      let token: string | null = null;
 
-      // first try to get the token from Redux state
-      let token = (getState() as RootState).auth.accessToken;
-      console.log('Token from Redux state:', token ? 'present' : 'not found');
-
-      // if not in Redux state, then try localStorage
-      if (!token) {
-        token = getAccessTokenFromLocalStorage();
-        console.log('Token from localStorage:', token ? 'present' : 'not found');
-      }
-
-      // still nothing. try get from MSAL silently
-      if (!token) {
+      // first try to get token from MSAL silently
+      const accounts = msalInstance.getAllAccounts();
+      if (accounts.length > 0) {
+        console.log('🔑 Attempting to get Restaurants API token from MSAL silently...');
+        
         try {
-          const accounts = msalInstance.getAllAccounts();
-          console.log('MSAL accounts found:', accounts.length);
+          const tokenResponse = await msalInstance.acquireTokenSilent({
+            scopes: ['api://c8b4f2d6-2193-4338-b7bc-74f2ad75844e/RestaurantsApi.All'],
+            account: accounts[0]
+          });
           
-          if (accounts.length > 0) {
-            console.log('Attempting to get token from MSAL silently...');
-            
-            try {
-              const tokenResponse = await msalInstance.acquireTokenSilent({
-                scopes: ['api://f776afca-bc47-4fee-9c85-e86ee08578f5/RestaurantsApi.All'],
-                account: accounts[0]
-              });
-              
-              token = tokenResponse.accessToken;
-              console.log('Token acquired from MSAL for restaurants API:', token ? 'success' : 'failed');
-            } catch (msalError) {
-              console.warn('Could not acquire token silently from MSAL:', msalError);
-            }
-          }
-        } catch (error) {
-          console.log('Could not access MSAL instance:', error);
+          token = tokenResponse.accessToken;
+        } catch (msalError) {
+          console.warn('⚠️ Could not acquire Restaurants API token silently from MSAL:', msalError);
         }
       }
 
+      // Fallback: try Redux state (but this might be MS Graph token)
+      if (!token) {
+        token = (getState() as RootState).auth.accessToken;
+        console.log('Fallback to token from Redux state:', token ? 'present' : 'not found');
+      }
+
+      // Last resort: try localStorage
+      if (!token) {
+        token = getAccessTokenFromLocalStorage();
+        console.log('Fallback to token from localStorage:', token ? 'present' : 'not found');
+      }
+
       if (token) {
-        console.log('✅ Setting Authorization header with token for restaurants API');
         headers.set('Authorization', `Bearer ${token}`);
       } else {
-        console.warn('⚠️ No access token found for restaurants API request');
+        console.warn('❗No token available to set Authorization header for Restaurants API request');
       }
 
       headers.set('Accept', 'application/json');
