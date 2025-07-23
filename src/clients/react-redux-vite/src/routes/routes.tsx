@@ -1,50 +1,33 @@
 import HomePage from '../features/home/HomePage';
 import { Restaurants } from '../features/restaurants/Restaurants';
-import AuthLanding from '../features/auth/AuthLanding';
-import PostLoginHandler from '../features/auth/PostLoginHandler';
-import AuthRedirect from '../features/auth/AuthRedirect';
+import {
+  Home as HomeIcon,
+  Restaurant as RestaurantIcon,
+} from '@mui/icons-material';
 
 interface RouteConfig {
   path: string;
   element: React.ReactElement;
+  icon: React.ReactNode;
+  displayName: string;
   requiresAuth: boolean;
   allowedRoles: string[];
 }
 
-const routes: RouteConfig[] = [
-  {
-    path: '/',
-    element: <AuthLanding />,
-    requiresAuth: false,
-    allowedRoles: [],
-  },
-  {
-    path: '/login',
-    element: <AuthLanding />,
-    requiresAuth: false,
-    allowedRoles: [],
-  },
-  {
-    path: '/signin-oidc',
-    element: <AuthRedirect />,
-    requiresAuth: false,
-    allowedRoles: [],
-  },
-  {
-    path: '/post-login',
-    element: <PostLoginHandler />,
-    requiresAuth: false,
-    allowedRoles: [],
-  },
+const sidebarRoutes: RouteConfig[] = [
   {
     path: '/home',
     element: <HomePage />,
+    icon: <HomeIcon />,
+    displayName: "Home",
     requiresAuth: true,
     allowedRoles: [],
   },
   {
     path: '/restaurants',
     element: <Restaurants />,
+    icon: <RestaurantIcon />,
+    displayName: "Restaurants",
     requiresAuth: true,
     allowedRoles: [],
   }
@@ -63,4 +46,4 @@ const routes: RouteConfig[] = [
   // }
 ];
 
-export default routes;
+export default sidebarRoutes;

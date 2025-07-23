@@ -40,13 +40,8 @@ const Home = () => {
 
   const handleLogout = async () => {
     try {
-      // Clear the school context
       schoolContextService.clear();
-      
-      // Perform MSAL logout
-      await instance.logoutRedirect({
-        postLogoutRedirectUri: '/'
-      });
+      await instance.logoutRedirect({postLogoutRedirectUri: '/' });
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -60,7 +55,7 @@ const Home = () => {
     if (userRoles.length > 0) {
       return userRoles.join(', ');
     }
-    return 'Parent/Guardian'; // Fallback if no roles are defined
+    return 'no roles assigned';
   };
 
   if (!accounts.length) {
@@ -76,7 +71,7 @@ const Home = () => {
       {/* Header Section */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" component="h1">
-          Welcome to Elkhorn
+          Welcome to Project: Elkhorn
         </Typography>
         <Button 
           variant="outlined" 

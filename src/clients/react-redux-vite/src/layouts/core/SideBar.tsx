@@ -9,61 +9,18 @@ import {
   Box,
   Typography
 } from '@mui/material';
-import {
-  Home as HomeIcon,
-  Restaurant as RestaurantIcon,
-  FormatQuote as QuoteIcon,
-  Palette as ThemeIcon,
-  Dashboard as DashboardIcon
-} from '@mui/icons-material';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
-import routes from '../../routes/routes';
-
-// Icon mapping for different routes
-const getIconForPath = (path: string) => {
-  switch (path) {
-    case '/home':
-      return <HomeIcon />;
-    case '/restaurants':
-      return <RestaurantIcon />;
-    case '/quotes':
-      return <QuoteIcon />;
-    case '/theme':
-      return <ThemeIcon />;
-    default:
-      return <DashboardIcon />;
-  }
-};
-
-// Get display name for routes
-const getDisplayName = (path: string) => {
-  switch (path) {
-    case '/home':
-      return 'Home';
-    case '/restaurants':
-      return 'Restaurants';
-    case '/quotes':
-      return 'Quotes';
-    case '/theme':
-      return 'Theme';
-    default:
-      return path.replace('/', '').charAt(0).toUpperCase() + path.slice(2);
-  }
-};
+import sidebarRoutes from '../../routes/routes';
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
   const { user } = useSelector((state: RootState) => state.auth);
 
   // Filter routes that require auth and check user roles
-  const availableRoutes = routes.filter(route => {
-    // Skip login page and routes that don't require auth
-    if (!route.requiresAuth || route.path === '/login' || route.path === '/') {
-      return false;
-    }
-
+  const availableRoutes = sidebarRoutes.filter(route => {
+   
     // Check if user has required roles
     if (route.allowedRoles.length > 0 && user) {
       return user.roles.some((userRole: string) => route.allowedRoles.includes(userRole));
@@ -96,9 +53,9 @@ const Sidebar: React.FC = () => {
               }}
             >
               <ListItemIcon>
-                {getIconForPath(route.path)}
+                {route.icon}
               </ListItemIcon>
-              <ListItemText primary={getDisplayName(route.path)} />
+              <ListItemText primary={route.displayName} />
             </ListItemButton>
           </ListItem>
         ))}
