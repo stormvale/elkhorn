@@ -43,9 +43,6 @@ const Header: React.FC = () => {
           Project: Elkhorn
         </Typography>
         
-        {/* Show current school context with switcher */}
-        <SchoolChip />
-        
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <ThemeToggle />
           

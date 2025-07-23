@@ -55,63 +55,6 @@ const Home = () => {
         </Button>
       </Box>
 
-      {/* User Information Card */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
-            <Avatar sx={{ bgcolor: 'primary.main' }}>
-              {user.name.charAt(0).toUpperCase()}
-            </Avatar>
-            <Box>
-              <Typography variant="h6" component="h2">
-                {user.name}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {getUserRoleDisplay()}
-              </Typography>
-            </Box>
-          </Stack>
-
-          {currentSchool ? (
-            <Box>
-              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                Current School Context:
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                <SchoolChip variant="filled" />
-              </Box>
-              
-              {currentSchool.children && currentSchool.children.length > 0 && (
-                <Box sx={{ mt: 2 }}>
-                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                    Your Children:
-                  </Typography>
-                  <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                    {currentSchool.children.map((child: any) => (
-                      <Chip 
-                        key={child.id}
-                        label={`${child.name} - ${child.grade}`}
-                        variant="outlined"
-                        size="small"
-                      />
-                    ))}
-                  </Stack>
-                </Box>
-              )}
-            </Box>
-          ) : (
-            <Box>
-              <Typography variant="body2" color="warning.main">
-                No school context selected. 
-                <Button size="small" onClick={() => navigate('/school-selector')}>
-                  Select a school
-                </Button>
-              </Typography>
-            </Box>
-          )}
-        </CardContent>
-      </Card>
-
       {/* Main Content */}
       <Stack gap={2} my={2}>
         <Typography textAlign="center" variant="h5">
