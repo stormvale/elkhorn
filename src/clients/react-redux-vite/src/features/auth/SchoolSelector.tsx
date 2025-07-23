@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useMsal } from '@azure/msal-react';
 import { 
   Container, Typography, Card, CardContent, Button, 
@@ -8,9 +8,7 @@ import {
 } from '@mui/material';
 import { useAppDispatch } from '../../app/hooks';
 import { setCurrentSchool } from '../../app/authSlice';
-import { useSchoolContext } from '../../hooks/useApp';
 import { userService } from '../../services/userService';
-
 import { UserSchoolDto } from '../users/api/apiSlice-generated';
 
 interface School {
@@ -18,44 +16,24 @@ interface School {
   name: string;
 }
 
+/*
+ * This component allows new users to select their school for
+ * the first time after registration.
+ */
 const SchoolSelector = () => {
   const { accounts } = useMsal();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { currentSchool, availableSchools } = useSchoolContext();
-  const [searchParams] = useSearchParams();
   const [schools, setSchools] = useState<School[]>([]);
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string>('');
 
-  // this prob shouldn't be a whole page - change to modal dialog later
-  
-  // Check if this is a school switch operation vs initial selection
-  const isSwitching = searchParams.get('mode') === 'switch';
-
   useEffect(() => {
     const loadSchools = async () => {
       try {
-        let schoolsToShow: School[];
-        
-        if (isSwitching) {
-          // User is switching schools - use available schools from Redux
-          schoolsToShow = availableSchools.map(school => ({
-            id: school.id,
-            name: school.name
-          }));
-          
-          // Pre-select current school
-          if (currentSchool) {
-            setSelectedSchoolId(currentSchool.id);
-          }
-        } else {
-          // New user - show all available schools
-          schoolsToShow = await userService.getAvailableSchools();
-        }
-        
+        const schoolsToShow: School[] = await userService.getAvailableSchools();
         setSchools(schoolsToShow);
       } catch (error) {
         console.error('Failed to load schools:', error);
@@ -66,16 +44,9 @@ const SchoolSelector = () => {
     };
 
     loadSchools();
-  }, [isSwitching, availableSchools, currentSchool]);
+  }, []);
 
   const handleSelectSchool = async () => {
-    console.log('SchoolSelector handleSelectSchool:', { 
-      selectedSchoolId, 
-      isSwitching, 
-      schoolsCount: schools.length,
-      availableSchoolsCount: availableSchools.length 
-    });
-
     if (!selectedSchoolId) {
       setError('Please select a school before continuing.');
       return;
@@ -90,42 +61,29 @@ const SchoolSelector = () => {
     setError('');
 
     try {
-      console.log('About to process school selection...');
+      console.log('Setting school for new user:', selectedSchoolId);
       
-      if (isSwitching) {
-        // User is switching between their existing schools
-        console.log('Switching to existing school:', selectedSchoolId);
-        const selectedSchool = availableSchools.find(s => s.id === selectedSchoolId);
-        if (selectedSchool) {
-          console.log('Dispatching setCurrentSchool for switch:', selectedSchool);
-          dispatch(setCurrentSchool(selectedSchool));
-        }
-      } else {
-        // New user selecting their first school. When api is ready, link school:
-        // await userService.linkSchoolToUser(tokenResponse.accessToken, selectedSchoolId);
+      // When API is ready, link school to user:
+      // await userService.linkSchoolToUser(tokenResponse.accessToken, selectedSchoolId);
 
-        console.log('Setting school for new user:', selectedSchoolId);
-        // Set up Redux school context for new user
-        const selectedSchool = schools.find(s => s.id === selectedSchoolId);
-        if (selectedSchool) {
-          // Create a UserSchoolDto-compatible object
-          const schoolDto: UserSchoolDto = {
-            id: selectedSchool.id,
-            name: selectedSchool.name,
-            children: [] // Empty for now, will be populated when profile is fetched
-          };
-          console.log('Dispatching setCurrentSchool for new user:', schoolDto);
-          dispatch(setCurrentSchool(schoolDto));
-        }
+      // Set up Redux school context for new user
+      const selectedSchool = schools.find(s => s.id === selectedSchoolId);
+      if (selectedSchool) {
+        // Create a UserSchoolDto-compatible object
+        const schoolDto: UserSchoolDto = {
+          id: selectedSchool.id,
+          name: selectedSchool.name,
+          children: [] // Empty for now, will be populated when profile is fetched
+        };
+        console.log('Dispatching setCurrentSchool for new user:', schoolDto);
+        dispatch(setCurrentSchool(schoolDto));
       }
 
-      console.log('Navigating to /home');
-      // Navigate to home
       navigate('/home');
       
     } catch (error) {
       console.error('Failed to select school:', error);
-      setError(`Failed to ${isSwitching ? 'switch to' : 'select'} school. Please try again.`);
+      setError('Failed to select school. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -156,14 +114,11 @@ const SchoolSelector = () => {
   return (
     <Container maxWidth="sm" sx={{ py: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom textAlign="center">
-        {isSwitching ? 'Switch School' : 'Select Your School'}
+        Select Your School
       </Typography>
       
       <Typography variant="body1" textAlign="center" color="text.secondary" sx={{ mb: 4 }}>
-        {isSwitching 
-          ? 'Choose which school context you\'d like to work with.'
-          : 'Please select the school where your child attends. This will be linked to your profile.'
-        }
+        Please select the school where your child attends. This will be linked to your profile.
       </Typography>
 
       {error && (
@@ -207,10 +162,10 @@ const SchoolSelector = () => {
             {isSaving ? (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <CircularProgress size={20} color="inherit" />
-                {isSwitching ? 'Switching...' : 'Saving...'}
+                Saving...
               </Box>
             ) : (
-              isSwitching ? 'Switch School' : 'Continue'
+              'Continue'
             )}
           </Button>
         </CardContent>

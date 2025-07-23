@@ -1,24 +1,16 @@
 import { Typography, Stack, Container, Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useAuthenticatedUser, useLogout } from '../../hooks/useApp';
+import { useAuthenticatedUser } from '../../hooks/useApp';
 
 const Home = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthenticatedUser();
-  const { logout } = useLogout();
 
   if (!isAuthenticated) {
     navigate('/');
     return null;
   }
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
 
   if (!user) {
     return (
@@ -30,21 +22,7 @@ const Home = () => {
 
   return (
     <Container sx={{ py: 2, position: 'relative' }}>
-      {/* Header Section */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1">
-          Welcome to Project: Elkhorn
-        </Typography>
-        <Button 
-          variant="outlined" 
-          color="secondary" 
-          onClick={handleLogout}
-          sx={{ height: 'fit-content' }}
-        >
-          Logout
-        </Button>
-      </Box>
-
+      
       {/* Main Content */}
       <Stack gap={2} my={2}>
         <Typography textAlign="center" variant="h5">
@@ -54,6 +32,12 @@ const Home = () => {
           Stay connected with your child's education
         </Typography>
         
+        <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.50', borderRadius: 2 }}>
+          <Typography variant="body1" gutterBottom>
+            <Button variant='contained'>Add Children</Button>
+          </Typography>
+        </Box>
+
         {/* Placeholder for future features */}
         <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.50', borderRadius: 2 }}>
           <Typography variant="h6" gutterBottom>
