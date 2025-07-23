@@ -1,130 +1,205 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { schoolContextService, UserSchool } from "../../services/schoolContextService";
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useMsal } from '@azure/msal-react';
+import { 
+  Container, Typography, Card, CardContent, Button, 
+  FormControl, RadioGroup, FormControlLabel, Radio, 
+  CircularProgress, Box, Alert 
+} from '@mui/material';
+import { userService } from '../../services/userService';
+import { schoolContextService } from '../../services/schoolContextService';
+
+interface School {
+  id: string;
+  name: string;
+}
 
 const SchoolSelector = () => {
-  const [schools, setSchools] = useState<UserSchool[]>([]);
-  const [selectedSchoolId, setSelectedSchoolId] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
+  const { accounts } = useMsal();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [schools, setSchools] = useState<School[]>([]);
+  const [selectedSchoolId, setSelectedSchoolId] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string>('');
+  
+  // Check if this is a school switch operation vs initial selection
+  const isSwitching = searchParams.get('mode') === 'switch';
 
   useEffect(() => {
-    const initializeSchools = async () => {
+    const loadSchools = async () => {
       try {
-        await schoolContextService.initialize();
-        const userSchools = schoolContextService.getUserSchools();
-        setSchools(userSchools);
-
-        // If user only has one school, redirect automatically
-        if (userSchools.length === 1) {
-          await schoolContextService.switchSchool(userSchools[0].schoolId);
-          navigate("/home");
-          return;
+        let availableSchools: School[];
+        
+        if (isSwitching) {
+          // User is switching schools - only show their linked schools
+          const userSchools = schoolContextService.getUserSchools();
+          availableSchools = userSchools.map(school => ({
+            id: school.id,
+            name: school.name
+          }));
+          
+          // Pre-select current school
+          const currentSchool = schoolContextService.getCurrentSchool();
+          if (currentSchool) {
+            setSelectedSchoolId(currentSchool.id);
+          }
+        } else {
+          // New user - show all available schools
+          availableSchools = await userService.getAvailableSchools();
         }
-
-        // If there's a current school, pre-select it
-        const currentSchool = schoolContextService.getCurrentSchool();
-        if (currentSchool) {
-          setSelectedSchoolId(currentSchool.schoolId);
-        }
+        
+        setSchools(availableSchools);
       } catch (error) {
-        console.error("Failed to initialize schools:", error);
+        console.error('Failed to load schools:', error);
+        setError('Failed to load available schools. Please try again.');
       } finally {
         setIsLoading(false);
       }
     };
 
-    initializeSchools();
-  }, [navigate]);
+    loadSchools();
+  }, [isSwitching]);
 
-  const handleSchoolSelect = async () => {
+  const handleSelectSchool = async () => {
     if (!selectedSchoolId) {
-      alert("Please select a school to continue.");
+      setError('Please select a school before continuing.');
       return;
     }
 
+    if (accounts.length === 0) {
+      navigate('/');
+      return;
+    }
+
+    setIsSaving(true);
+    setError('');
+
     try {
-      await schoolContextService.switchSchool(selectedSchoolId);
-      navigate("/home");
+      if (isSwitching) {
+        // User is switching between their existing schools
+        await schoolContextService.switchSchool(selectedSchoolId);
+      } else {
+        // New user selecting their first school
+        // When backend is ready, get access token and link school:
+        // const tokenResponse = await instance.acquireTokenSilent({
+        //   ...apiRequest,
+        //   account: accounts[0]
+        // });
+        // await userService.linkSchoolToUser(tokenResponse.accessToken, selectedSchoolId);
+
+        // Set up local school context for new user
+        const selectedSchool = schools.find(s => s.id === selectedSchoolId);
+        if (selectedSchool) {
+          // Create user school object
+          // const userSchool = {
+          //   id: selectedSchool.id,
+          //   name: selectedSchool.name,
+          //   children: [] // This would come from API in real implementation
+          // };
+          
+          //schoolContextService.setUserSchools([userSchool]);
+          schoolContextService.setCurrentSchool(selectedSchoolId);
+        }
+      }
+
+      // Navigate to home
+      navigate('/home');
+      
     } catch (error) {
-      console.error("Failed to switch school context:", error);
-      alert("Failed to select school. Please try again.");
+      console.error('Failed to select school:', error);
+      setError(`Failed to ${isSwitching ? 'switch to' : 'select'} school. Please try again.`);
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  if (isLoading) {
+  if (!accounts.length) {
     return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
-        <h2>Loading your schools...</h2>
-      </div>
+      <Container maxWidth="sm" sx={{ py: 4, textAlign: 'center' }}>
+        <Typography variant="h6">Please sign in first</Typography>
+        <Button onClick={() => navigate('/')} sx={{ mt: 2 }}>
+          Go to Sign In
+        </Button>
+      </Container>
     );
   }
 
-  if (schools.length === 0) {
+  if (isLoading) {
     return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
-        <h2>No Schools Found</h2>
-        <p>You don't appear to have access to any schools yet. Please contact your school administrator.</p>
-      </div>
+      <Container maxWidth="sm" sx={{ py: 4 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+          <CircularProgress />
+          <Typography>Loading available schools...</Typography>
+        </Box>
+      </Container>
     );
   }
 
   return (
-    <div style={{ padding: "2rem", maxWidth: "600px", margin: "0 auto" }}>
-      <h2>Select Your School Context</h2>
-      <p>You have access to multiple schools. Please select which school you'd like to work with.</p>
+    <Container maxWidth="sm" sx={{ py: 4 }}>
+      <Typography variant="h4" component="h1" gutterBottom textAlign="center">
+        {isSwitching ? 'Switch School' : 'Select Your School'}
+      </Typography>
       
-      <div style={{ marginBottom: "2rem" }}>
-        {schools.map(school => (
-          <div 
-            key={school.schoolId} 
-            style={{ 
-              border: selectedSchoolId === school.schoolId ? "2px solid #007acc" : "1px solid #ccc",
-              borderRadius: "8px",
-              padding: "1rem",
-              margin: "0.5rem 0",
-              cursor: "pointer",
-              backgroundColor: selectedSchoolId === school.schoolId ? "#f0f8ff" : "white"
-            }}
-            onClick={() => setSelectedSchoolId(school.schoolId)}
-          >
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <input
-                type="radio"
-                name="school"
-                value={school.schoolId}
-                checked={selectedSchoolId === school.schoolId}
-                onChange={() => setSelectedSchoolId(school.schoolId)}
-                style={{ marginRight: "1rem" }}
-              />
-              <div>
-                <h3 style={{ margin: "0 0 0.5rem 0" }}>{school.schoolName}</h3>
-                <p style={{ margin: "0", color: "#666", fontSize: "0.9rem" }}>
-                  Role: {school.roles.join(', ')} | Children: {school.children.map(child => child.name).join(", ")}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <Typography variant="body1" textAlign="center" color="text.secondary" sx={{ mb: 4 }}>
+        {isSwitching 
+          ? 'Choose which school context you\'d like to work with.'
+          : 'Please select the school where your child attends. This will be linked to your profile.'
+        }
+      </Typography>
 
-      <button 
-        onClick={handleSchoolSelect}
-        disabled={!selectedSchoolId}
-        style={{ 
-          width: "100%", 
-          padding: "0.75rem", 
-          fontSize: "1rem",
-          backgroundColor: selectedSchoolId ? "#007acc" : "#ccc",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: selectedSchoolId ? "pointer" : "not-allowed"
-        }}
-      >
-        Continue to {schools.find(s => s.schoolId === selectedSchoolId)?.schoolName || "Selected School"}
-      </button>
-    </div>
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
+
+      <Card>
+        <CardContent sx={{ p: 3 }}>
+          <FormControl component="fieldset" fullWidth>
+            <RadioGroup
+              value={selectedSchoolId}
+              onChange={(e) => setSelectedSchoolId(e.target.value)}
+            >
+              {schools.map((school) => (
+                <FormControlLabel
+                  key={school.id}
+                  value={school.id}
+                  control={<Radio />}
+                  label={school.name}
+                  sx={{ 
+                    mb: 1,
+                    '& .MuiFormControlLabel-label': {
+                      fontSize: '1.1rem'
+                    }
+                  }}
+                />
+              ))}
+            </RadioGroup>
+          </FormControl>
+
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            onClick={handleSelectSchool}
+            disabled={!selectedSchoolId || isSaving}
+            sx={{ mt: 3 }}
+          >
+            {isSaving ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CircularProgress size={20} color="inherit" />
+                {isSwitching ? 'Switching...' : 'Saving...'}
+              </Box>
+            ) : (
+              isSwitching ? 'Switch School' : 'Continue'
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+    </Container>
   );
 };
 

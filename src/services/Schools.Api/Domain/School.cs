@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Domain.Abstractions;
 using Domain.Common;
+using Domain.Interfaces;
 using Domain.Results;
 
 namespace Schools.Api.Domain;

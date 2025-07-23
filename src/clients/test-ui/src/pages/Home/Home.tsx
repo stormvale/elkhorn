@@ -52,7 +52,7 @@ const Home = () => {
   };
 
   const handleSwitchSchool = () => {
-    navigate('/school-selector');
+    navigate('/school-selector?mode=switch');
   };
 
   const getUserRoleDisplay = () => {
@@ -111,7 +111,7 @@ const Home = () => {
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
                 <Chip 
-                  label={currentSchool.schoolName}
+                  label={currentSchool.name}
                   color="primary"
                   variant="filled"
                 />

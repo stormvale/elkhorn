@@ -26,6 +26,7 @@
     <ProjectReference Include="..\services\Orders.Api\Orders.Api.csproj" />
     <ProjectReference Include="..\services\Restaurants.Api\Restaurants.Api.csproj" />
     <ProjectReference Include="..\services\Schools.Api\Schools.Api.csproj" />
+    <ProjectReference Include="..\services\Users.Api\Users.Api.csproj" />
   </ItemGroup>
 
   <Target Name="RestoreNpm" BeforeTargets="Build" Condition=" '$(DesignTimeBuild)' != 'true' ">

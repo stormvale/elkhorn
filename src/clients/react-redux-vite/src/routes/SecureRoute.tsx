@@ -34,5 +34,5 @@ export const SecureRoute = ({ children, allowedRoles }: SecureRouteProps) => {
     }
   }
 
-  return children;
+  return <>{children}</>;
 };

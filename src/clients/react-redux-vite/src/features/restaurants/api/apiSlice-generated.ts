@@ -1,4 +1,4 @@
-import { emptyApi as api } from "../../../../openapi/emptyApi"
+import { apiBase as api } from "./apiSlice-base"
 const injectedRtkApi = api.injectEndpoints({
   endpoints: build => ({
     registerRestaurant: build.mutation<
@@ -79,11 +79,12 @@ export type Address = {
   postCode: string
   state: string
 }
+export type ContactType = "Contact" | "Parent" | "Manager" | "Principal"
 export type Contact = {
   name: string
   email: string
   phone: string | null
-  type: string
+  type: ContactType
 }
 export type RegisterRestaurantRequest = {
   name: string

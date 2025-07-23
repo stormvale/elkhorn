@@ -20,7 +20,6 @@ export const msalConfig: Configuration = {
       ? 'http://localhost:57575/signin-oidc'
       : 'https://calm-dune-09478071e-15.westus2.1.azurestaticapps.net/signin-oidc',
 
-
       // the page to navigate after logout.
       postLogoutRedirectUri: '/login',
 
@@ -65,8 +64,12 @@ export const msalInstance = new PublicClientApplication(msalConfig);
  */
 export const loginRequest = {
     scopes: [
-        "api://f776afca-bc47-4fee-9c85-e86ee08578f5/RestaurantsApi.All"
+        "openid", "profile", "User.Read"
+        // "api://c8b4f2d6-2193-4338-b7bc-74f2ad75844e/UsersApi.All",
+        // "api://f776afca-bc47-4fee-9c85-e86ee08578f5/RestaurantsApi.All"
     ]
+    // You cannot request scopes for multiple resources in a single authentication request.
+    // Each API (resource) requires a separate token request
 };
 
 /**

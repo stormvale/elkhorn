@@ -1,8 +1,8 @@
-import LoginPage from '../features/auth/LoginPage';
 import HomePage from '../features/home/HomePage';
 import { Restaurants } from '../features/restaurants/Restaurants';
-import { Quotes } from '../features/quotes/Quotes';
-import TemplateTester from '../theme/TemplateTester';
+import AuthLanding from '../features/auth/AuthLanding';
+import PostLoginHandler from '../features/auth/PostLoginHandler';
+import AuthRedirect from '../features/auth/AuthRedirect';
 
 interface RouteConfig {
   path: string;
@@ -14,13 +14,25 @@ interface RouteConfig {
 const routes: RouteConfig[] = [
   {
     path: '/',
-    element: <LoginPage />,
+    element: <AuthLanding />,
     requiresAuth: false,
     allowedRoles: [],
   },
   {
     path: '/login',
-    element: <LoginPage />,
+    element: <AuthLanding />,
+    requiresAuth: false,
+    allowedRoles: [],
+  },
+  {
+    path: '/signin-oidc',
+    element: <AuthRedirect />,
+    requiresAuth: false,
+    allowedRoles: [],
+  },
+  {
+    path: '/post-login',
+    element: <PostLoginHandler />,
     requiresAuth: false,
     allowedRoles: [],
   },
@@ -28,26 +40,27 @@ const routes: RouteConfig[] = [
     path: '/home',
     element: <HomePage />,
     requiresAuth: true,
-    allowedRoles: ['User'],
+    allowedRoles: [],
   },
   {
     path: '/restaurants',
     element: <Restaurants />,
     requiresAuth: true,
-    allowedRoles: ['User', 'Admin'],
-  },
-  {
-    path: '/quotes',
-    element: <Quotes />,
-    requiresAuth: true,
-    allowedRoles: ['User'],
-  },
-  {
-    path: '/theme',
-    element: <TemplateTester />,
-    requiresAuth: true,
-    allowedRoles: ['User', 'Admin'],
+    allowedRoles: [],
   }
+  
+  // {
+  //   path: '/quotes',
+  //   element: <Quotes />,
+  //   requiresAuth: true,
+  //   allowedRoles: ['User'],
+  // },
+  // {
+  //   path: '/theme',
+  //   element: <TemplateTester />,
+  //   requiresAuth: true,
+  //   allowedRoles: ['User', 'Admin'],
+  // }
 ];
 
 export default routes;

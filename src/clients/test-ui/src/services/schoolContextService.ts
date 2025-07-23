@@ -1,9 +1,6 @@
-import { msalInstance } from "../msalConfig";
-
 export interface UserSchool {
-  schoolId: string;
-  schoolName: string;
-  roles: string[];
+  id: string;
+  name: string;
   children: {
     id: string;
     name: string;
@@ -26,57 +23,53 @@ export class SchoolContextService {
   }
 
   /**
-   * Initialize the service after authentication
+   * Initialize the service - this will get the current school from session storage
    */
   async initialize(): Promise<void> {
-    const account = msalInstance.getActiveAccount();
-    if (!account) {
-      throw new Error("No active account found");
+    const storedSchoolId = sessionStorage.getItem("schoolId");
+    if (storedSchoolId) {
+      this.currentSchoolId = storedSchoolId;
     }
 
-    try {
-      // // Fetch user's school associations from the API
-      // const response = await fetch(`/api/users/${account.localAccountId}/schools`, {
-      //   headers: {
-      //     'Authorization': `Bearer ${await this.getAccessToken()}`
-      //   }
-      // });
-
-      // if (!response.ok) {
-      //   throw new Error("Failed to fetch user schools");
-      // }
-
-      // this.userSchools = await response.json();
+    // In development, provide mock data
+    // In production, this would be set by the PostLoginHandler from the API
+    if (this.userSchools.length === 0) {
       this.userSchools = [
         {
-          schoolId: "221",
-          schoolName: "Fairview Elementary",
-          roles: ["Parent/Guardian", "PAC Admin"],
+          id: "221",
+          name: "Fairview Elementary",
           children: [
-            { id: "child1", name: "Timmy Smith", grade: "3rd Grade" }
+            { id: "child1", name: "Emma Johnson", grade: "3rd Grade" }
           ]
         },
         {
-          schoolId: "291",
-          schoolName: "Rock City Elementary",
-          roles: ["Parent/Guardian"],
+          id: "291",
+          name: "Rock City Elementary",
           children: [
-            { id: "child2", name: "Sally Smith", grade: "2nd Grade" }
+            { id: "child2", name: "Billy Johnson", grade: "1st Grade" }
           ]
         }
       ];
-      
-      // Set initial school context
-      const storedSchoolId = sessionStorage.getItem("schoolId");
-      if (storedSchoolId && this.userSchools.some(s => s.schoolId === storedSchoolId)) {
-        this.currentSchoolId = storedSchoolId;
-      } else if (this.userSchools.length === 1) {
-        // If user only has access to one school, auto-select it
-        this.currentSchoolId = this.userSchools[0].schoolId;
-      }
-    } catch (error) {
-      console.error("Failed to initialize school context:", error);
     }
+  }
+
+  /**
+   * Set user schools from API response (called by PostLoginHandler)
+   */
+  setUserSchools(schools: UserSchool[]): void {
+    this.userSchools = schools;
+  }
+
+  /**
+   * Set the current school context
+   */
+  setCurrentSchool(schoolId: string): void {
+    const school = this.userSchools.find(s => s.id === schoolId);
+    if (!school) {
+      throw new Error("School not found in user's schools");
+    }
+    this.currentSchoolId = schoolId;
+    sessionStorage.setItem("schoolId", schoolId);
   }
 
   /**
@@ -91,14 +84,14 @@ export class SchoolContextService {
    */
   getCurrentSchool(): UserSchool | null {
     if (!this.currentSchoolId) return null;
-    return this.userSchools.find(s => s.schoolId === this.currentSchoolId) || null;
+    return this.userSchools.find(s => s.id === this.currentSchoolId) || null;
   }
 
   /**
    * Switch to a different school context
    */
   async switchSchool(schoolId: string): Promise<void> {
-    const school = this.userSchools.find(s => s.schoolId === schoolId);
+    const school = this.userSchools.find(s => s.id === schoolId);
     if (!school) {
       throw new Error("User does not have access to this school");
     }
@@ -108,11 +101,12 @@ export class SchoolContextService {
     
     // Optionally, notify your backend about the context switch
     try {
+      // Note: This would need proper token management in production
       await fetch('/api/user/context', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await this.getAccessToken()}`
+          // 'Authorization': `Bearer ${await this.getAccessToken()}`
         },
         body: JSON.stringify({ schoolId })
       });
@@ -126,23 +120,6 @@ export class SchoolContextService {
    */
   hasMultipleSchools(): boolean {
     return this.userSchools.length > 1;
-  }
-
-  /**
-   * Get access token for API calls
-   */
-  private async getAccessToken(): Promise<string> {
-    const account = msalInstance.getActiveAccount();
-    if (!account) {
-      throw new Error("No active account");
-    }
-
-    const response = await msalInstance.acquireTokenSilent({
-      scopes: ["api://f776afca-bc47-4fee-9c85-e86ee08578f5/RestaurantsApi.All"],
-      account
-    });
-
-    return response.accessToken;
   }
 
   /**

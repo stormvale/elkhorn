@@ -18,15 +18,8 @@ const AuthRedirect = () => {
           // Set the active account
           instance.setActiveAccount(response.account);
           
-          // Get the school context from session storage
-          const schoolId = sessionStorage.getItem('schoolId');
-          
-          if (schoolId) {
-            // this is where we could somehow link the school context to the user?
-            navigate('/home');
-          } else {
-            navigate('/register');
-          }
+          // Navigate to post-login handler to check user profile and set up context
+          navigate('/post-login');
         } else {
           // No response means we're probably not coming from a redirect
           console.log('No redirect response, navigating to auth landing');

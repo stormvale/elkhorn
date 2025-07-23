@@ -1,5 +1,5 @@
-﻿using Domain.Results;
-using Schools.Api.Domain;
+﻿using Contracts.Schools.Responses;
+using Domain.Results;
 using Schools.Api.DomainErrors;
 using Schools.Api.EfCore;
 using Schools.Api.Extensions;
@@ -23,7 +23,7 @@ public static class GetById
         .WithName(RouteName)
         .WithSummary("Get by Id")
         .WithTags("Schools")
-        .Produces<School>()
+        .Produces<SchoolResponse>()
         .Produces(StatusCodes.Status404NotFound);
     }
 }
