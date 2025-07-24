@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Domain.Abstractions;
 using Domain.Interfaces;
 using Domain.Results;
@@ -26,10 +25,13 @@ public class Child : AggregateRoot, IAuditable
 
         return Result.Success(child);
     }
+
+    public string Name => $"{FirstName} {LastName}";
     
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
     public string ParentId { get; private set; } // this is a UserId
+    public string Grade { get; set; }
     public Guid SchoolId { get; private set; }
     
     #region IAuditable

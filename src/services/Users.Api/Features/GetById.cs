@@ -12,16 +12,16 @@ public static class GetById
 
     public static void MapGetById(this WebApplication app)
     {
-        app.MapGet("/{id:Guid}", async (Guid id, AppDbContext db, CancellationToken ct) =>
+        app.MapGet("/{userId}", async (string userId, AppDbContext db, CancellationToken ct) =>
         {
-            var user = await db.Users.FindAsync([id], ct);
+            var user = await db.Users.FindAsync([userId], ct);
             
             return user is null 
-                ? Result.Failure(UserErrors.NotFound(id)).ToProblemDetails()
+                ? Result.Failure(UserErrors.NotFound(userId)).ToProblemDetails()
                 : TypedResults.Ok(user.ToUserResponse());
         })
         .WithName(RouteName)
-        .WithSummary("Get by Id")
+        .WithSummary("Get User by Id")
         .WithTags("Users")
         .Produces<UserResponse>()
         .Produces(StatusCodes.Status404NotFound);

@@ -9,10 +9,4 @@
         <RepositoryUrl>https://github.com/stormvale/elkhorn</RepositoryUrl>
     </PropertyGroup>
 
-    <ItemGroup>
-      <Folder Include="Common\Messages\" />
-      <Folder Include="Common\Requests\" />
-      <Folder Include="Common\Responses\" />
-    </ItemGroup>
-
 </Project>

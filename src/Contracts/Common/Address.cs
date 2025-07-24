@@ -19,7 +19,5 @@ public class Address(string street, string city, string postCode, string state)
     [StringLength(2, MinimumLength = 2, ErrorMessage = "State must be 2 characters.")]
     public string State { get; set; } = state;
 
-    public static Address Empty => new(string.Empty, string.Empty, string.Empty, string.Empty);
-
     public override string ToString() => $"{Street}, {City}, {PostCode}, {State}";
 }

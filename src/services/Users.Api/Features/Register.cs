@@ -14,7 +14,7 @@ public static class Register
     {
         app.MapPost("/", async (RegisterUserRequest req, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
         {
-            var createUserResult = User.Create(req.Id, req.Name, req.Address.ToDomainAddress());
+            var createUserResult = User.Create(req.Id, req.Name, req.Email);
             if (createUserResult.IsFailure)
             {
                 return createUserResult.ToProblemDetails();
@@ -36,6 +36,6 @@ public static class Register
         .WithName("RegisterUser")
         .WithSummary("Register")
         .WithTags("Users")
-        .Produces(StatusCodes.Status201Created);
+        .Produces<RegisterUserResponse>(StatusCodes.Status201Created);
     }
 }

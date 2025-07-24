@@ -64,7 +64,6 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 var app = builder.Build();
 
-//app.UseHttpsRedirection();
 app.UseCors();
 app.UseCloudEvents();
 app.UseExceptionHandler();
@@ -77,7 +76,9 @@ app.MapSubscribeHandler();
 app.MapRegister();
 app.MapGetById();
 app.MapList();
-app.MapGetProfile();
+app.MapDelete();
+app.MapProfile();
+app.MapLinkSchool();
 
 await app.RunAsync();
 

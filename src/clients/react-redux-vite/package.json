@@ -19,6 +19,7 @@
     "test": "vitest --run",
     "type-check": "tsc -b --noEmit",
     "api-gen:restaurants": "npx @rtk-query/codegen-openapi src/features/restaurants/api/openapi-config.ts",
+    "api-gen:schools": "npx @rtk-query/codegen-openapi src/features/schools/api/openapi-config.ts",
     "api-gen:users": "npx @rtk-query/codegen-openapi src/features/users/api/openapi-config.ts"
   },
   "dependencies": {

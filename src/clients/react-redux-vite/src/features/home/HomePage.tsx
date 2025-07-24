@@ -44,8 +44,8 @@ const Home = () => {
             Coming Soon:
           </Typography>
           <ul>
+            <li>District & School announcements</li>
             <li>Messages from teachers</li>
-            <li>School announcements</li>
             <li>Hot Lunch orders</li>
             <li>Lost-property tracking</li>
             <li>Event notifications</li>

@@ -1,6 +1,4 @@
-﻿using Contracts.Lunches.Responses;
-using Contracts.Schools.Responses;
-using Contracts.Users.Responses;
+﻿using Contracts.Users.Responses;
 using Domain.Common;
 using Users.Api.Domain;
 
@@ -23,7 +21,8 @@ public static class MappingExtensions
     public static UserResponse ToUserResponse(this User domainObject) => new(
         domainObject.Id,
         domainObject.Name,
-        domainObject.Address.ToResponse(),
+        domainObject.Email,
+        domainObject.SchoolIds.ToArray(),
         domainObject.Version
     );
 }

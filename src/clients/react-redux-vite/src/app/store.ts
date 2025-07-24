@@ -8,11 +8,13 @@ import { errorMiddleware } from "../middleware/errorMiddleware"
 import { notificationSlice } from "../features/notifications/notificationSlice"
 import { authSlice } from "./authSlice"
 import { usersApiSlice } from "../features/users/api/apiSlice"
+import { schoolsApiSlice } from "../features/schools/api/apiSlice"
 
 // `combineSlices` automatically combines the reducers using the `reducerPath`
 const rootReducer = combineSlices(
   quotesApiSlice,
   restaurantsApiSlice,
+  schoolsApiSlice,
   usersApiSlice,
   themeSlice,
   authSlice,
@@ -33,6 +35,7 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
       return getDefaultMiddleware()
         .concat(quotesApiSlice.middleware)
         .concat(restaurantsApiSlice.middleware)
+        .concat(schoolsApiSlice.middleware)
         .concat(usersApiSlice.middleware)
         .concat(errorMiddleware)
     },

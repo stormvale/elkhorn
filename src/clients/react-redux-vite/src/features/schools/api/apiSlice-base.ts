@@ -5,26 +5,26 @@ import { msalInstance } from '../../../msalConfig';
 
 // the endpoints for this api are generated from the OpenAPI spec
 export const apiBase = createApi({
-  reducerPath: 'usersApi',
+  reducerPath: 'schoolsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_USERS_API_URL,
+    baseUrl: import.meta.env.VITE_SCHOOLS_API_URL,
     prepareHeaders: async (headers, { getState }) => {
       let token: string | null = null;
 
       // first try to get token from MSAL silently
       const accounts = msalInstance.getAllAccounts();
       if (accounts.length > 0) {
-        console.log('🔑 Attempting to get Users API token from MSAL silently...');
+        console.log('🔑 Attempting to get Schools API token from MSAL silently...');
         
         try {
           const tokenResponse = await msalInstance.acquireTokenSilent({
-            scopes: ['api://c8b4f2d6-2193-4338-b7bc-74f2ad75844e/UsersApi.All'],
+            scopes: ['api://2c25e4f8-a05f-4450-bbdd-ef927a3ed271/SchoolsApi.All'],
             account: accounts[0]
           });
           
           token = tokenResponse.accessToken;
         } catch (msalError) {
-          console.warn('⚠️ Could not acquire Users API token silently from MSAL:', msalError);
+          console.warn('⚠️ Could not acquire Schools API token silently from MSAL:', msalError);
         }
       }
 
@@ -43,7 +43,7 @@ export const apiBase = createApi({
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       } else {
-        console.warn('❗No token available to set Authorization header for Users API request');
+        console.warn('❗No token available to set Authorization header for Schools API request');
       }
 
       headers.set('Accept', 'application/json');

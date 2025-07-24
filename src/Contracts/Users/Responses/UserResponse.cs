@@ -1,9 +1,8 @@
-﻿using Contracts.Common;
-
-namespace Contracts.Users.Responses;
+﻿namespace Contracts.Users.Responses;
 
 public sealed record UserResponse(
     string Id,
     string Name,
-    Address Address,
+    string Email,
+    string[] SchoolIds,
     uint Version);

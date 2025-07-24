@@ -11,11 +11,12 @@ public class SchoolTests
     {
         var address = new Address("Street", "City", "PostCode", "State");
         var contact = new Contact("Name", "Email", "Phone", ContactType.Principal);
-        var school = School.Create(Guid.CreateVersion7(),"Test School", address, contact).Value!;
+        var school = School.Create(Guid.CreateVersion7(),"Test School", "123", address, contact).Value!;
     
         // id generated only when persisted
         school.Id.ShouldNotBe(Guid.Empty);
         school.Name.ShouldBe("Test School");
+        school.ExternalId.ShouldBe("123");
         school.Address.ShouldBe(address);
         school.Contact.ShouldBe(contact);
         school.Pac.ShouldNotBeNull();

@@ -11,23 +11,29 @@ public static class Delete
 {
     public static void MapDelete(this WebApplication app)
     {
-        app.MapDelete("/{id:Guid}", async Task<IResult> (Guid id, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
-        {
-            var school = await db.Schools.FindAsync([id], ct);
-            if (school is null)
-            {
-                return Result.Failure(SchoolErrors.NotFound(id)).ToProblemDetails();
-            }
-            
-            // 'ExecuteDelete' and 'ExecuteDeleteAsync' are not supported by the CosmosDb provider
-            db.Schools.Remove(school);
-            await db.SaveChangesAsync(ct);
+        app.MapDelete("/{id:Guid}",
+                async Task<IResult> (Guid id, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
+                {
+                    var school = await db.Schools.FindAsync([id], ct);
+                    if (school is null)
+                    {
+                        return Result.Failure(SchoolErrors.NotFound(id)).ToProblemDetails();
+                    }
 
-            await dapr.PublishEventAsync("pubsub", "schools-events", new SchoolDeletedMessage(id), ct);
-            
-            return TypedResults.NoContent();
-        })
-        .WithSummary("Delete")
-        .WithTags("Schools");
+                    // 'ExecuteDelete' and 'ExecuteDeleteAsync' are not supported by the CosmosDb provider
+                    db.Schools.Remove(school);
+                    await db.SaveChangesAsync(ct);
+
+                    await dapr.PublishEventAsync("pubsub", "schools-events", new SchoolDeletedMessage(id), ct);
+
+                    return TypedResults.NoContent();
+                })
+            .WithName("DeleteSchool")
+            .WithSummary("Delete School")
+            .WithTags("Schools")
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status404NotFound);
     }
 }

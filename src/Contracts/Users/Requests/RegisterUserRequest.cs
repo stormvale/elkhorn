@@ -13,4 +13,5 @@ public record RegisterUserRequest(
     string Name,
 
     [Required]
-    Address Address);
+    [EmailAddress]
+    string Email);

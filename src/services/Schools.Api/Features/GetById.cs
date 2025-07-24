@@ -8,7 +8,7 @@ namespace Schools.Api.Features;
 
 public static class GetById
 {
-    public const string RouteName = "GetById";
+    public const string RouteName = "GetSchoolById";
 
     public static void MapGetById(this WebApplication app)
     {
@@ -21,8 +21,9 @@ public static class GetById
                 : TypedResults.Ok(school.ToSchoolResponse());
         })
         .WithName(RouteName)
-        .WithSummary("Get by Id")
+        .WithSummary("Get School by Id")
         .WithTags("Schools")
+        .RequireAuthorization()
         .Produces<SchoolResponse>()
         .Produces(StatusCodes.Status404NotFound);
     }

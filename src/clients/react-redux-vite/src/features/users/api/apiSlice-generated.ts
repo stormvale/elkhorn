@@ -13,11 +13,21 @@ const injectedRtkApi = api.injectEndpoints({
     profile: build.query<ProfileApiResponse, ProfileApiArg>({
       query: () => ({ url: `/profile` }),
     }),
+    linkUserToSchool: build.mutation<
+      LinkUserToSchoolApiResponse,
+      LinkUserToSchoolApiArg
+    >({
+      query: queryArg => ({
+        url: `/${queryArg.userId}/schools/${queryArg.schoolId}`,
+        method: "POST",
+      }),
+    }),
   }),
   overrideExisting: false,
 })
 export { injectedRtkApi as usersApi }
-export type RegisterUserApiResponse = unknown
+export type RegisterUserApiResponse =
+  /** status 201 Created */ RegisterUserResponse
 export type RegisterUserApiArg = RegisterUserRequest
 export type ListUsersApiResponse = /** status 200 OK */ UserResponse[]
 export type ListUsersApiArg = void
@@ -25,20 +35,23 @@ export type GetUserByIdApiResponse = /** status 200 OK */ UserResponse
 export type GetUserByIdApiArg = string
 export type ProfileApiResponse = /** status 200 OK */ UserProfileResponse
 export type ProfileApiArg = void
-export type Address = {
-  street: string
-  city: string
-  postCode: string
-  state: string
+export type LinkUserToSchoolApiResponse = unknown
+export type LinkUserToSchoolApiArg = {
+  userId: string
+  schoolId: string
+}
+export type RegisterUserResponse = {
+  userId: string
 }
 export type RegisterUserRequest = {
+  id: string
   name: string
-  address: Address
+  email: string
 }
 export type UserResponse = {
   id: string
   name: string
-  address: Address
+  email: string
   version: number
 }
 export type ChildDto = {
@@ -54,15 +67,13 @@ export type UserSchoolDto = {
 export type UserProfileResponse = {
   id: string
   email: string
-  firstName: string | null
-  lastName: string | null
   displayName: string | null
   schools: UserSchoolDto[]
-  createdAt: string
 }
 export const {
   useRegisterUserMutation,
   useListUsersQuery,
   useGetUserByIdQuery,
   useProfileQuery,
+  useLinkUserToSchoolMutation,
 } = injectedRtkApi

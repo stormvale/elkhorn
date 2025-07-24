@@ -10,24 +10,27 @@ public static class CreateLunchItem
 {
     public static void MapCreateLunchItem(this RouteGroupBuilder group)
     {
-        group.MapPost("/pac/lunch-items", async (Guid schoolId, CreateLunchItemRequest req, AppDbContext db, CancellationToken ct) =>
+        group.MapPost("/lunch-items", async (Guid schoolId, CreateLunchItemRequest req, AppDbContext db, CancellationToken ct) =>
         {
             var school = await db.Schools.FindAsync([schoolId], ct);
             if (school is null)
             {
                 return Result.Failure(SchoolErrors.NotFound(schoolId)).ToProblemDetails();
             }
-            
+
             var result = school.Pac.AddLunchItem(req.Name, req.Price);
             if (result.IsFailure)
             {
                 return result.ToProblemDetails();
             }
-            
+
             await db.SaveChangesAsync(ct);
             return TypedResults.Ok();
         })
-        .WithSummary("Create Lunch Item")
-        .WithTags("Pac");
+        .WithName("CreatePacLunchItem")
+        .WithSummary("Create PAC Lunch Item")
+        .WithTags("Pac")
+        .Produces(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status404NotFound);
     }
 }

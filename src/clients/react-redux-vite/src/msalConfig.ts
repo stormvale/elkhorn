@@ -33,24 +33,25 @@ export const msalConfig: Configuration = {
     system: {
     loggerOptions: {
       loggerCallback: (level, message, containsPii) => {
-        if (containsPii) {
-          return; // Do not log PII
-        }
+        if (containsPii) return; // Do not log PII
+
         switch (level) {
-          case LogLevel.Error:
-            console.error(message);
+          case LogLevel.Verbose:
+            console.debug(message);
             return;
           case LogLevel.Info:
             console.info(message);
             return;
-          case LogLevel.Verbose:
-            console.debug(message);
-            return;
           case LogLevel.Warning:
             console.warn(message);
             return;
+          case LogLevel.Error:
+            console.error(message);
+            return;
         }
-      }
+      },
+      logLevel: LogLevel.Warning, // warnings and errors
+      piiLoggingEnabled: false
     }
   }
 };

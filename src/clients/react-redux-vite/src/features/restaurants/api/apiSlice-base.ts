@@ -5,6 +5,7 @@ import { msalInstance } from '../../../msalConfig';
 
 // the endpoints for this api are generated from the OpenAPI spec
 export const apiBase = createApi({
+  reducerPath: 'restaurantsApi',
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_RESTAURANTS_API_URL,
     prepareHeaders: async (headers, { getState }) => {

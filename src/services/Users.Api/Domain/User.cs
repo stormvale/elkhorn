@@ -1,37 +1,46 @@
 ﻿using System.Text.Json.Serialization;
 using Domain.Abstractions;
-using Domain.Common;
 using Domain.Interfaces;
 using Domain.Results;
+using Users.Api.DomainErrors;
 
 namespace Users.Api.Domain;
 
 /// <summary>
-/// The User's Id comes from the http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifie claim, which is
+/// The User's ID comes from the http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier claim, which is
 /// a stable, system-level ID for the user provided by Entra ID after authentication.
 /// </summary>
 public class User : AggregateRoot<string>, IAuditable
 {
     [JsonConstructor] private User(string id) : base(id) { /* ef constructor */ }
     
-    public static Result<User> Create(string id, string name, Address address)
+    public static Result<User> Create(string id, string name, string email)
     {
         var school = new User(id)
         {
             Name = name,
-            Address = address,
+            Email = email,
+            SchoolIds = []
         };
 
         return Result.Success(school);
     }
 
     public string Name { get; private set; }
-    public Address Address { get; private set; }
+    public string Email { get; private set; }
+    public List<string> SchoolIds { get; private set; } = []; // EF core can't do List<Guid> with Cosmos
+    public List<Child> Children { get; } = [];
 
-    // EF Core Cosmos DB provider has a problem with List<Guid>
-    public List<string> SchoolIds { get; set; }
-
-    public List<Child> Children { get; private set; } = [];
+    public Result LinkSchool(Guid schoolId)
+    {
+        if (SchoolIds.Contains(schoolId.ToString()))
+        {
+            return Result.Failure(UserErrors.AlreadyLinkedToSchool(Id, schoolId));
+        }
+        
+        SchoolIds.Add(schoolId.ToString());
+        return Result.Success();
+    }
     
     public void RegisterChild(string firstName, string lastName, Guid schoolId)
     {

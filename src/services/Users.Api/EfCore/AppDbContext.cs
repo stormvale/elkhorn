@@ -13,10 +13,15 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             .HasPartitionKey(x => x.Id);
 
         modelBuilder.Entity<User>().Property(x => x.Name).HasMaxLength(100);
-
+        modelBuilder.Entity<User>().Property(x => x.Email).HasMaxLength(100);
+        
         modelBuilder.Entity<User>().OwnsMany(r => r.Children, childBuilder =>
         {
             childBuilder.WithOwner();
+            childBuilder.Property(x => x.FirstName).HasMaxLength(50);
+            childBuilder.Property(x => x.LastName).HasMaxLength(50);
+            childBuilder.Property(x => x.Grade).HasMaxLength(20);
+            childBuilder.Property(x => x.ParentId).HasMaxLength(20);
         });
     }
 }

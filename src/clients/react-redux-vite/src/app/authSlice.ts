@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { tokenStorage } from '../utils/tokenStorage';
-import { User } from '../types';
+//import { User } from '../types';
 import { UserSchoolDto } from '../features/users/api/apiSlice-generated';
+import { User } from '../types';
 
 // Initialize state from localStorage
 const initializeAuthState = (): AuthState => {
@@ -36,7 +37,6 @@ const initialState: AuthState = initializeAuthState();
  * This slice manages authentication state, including the access token obtained via MSAL
  * and user information. It provides actions to set and clear credentials.
  */
-
 
 interface AuthState {
   // Authentication
