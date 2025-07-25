@@ -1,0 +1,15 @@
+meta {
+  name: Link School copy
+  type: http
+  seq: 7
+}
+
+post {
+  url: https://{{host.users.api}}/{{userId}}/schools/{{schoolId}}
+  body: none
+  auth: inherit
+}
+
+vars:pre-request {
+  userId: r54kv8kgbecylhxt6jYmSa9J2xPhmXoL_y45QVnQ8MA
+}

@@ -17,5 +17,6 @@ public record Address(
     string State
 )
 {
+    public static readonly Address Unknown = new(string.Empty, string.Empty, string.Empty, string.Empty);
     public override string ToString() => $"{Street}, {City}, {PostCode}, {State}";
 }

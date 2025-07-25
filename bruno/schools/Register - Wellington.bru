@@ -1,0 +1,34 @@
+meta {
+  name: Register - Wellington
+  type: http
+  seq: 2
+}
+
+post {
+  url: https://{{host.schools.api}}/
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "externalId": "338",
+    "name": "Wellington Secondary",
+    "address": {
+      "street": "3135 Mexicana Road",
+      "city": "Nanaimo",
+      "postCode": "V9T2W8",
+      "state": "BC"
+    },
+    "contact": {
+      "name": "Darcy Hoff",
+      "email": "darcy@sd86.test",
+      "phone": null,
+      "type": "Principal"
+    }
+  }
+}
+
+vars:post-response {
+  schoolId: res.body.schoolId
+}

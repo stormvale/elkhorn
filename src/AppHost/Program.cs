@@ -26,6 +26,7 @@ elkhornDb.AddContainer("restaurants", "/id");
 elkhornDb.AddContainer("schools", "/id");
 elkhornDb.AddContainer("lunches", "/id");
 elkhornDb.AddContainer("orders", "/id");
+elkhornDb.AddContainer("users", "/id");
 
 #endregion
 
@@ -52,13 +53,21 @@ var restaurantsApi = builder.AddProject<Restaurants_Api>("restaurants-api")
 
 var schoolsApi = builder.AddProject<Schools_Api>("schools-api")
     .WithDaprSidecar()
-    .WithReference(statestore)
     .WithReference(pubSub)
     .WithReference(cosmos);
 
 var lunchesApi = builder.AddProject<Lunches_Api>("lunches-api")
     .WithDaprSidecar()
-    .WithReference(statestore)
+    .WithReference(pubSub)
+    .WithReference(cosmos);
+
+var usersApi = builder.AddProject<Users_Api>("users-api")
+    .WithDaprSidecar()
+    .WithReference(pubSub)
+    .WithReference(cosmos);
+
+var ordersApi = builder.AddProject<Orders_Api>("orders-api")
+    .WithDaprSidecar()
     .WithReference(pubSub)
     .WithReference(cosmos);
 
@@ -66,12 +75,6 @@ var lunchesApi = builder.AddProject<Lunches_Api>("lunches-api")
 //     .WithDaprSidecar()
 //     .WithReference(stateStore)
 //     .WithReference(pubSub);
-
-var ordersApi = builder.AddProject<Orders_Api>("orders-api")
-    .WithDaprSidecar()
-    .WithReference(statestore)
-    .WithReference(pubSub)
-    .WithReference(cosmos);
 
 // builder.AddProject<Projects.Billing_Api>("billing-api")
 //     .WithDaprSidecar()
@@ -89,6 +92,7 @@ var gatewayApi = builder.AddProject<Gateway_Api>("gateway-api")
     .WithReference(schoolsApi).WaitFor(schoolsApi)
     .WithReference(lunchesApi).WaitFor(lunchesApi)
     .WithReference(ordersApi).WaitFor(ordersApi)
+    .WithReference(usersApi).WaitFor(usersApi)
     .WithExternalHttpEndpoints();
 
 #region Scalar OpenApi documentation
@@ -103,15 +107,17 @@ var gatewayApi = builder.AddProject<Gateway_Api>("gateway-api")
         .WithApiReference(restaurantsApi, options => options.WithOpenApiRoutePattern("/openapi/v1.json"))
         .WithApiReference(schoolsApi, options => options.WithOpenApiRoutePattern("/openapi/v1.json"))
         .WithApiReference(lunchesApi, options => options.WithOpenApiRoutePattern("/openapi/v1.json"))
-        .WithApiReference(ordersApi, options => options.WithOpenApiRoutePattern("/openapi/v1.json"));
+        .WithApiReference(ordersApi, options => options.WithOpenApiRoutePattern("/openapi/v1.json"))
+        .WithApiReference(usersApi, options => options.WithOpenApiRoutePattern("/openapi/v1.json"));
 
 #endregion
 
 // this was the first iteration of the web app (no longer used)
-builder.AddNpmApp("web-react-ts-mui", "../clients/web-react-ts-mui")
+builder.AddNpmApp("test-ui", "../clients/test-ui")
     .WithReference(gatewayApi)
+    .WithHttpEndpoint(name: "web", port: 54321, isProxied: false) // fixed port
+    .WithEnvironment("VITE_PORT", "54321")
     .WithEnvironment("BROWSER", "none")
-    .WithHttpEndpoint(env: "VITE_PORT", name: "vite-http")
     .WithExternalHttpEndpoints()
     .PublishAsDockerFile();
 

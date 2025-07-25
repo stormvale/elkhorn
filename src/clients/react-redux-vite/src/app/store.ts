@@ -1,19 +1,21 @@
 import type { Action, ThunkAction } from "@reduxjs/toolkit"
 import { combineSlices, configureStore } from "@reduxjs/toolkit"
 import { setupListeners } from "@reduxjs/toolkit/query"
-import { counterSlice } from "../features/counter/counterSlice"
 import { quotesApiSlice } from "../features/quotes/quotesApiSlice"
 import { restaurantsApiSlice } from "../features/restaurants/api/apiSlice"
 import { themeSlice } from "../theme/themeSlice"
 import { errorMiddleware } from "../middleware/errorMiddleware"
 import { notificationSlice } from "../features/notifications/notificationSlice"
 import { authSlice } from "./authSlice"
+import { usersApiSlice } from "../features/users/api/apiSlice"
+import { schoolsApiSlice } from "../features/schools/api/apiSlice"
 
 // `combineSlices` automatically combines the reducers using the `reducerPath`
 const rootReducer = combineSlices(
-  counterSlice,
   quotesApiSlice,
   restaurantsApiSlice,
+  schoolsApiSlice,
+  usersApiSlice,
   themeSlice,
   authSlice,
   notificationSlice
@@ -33,6 +35,8 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
       return getDefaultMiddleware()
         .concat(quotesApiSlice.middleware)
         .concat(restaurantsApiSlice.middleware)
+        .concat(schoolsApiSlice.middleware)
+        .concat(usersApiSlice.middleware)
         .concat(errorMiddleware)
     },
     preloadedState,

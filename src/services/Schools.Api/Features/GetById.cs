@@ -1,5 +1,5 @@
-﻿using Domain.Results;
-using Schools.Api.Domain;
+﻿using Contracts.Schools.Responses;
+using Domain.Results;
 using Schools.Api.DomainErrors;
 using Schools.Api.EfCore;
 using Schools.Api.Extensions;
@@ -8,7 +8,7 @@ namespace Schools.Api.Features;
 
 public static class GetById
 {
-    public const string RouteName = "GetById";
+    public const string RouteName = "GetSchoolById";
 
     public static void MapGetById(this WebApplication app)
     {
@@ -21,9 +21,10 @@ public static class GetById
                 : TypedResults.Ok(school.ToSchoolResponse());
         })
         .WithName(RouteName)
-        .WithSummary("Get by Id")
+        .WithSummary("Get School by Id")
         .WithTags("Schools")
-        .Produces<School>()
+        .RequireAuthorization()
+        .Produces<SchoolResponse>()
         .Produces(StatusCodes.Status404NotFound);
     }
 }

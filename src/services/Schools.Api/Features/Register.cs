@@ -16,6 +16,7 @@ public static class Register
         {
             var createSchoolResult = School.Create(Guid.CreateVersion7(),
                 req.Name,
+                req.ExternalId,
                 req.Address.ToDomainAddress(),
                 req.Contact.ToDomainContact());
 
@@ -37,8 +38,10 @@ public static class Register
                 routeValues: new { id = school.Id }
             );
         })
-        .WithSummary("Register")
+        .WithName("RegisterSchool")
+        .WithSummary("Register new School")
         .WithTags("Schools")
-        .Produces(StatusCodes.Status201Created);
+        .RequireAuthorization()
+        .Produces<RegisterSchoolResponse>(StatusCodes.Status201Created);
     }
 }

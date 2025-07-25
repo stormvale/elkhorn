@@ -10,7 +10,6 @@ interface RestaurantListProps {
 
 export const RestaurantList = ({ onSelected, selectedId }: RestaurantListProps) => {
   const { data = [] } = useListRestaurantsQuery();
-  //const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   // Clear selection if selected item no longer exists in the list
   useEffect(() => {

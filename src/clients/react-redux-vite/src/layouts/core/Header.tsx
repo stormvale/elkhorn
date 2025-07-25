@@ -1,24 +1,10 @@
 import React from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Box,
-  Avatar,
-  Menu,
-  MenuItem
-} from '@mui/material';
-import { useMsal } from '@azure/msal-react';
-import { useAppDispatch } from '../../app/hooks';
-import { clearCredentials } from '../../app/authSlice';
+import { AppBar, Toolbar, Typography, Box, Avatar, Menu, MenuItem } from '@mui/material';
 import { ThemeToggle } from '../../theme/ThemeToggle';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../app/store';
+import { useAuthContext } from '../../hooks/useAuthContext';
 
 const Header: React.FC = () => {
-  const { instance } = useMsal();
-  const { user } = useSelector((state: RootState) => state.auth);
-  const dispatch = useAppDispatch();
+  const { currentUser, logout } = useAuthContext();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -29,12 +15,9 @@ const Header: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
-    instance.logoutPopup()
-      .then(() => dispatch(clearCredentials()))
-      .catch(error => console.error('Logout error:', error));
-
-    handleClose()
+  const handleLogout = async () => {
+    await logout();
+    handleClose();
   };
 
   return (
@@ -53,16 +36,16 @@ const Header: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <ThemeToggle />
           
-          {user && (
+          {currentUser && (
             <>
               <Typography variant="body2">
-                Welcome, {user.name}
+                Welcome, {currentUser.name}
               </Typography>
               <Avatar
                 onClick={handleMenu}
                 sx={{ cursor: 'pointer', bgcolor: 'secondary.main' }}
               >
-                {user.name?.charAt(0).toUpperCase()}
+                {currentUser.name?.charAt(0).toUpperCase()}
               </Avatar>
               <Menu
                 anchorEl={anchorEl}

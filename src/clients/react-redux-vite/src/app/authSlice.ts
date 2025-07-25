@@ -1,49 +1,51 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { tokenStorage } from '../utils/tokenStorage';
-import { User } from '../types';
+import { authStorage } from '../utils/authStorage';
+import { UserSchoolDto } from '../features/users/api/apiSlice-generated';
 
-// Initialize state from localStorage
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  roles: string[];
+  availableSchools: UserSchoolDto[];
+}
+
+interface AuthState {
+  isAuthenticated: boolean;
+  currentUser: AuthUser | null;
+  accessToken: string | null;
+  currentSchool: UserSchoolDto | null;
+}
+
+interface SetCredentialsPayload {
+  accessToken: string;
+  user: AuthUser;
+}
+
 const initializeAuthState = (): AuthState => {
-  const { accessToken, user } = tokenStorage.getAuthState();
-  const isTokenValid = accessToken ? tokenStorage.isTokenValid() : false;
+  const { accessToken, user } = authStorage.getAuthState();
+  const isTokenValid = accessToken ? authStorage.isTokenValid() : false;
 
+  // initialize from localStorage if we can
   if (isTokenValid && user) {
     return {
       isAuthenticated: true,
-      user,
+      currentUser: user,
       accessToken,
-      error: null,
+      currentSchool: null
     };
   } else {
-    tokenStorage.clearAuthData();
+    authStorage.clearAuthData();
     return {
       isAuthenticated: false,
-      user: null,
+      currentUser: null,
       accessToken: null,
-      error: null,
+      currentSchool: null
     };
   }
 };
 
 const initialState: AuthState = initializeAuthState();
-
-/*
- * This slice manages authentication state, including the access token obtained via MSAL
- * and user information. It provides actions to set and clear credentials.
- */
-
-
-interface AuthState {
-  isAuthenticated: boolean;
-  user: User | null;
-  accessToken: string | null;
-  error: string | null;
-}
-
-interface SetCredentialsPayload {
-  accessToken: string;
-  user: User;
-}
 
 export const authSlice = createSlice({
   name: 'auth',
@@ -53,49 +55,52 @@ export const authSlice = createSlice({
       const { accessToken, user } = action.payload;
 
       state.isAuthenticated = true;
-      state.user = user;
+      state.currentUser = user;
       state.accessToken = accessToken;
-      state.error = null;
 
-      tokenStorage.setAccessToken(accessToken);
-      tokenStorage.setUser(user);
+      authStorage.setAccessToken(accessToken);
+      authStorage.setUser(user);
+      console.log('🔑 User credentials stored in Redux state.');
     },
 
     clearCredentials: (state) => {
       state.isAuthenticated = false;
-      state.user = null;
+      state.currentUser = null;
       state.accessToken = null;
-      state.error = null;
-      tokenStorage.clearAuthData();
+      state.currentSchool = null;
+      authStorage.clearAuthData();
     },
 
-    setAuthError: (state, action: PayloadAction<string>) => {
-      state.error = action.payload;
+    setCurrentSchool: (state, action: PayloadAction<UserSchoolDto>) => {
+      state.currentSchool = action.payload;
+      sessionStorage.setItem('schoolId', state.currentSchool.id);
     },
 
-    restoreAuthStateFromLocalStorage: (state) => {
-      const { accessToken, user } = tokenStorage.getAuthState();
-      const isTokenValid = accessToken ? tokenStorage.isTokenValid() : false;
+    // restoreAuthStateFromLocalStorage: (state) => {
+    //   const { accessToken, user } = authStorage.getAuthState();
+    //   const isTokenValid = accessToken ? authStorage.isTokenValid() : false;
 
-      if (isTokenValid && user) {
-        state.isAuthenticated = true;
-        state.user = user;
-        state.accessToken = accessToken;
-      } else {
-        state.isAuthenticated = false;
-        state.user = null;
-        state.accessToken = null;
-        tokenStorage.clearAuthData();
-      }
-    }
+    //   if (isTokenValid && user) {
+    //     state.isAuthenticated = true;
+    //     state.currentUser = user;
+    //     state.accessToken = accessToken;
+    //   } else {
+    //     state.isAuthenticated = false;
+    //     state.currentUser = null;
+    //     state.accessToken = null;
+    //     state.currentSchool = null;
+    //     authStorage.clearAuthData();
+    //   }
+    // }
   }
 });
 
 export const {
   setCredentials,
   clearCredentials,
-  setAuthError,
-  restoreAuthStateFromLocalStorage 
+  //restoreAuthStateFromLocalStorage,
+  //setSchoolContext,
+  setCurrentSchool 
 } = authSlice.actions;
 
 export default authSlice.reducer;

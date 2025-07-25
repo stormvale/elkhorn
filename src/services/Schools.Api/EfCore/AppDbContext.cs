@@ -15,6 +15,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             .HasPartitionKey(x => x.Id);
 
         modelBuilder.Entity<School>().Property(x => x.Name).HasMaxLength(100);
+        modelBuilder.Entity<School>().Property(x => x.ExternalId).HasMaxLength(20);
 
         // owned types are stored as nested JSON inside the parent document
         modelBuilder.Entity<School>().OwnsOne(x => x.Pac);

@@ -27,6 +27,7 @@ public static class MappingExtensions
     public static SchoolResponse ToSchoolResponse(this School school) => new(
         school.Id,
         school.Name,
+        school.ExternalId,
         school.Contact.ToResponse(),
         school.Address.ToResponse(),
         school.Pac.ToResponse(),

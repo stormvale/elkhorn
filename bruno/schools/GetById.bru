@@ -1,0 +1,11 @@
+meta {
+  name: GetById
+  type: http
+  seq: 3
+}
+
+get {
+  url: https://{{host.schools.api}}/{{schoolId}}
+  body: none
+  auth: inherit
+}
