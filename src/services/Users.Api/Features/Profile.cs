@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Contracts.Schools.Responses;
 using Contracts.Users.DTOs;
 using Contracts.Users.Messages;
 using Contracts.Users.Responses;
@@ -12,14 +13,16 @@ public static class Profile
 {
     public static void MapProfile(this WebApplication app)
     {
-        app.MapGet("/profile", async (ClaimsPrincipal claimsPrincipal, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
+        app.MapGet("/profile", async (
+                ClaimsPrincipal claimsPrincipal,
+                AppDbContext db,
+                DaprClient dapr,
+                CancellationToken ct) =>
         {
-            // ClaimTypes.NameIdentifier represents a standard claim type used in claims-based identity systems,
-            // primarily to represent a unique and persistent identifier for a user within a specific context.
-            var userId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId))
+            // The 'oid' claim will be used for the user id, because it is the immutable ID of the user in Entra ID across all apps in the tenant.
+            if (!Guid.TryParse(claimsPrincipal.FindFirst("oid")?.Value, out var userId))
             {
-                return Results.Problem($"Claim '{ClaimTypes.NameIdentifier}' was not found in provided token.", statusCode: 401);
+                return Results.Problem($"Claim 'oid' was not found in {nameof(claimsPrincipal)}.");
             }
             
             var user = await db.Users.FindAsync([userId], ct);
@@ -51,10 +54,22 @@ public static class Profile
         .Produces(StatusCodes.Status404NotFound);
     }
     
-    public static UserProfileResponse ToProfileResponse(this User user)
+    private static UserSchoolDto MapUserSchoolDto(SchoolResponse school, List<Child> children)
+    {
+        ChildDto[] childDtos =
+        [
+            .. children
+                .Where(child => child.SchoolId == school.Id)
+                .Select(child => new ChildDto(child.Id, child.Name, child.Grade))
+        ];
+
+        return new UserSchoolDto(school.Id, school.Name, childDtos);
+    }
+    
+    private static UserProfileResponse ToProfileResponse(this User user)
     {
         var userSchoolsWithKids = user.SchoolIds.Select(schoolId => new UserSchoolDto(
-            schoolId,
+            Guid.Parse(schoolId),
             $"School {schoolId}", 
             user.Children
                 .Where(child => child.SchoolId == Guid.Parse(schoolId))

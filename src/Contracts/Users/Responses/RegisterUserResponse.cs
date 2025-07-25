@@ -1,3 +1,3 @@
 ﻿namespace Contracts.Users.Responses;
 
-public sealed record RegisterUserResponse(string UserId);
+public sealed record RegisterUserResponse(Guid UserId);

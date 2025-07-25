@@ -8,7 +8,7 @@ import {
 import { useAppDispatch } from '../../app/hooks';
 import { setCurrentSchool } from '../../app/authSlice';
 import { useLinkUserToSchoolMutation, UserSchoolDto } from '../users/api/apiSlice-generated';
-import { useAuthenticatedUser } from '../../hooks/useApp';
+import { useAuthContext } from '../../hooks/useAuthContext';
 import { useListSchoolsQuery } from '../schools/api/apiSlice';
 
 /*
@@ -18,14 +18,14 @@ import { useListSchoolsQuery } from '../schools/api/apiSlice';
 const SchoolSelector = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { user } = useAuthenticatedUser();
+  const { currentUser } = useAuthContext();
   const [selectedSchoolId, setSelectedSchoolId] = useState<string>('');
 
   const { data: schools = [], isLoading, error: errorFetching } = useListSchoolsQuery();
   const [linkUserToSchool, { isLoading: isLinking, error: errorLinking }] = useLinkUserToSchoolMutation();
 
   const handleSelectSchool = async () => {
-    await linkUserToSchool({ userId: user!.id, schoolId: selectedSchoolId })
+    await linkUserToSchool({ userId: currentUser!.id, schoolId: selectedSchoolId })
       .then(() => {
 
         // set the Redux school context for new user
@@ -44,7 +44,7 @@ const SchoolSelector = () => {
       })
   };
 
-  if (!user) {
+  if (!currentUser) {
     return (
       <Container maxWidth="sm" sx={{ py: 4, textAlign: 'center' }}>
         <Typography variant="h6">Please sign in first</Typography>

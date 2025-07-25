@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
 import { Chip, Menu, MenuItem, Typography, Box} from '@mui/material';
 import { School as SchoolIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
-import { useSchoolContext } from '../hooks/useApp';
+import { useAuthContext } from '../hooks/useAuthContext';
+import { setCurrentSchool } from '../app/authSlice';
 
 interface SchoolChipProps {
   size?: 'small' | 'medium';
   variant?: 'filled' | 'outlined';
 }
 
-const SchoolChip: React.FC<SchoolChipProps> = ({
-  size = 'medium',
-  variant = 'outlined'
-}) => {
-  const { currentSchool, availableSchools, switchSchool, hasMultipleSchools } = useSchoolContext();
+const SchoolChip: React.FC<SchoolChipProps> = ({ size = 'medium', variant = 'outlined'}) => {
+  const { currentSchool, availableSchools } = useAuthContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const hasMultipleSchools = availableSchools.length > 1;
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     if (hasMultipleSchools) {
@@ -29,7 +28,7 @@ const SchoolChip: React.FC<SchoolChipProps> = ({
   const handleSchoolSelect = (schoolId: string) => {
     const selectedSchool = availableSchools.find(school => school.id === schoolId);
     if (selectedSchool) {
-      switchSchool(selectedSchool);
+      setCurrentSchool(selectedSchool);
     }
     handleClose();
   };

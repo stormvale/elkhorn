@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { RootState } from '../../../app/store';
-import { getAccessTokenFromLocalStorage } from '../../../utils/tokenStorage';
+import { getAccessTokenFromLocalStorage } from '../../../utils/authStorage';
 import { msalInstance } from '../../../msalConfig';
 
 // the endpoints for this api are generated from the OpenAPI spec

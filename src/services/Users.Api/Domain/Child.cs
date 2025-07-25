@@ -12,7 +12,7 @@ public class Child : AggregateRoot, IAuditable
 {
     [JsonConstructor] private Child(Guid id) : base(id) { /* ef constructor */ }
     
-    public static Result<Child> Create(Guid id, string firstName, string lastName, string parentId, Guid schoolId)
+    public static Result<Child> Create(Guid id, string firstName, string lastName, Guid parentId, Guid schoolId)
     {
         var child = new Child(id)
         {
@@ -30,7 +30,7 @@ public class Child : AggregateRoot, IAuditable
     
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
-    public string ParentId { get; private set; } // this is a UserId
+    public Guid ParentId { get; private set; } // this is a UserId
     public string Grade { get; set; }
     public Guid SchoolId { get; private set; }
     

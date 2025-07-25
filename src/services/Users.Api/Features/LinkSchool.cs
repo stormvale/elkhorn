@@ -11,7 +11,7 @@ public static class LinkSchool
 {
     public static void MapLinkSchool(this WebApplication app)
     {
-        app.MapPost("/{userId}/schools/{schoolId:Guid}", async (string userId, Guid schoolId, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
+        app.MapPost("/{userId:Guid}/schools/{schoolId:Guid}", async (Guid userId, Guid schoolId, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
         {
             var user = await db.Users.FindAsync([userId], ct);
             if (user is null)

@@ -10,7 +10,7 @@ interface SecureRouteProps {
 }
 
 export const SecureRoute = ({ children, allowedRoles }: SecureRouteProps) => {
-  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, currentUser: user } = useSelector((state: RootState) => state.auth);
   const location = useLocation();
 
   if (!isAuthenticated) {

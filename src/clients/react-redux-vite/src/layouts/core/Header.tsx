@@ -1,19 +1,10 @@
 import React from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Box,
-  Avatar,
-  Menu,
-  MenuItem
-} from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Avatar, Menu, MenuItem } from '@mui/material';
 import { ThemeToggle } from '../../theme/ThemeToggle';
-import { useAuthenticatedUser, useLogout } from '../../hooks/useApp';
+import { useAuthContext } from '../../hooks/useAuthContext';
 
 const Header: React.FC = () => {
-  const { user } = useAuthenticatedUser();
-  const { logout } = useLogout();
+  const { currentUser, logout } = useAuthContext();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -45,16 +36,16 @@ const Header: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <ThemeToggle />
           
-          {user && (
+          {currentUser && (
             <>
               <Typography variant="body2">
-                Welcome, {user.name}
+                Welcome, {currentUser.name}
               </Typography>
               <Avatar
                 onClick={handleMenu}
                 sx={{ cursor: 'pointer', bgcolor: 'secondary.main' }}
               >
-                {user.name?.charAt(0).toUpperCase()}
+                {currentUser.name?.charAt(0).toUpperCase()}
               </Avatar>
               <Menu
                 anchorEl={anchorEl}

@@ -6,7 +6,7 @@ namespace Contracts.Users.Requests;
 public record RegisterUserRequest(
 
     [Required]
-    string Id,
+    Guid Id,
     
     [Required]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 50 characters.")]

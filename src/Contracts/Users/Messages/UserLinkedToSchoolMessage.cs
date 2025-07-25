@@ -5,7 +5,7 @@ namespace Contracts.Users.Messages;
 public sealed record UserLinkedToSchoolMessage(
     
     [property: JsonPropertyName("userId")]
-    string UserId,
+    Guid UserId,
     
     [property: JsonPropertyName("schoolId")]
     Guid SchoolId);

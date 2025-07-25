@@ -3,7 +3,7 @@
 namespace Contracts.Users.Responses;
 
 public record UserProfileResponse(
-    string Id,
+    Guid Id,
     string Email,
     string? DisplayName,
     UserSchoolDto[] Schools);

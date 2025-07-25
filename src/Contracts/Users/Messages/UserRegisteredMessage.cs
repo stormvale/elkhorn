@@ -5,7 +5,7 @@ namespace Contracts.Users.Messages;
 public sealed record UserRegisteredMessage(
     
     [property: JsonPropertyName("userId")]
-    string UserId,
+    Guid UserId,
     
     [property: JsonPropertyName("name")]
     string Name);

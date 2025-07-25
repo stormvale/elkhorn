@@ -1,3 +1,3 @@
 ﻿namespace Contracts.Users.Messages;
 
-public sealed record UserDeletedMessage(string UserId);
+public sealed record UserDeletedMessage(Guid UserId);

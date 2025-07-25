@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography, CircularProgress, Box } from '@mui/material';
 import { useAppDispatch } from '../../app/hooks';
-import { setSchoolContext } from '../../app/authSlice';
+//import { setSchoolContext } from '../../app/authSlice';
 import { useProfileQuery } from '../users/api/apiSlice';
+import { setCurrentSchool } from '../../app/authSlice';
 
 const PostLoginHandler = () => {
   const navigate = useNavigate();
@@ -36,8 +37,7 @@ const PostLoginHandler = () => {
 
     if (userProfile) {
       if (userProfile.schools && userProfile.schools.length > 0) {
-        setStatus('Setting up your school context...');
-        dispatch(setSchoolContext({ schools: userProfile.schools }));
+        dispatch(setCurrentSchool(userProfile.schools[0]));
         navigate('/home');
       } else {
         setStatus('Welcome! Let\'s get you connected to a school...');

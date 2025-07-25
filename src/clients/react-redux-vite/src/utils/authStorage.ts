@@ -1,10 +1,10 @@
-import { User } from "../types";
+import { AuthUser } from "../app/authSlice";
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 const USER_KEY = 'user';
 const AUTH_STATE_KEY = 'authState';
 
-export const tokenStorage = {
+export const authStorage = {
   // Get access token from localStorage
   getAccessToken: (): string | null => {
     try {
@@ -25,7 +25,7 @@ export const tokenStorage = {
   },
 
   // Get user from localStorage
-  getUser: (): User | null => {
+  getUser: (): AuthUser | null => {
     try {
       const userJson = localStorage.getItem(USER_KEY);
       return userJson ? JSON.parse(userJson) : null;
@@ -36,7 +36,7 @@ export const tokenStorage = {
   },
 
   // Set user in localStorage
-  setUser: (user: User): void => {
+  setUser: (user: AuthUser): void => {
     try {
       localStorage.setItem(USER_KEY, JSON.stringify(user));
     } catch (error) {
@@ -45,10 +45,10 @@ export const tokenStorage = {
   },
 
   // Get complete auth state
-  getAuthState: (): { accessToken: string | null; user: User | null } => {
+  getAuthState: (): { accessToken: string | null; user: AuthUser | null } => {
     return {
-      accessToken: tokenStorage.getAccessToken(),
-      user: tokenStorage.getUser(),
+      accessToken: authStorage.getAccessToken(),
+      user: authStorage.getUser(),
     };
   },
 
@@ -65,7 +65,7 @@ export const tokenStorage = {
 
   // Check if token exists and is not expired (basic check)
   isTokenValid: (): boolean => {
-    const token = tokenStorage.getAccessToken();
+    const token = authStorage.getAccessToken();
     if (!token) return false;
 
     try {
@@ -81,8 +81,8 @@ export const tokenStorage = {
 };
 
 // Export individual functions for convenience
-export const getAccessTokenFromLocalStorage = tokenStorage.getAccessToken;
-export const setAccessTokenInLocalStorage = tokenStorage.setAccessToken;
-export const getUserFromLocalStorage = tokenStorage.getUser;
-export const setUserInLocalStorage = tokenStorage.setUser;
-export const clearAuthDataFromLocalStorage = tokenStorage.clearAuthData;
+export const getAccessTokenFromLocalStorage = authStorage.getAccessToken;
+export const setAccessTokenInLocalStorage = authStorage.setAccessToken;
+export const getUserFromLocalStorage = authStorage.getUser;
+export const setUserInLocalStorage = authStorage.setUser;
+export const clearAuthDataFromLocalStorage = authStorage.clearAuthData;

@@ -12,7 +12,7 @@ public static class GetById
 
     public static void MapGetById(this WebApplication app)
     {
-        app.MapGet("/{userId}", async (string userId, AppDbContext db, CancellationToken ct) =>
+        app.MapGet("/{userId:Guid}", async (Guid userId, AppDbContext db, CancellationToken ct) =>
         {
             var user = await db.Users.FindAsync([userId], ct);
             

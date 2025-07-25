@@ -1,23 +1,20 @@
 import { useState } from "react";
 import { useMsal } from "@azure/msal-react";
 import { useNavigate } from "react-router-dom";
-import { 
-  Typography, Stack, Container, Card, CardContent, Button, 
-  Box, CircularProgress, Alert 
-} from '@mui/material';
+import { Typography, Stack, Container, Card, CardContent, Button, Box, CircularProgress, Alert } from '@mui/material';
 import { loginRequest } from "../../msalConfig";
-import { useAuthenticatedUser } from "../../hooks/useApp";
+import { useAuthContext } from "../../hooks/useAuthContext";
 
 const AuthLanding = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { instance } = useMsal();
-  const { user, isAuthenticated } = useAuthenticatedUser();
+  const { currentUser, isAuthenticated } = useAuthContext();
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     setIsLoading(true);
     try {
-      await instance.loginRedirect(loginRequest);
+      await instance.loginRedirect(loginRequest); // will login using Entra ID and redirect to AuthRedirect.tsx
     } catch (error) {
       console.error("Login failed:", error);
       setIsLoading(false);
@@ -25,7 +22,6 @@ const AuthLanding = () => {
   };
 
   const handleContinueToApp = () => {
-    // Navigate to home or school selector based on user's school context
     navigate('/home');
   };
 
@@ -40,11 +36,11 @@ const AuthLanding = () => {
           Your school communication hub
         </Typography>
 
-        {isAuthenticated && user && (
+        {isAuthenticated && currentUser && (
           <Alert severity="success" sx={{ width: '100%' }}>
             <Box>
               <Typography variant="body1" fontWeight="medium">
-                Welcome back, {user.name || user.email}!
+                Welcome back, {currentUser.name || currentUser.email}!
               </Typography>
             </Box>
           </Alert>

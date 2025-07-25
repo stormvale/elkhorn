@@ -7,14 +7,14 @@ using Users.Api.DomainErrors;
 namespace Users.Api.Domain;
 
 /// <summary>
-/// The User's ID comes from the http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier claim, which is
-/// a stable, system-level ID for the user provided by Entra ID after authentication.
+/// The User's ID comes from the 'oid' claim because it is the immutable ID
+/// of the user in Entra ID across all apps in the tenant.
 /// </summary>
-public class User : AggregateRoot<string>, IAuditable
+public class User : AggregateRoot, IAuditable
 {
-    [JsonConstructor] private User(string id) : base(id) { /* ef constructor */ }
+    [JsonConstructor] private User(Guid id) : base(id) { /* ef constructor */ }
     
-    public static Result<User> Create(string id, string name, string email)
+    public static Result<User> Create(Guid id, string name, string email)
     {
         var school = new User(id)
         {

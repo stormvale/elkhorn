@@ -11,18 +11,18 @@ public static class Delete
 {
     public static void MapDelete(this WebApplication app)
     {
-        app.MapDelete("/{id}", async Task<IResult> (string id, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
+        app.MapDelete("/{userId:Guid}", async Task<IResult> (Guid userId, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
         {
-            var user = await db.Users.FindAsync([id], ct);
+            var user = await db.Users.FindAsync([userId], ct);
             if (user is null)
             {
-                return Result.Failure(UserErrors.NotFound(id)).ToProblemDetails();
+                return Result.Failure(UserErrors.NotFound(userId)).ToProblemDetails();
             }
 
             db.Users.Remove(user);
             await db.SaveChangesAsync(ct);
 
-            await dapr.PublishEventAsync("pubsub", "user-events", new UserDeletedMessage(id), ct);
+            await dapr.PublishEventAsync("pubsub", "user-events", new UserDeletedMessage(userId), ct);
 
             return TypedResults.NoContent();
         })

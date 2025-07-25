@@ -10,21 +10,20 @@ import {
   Stack,
 } from '@mui/material';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
-import { useAuthenticatedUser, useSchoolContext } from '../../hooks/useApp';
+import { useAuthContext } from '../../hooks/useAuthContext';
 import sidebarRoutes from '../../routes/routes';
 import SchoolChip from '../../components/SchoolChip';
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
-  const { user } = useAuthenticatedUser();
-  const { currentSchool } = useSchoolContext();
+  const { currentUser, currentSchool } = useAuthContext();
 
   // Filter routes that require auth and check user roles
   const availableRoutes = sidebarRoutes.filter(route => {
    
     // Check if user has required roles
-    if (route.allowedRoles.length > 0 && user) {
-      return user.roles.some((userRole: string) => route.allowedRoles.includes(userRole));
+    if (route.allowedRoles.length > 0 && currentUser) {
+      return currentUser.roles.some((userRole: string) => route.allowedRoles.includes(userRole));
     }
 
     return true;
@@ -64,15 +63,15 @@ const Sidebar: React.FC = () => {
         borderTop: 1,
         borderColor: 'divider'
       }}>
-        {user && (
+        {currentUser && (
           <Box>
             <Stack spacing={1.5} sx={{ mb: 1 }}>
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Typography variant="body2" noWrap fontWeight="medium">
-                  {user.name}
+                  {currentUser.name}
                 </Typography>
                 <Typography variant="caption" color="text.secondary" noWrap>
-                  {user.roles.join(', ') || 'No roles assigned'}
+                  {currentUser.roles.join(', ') || 'No roles assigned'}
                 </Typography>
               </Box>
             </Stack>

@@ -1,10 +1,10 @@
 import { Typography, Stack, Container, Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useAuthenticatedUser } from '../../hooks/useApp';
+import { useAuthContext } from '../../hooks/useAuthContext';
 
 const Home = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuthenticatedUser();
+  const { currentUser, isAuthenticated } = useAuthContext();
 
   if (!isAuthenticated) {
     navigate('/');
@@ -12,7 +12,7 @@ const Home = () => {
   }
 
 
-  if (!user) {
+  if (!currentUser) {
     return (
       <Container sx={{ py: 2, textAlign: 'center' }}>
         <Typography variant="h4">Loading user information...</Typography>

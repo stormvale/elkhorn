@@ -1,7 +1,7 @@
 ﻿namespace Contracts.Users.Responses;
 
 public sealed record UserResponse(
-    string Id,
+    Guid Id,
     string Name,
     string Email,
     string[] SchoolIds,
