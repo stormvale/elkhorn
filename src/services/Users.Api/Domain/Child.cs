@@ -20,7 +20,7 @@ public class Child : AggregateRoot, IAuditable
             LastName = lastName,
             ParentId = parentId,
             SchoolId = schoolId,
-            CreatedUtc = DateTime.UtcNow
+            CreatedUtc = DateTimeOffset.UtcNow
         };
 
         return Result.Success(child);
