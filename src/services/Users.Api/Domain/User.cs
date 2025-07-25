@@ -48,7 +48,7 @@ public class User : AggregateRoot, IAuditable
 
         if (child.IsSuccess)
         {
-            Children.Add(child);
+            Children.Add(child.Value);
         }
     }
     
