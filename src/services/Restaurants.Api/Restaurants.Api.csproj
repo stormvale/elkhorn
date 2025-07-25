@@ -1,9 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <OpenApiDocumentsDirectory>.</OpenApiDocumentsDirectory>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Aspire.Microsoft.EntityFrameworkCore.Cosmos" />
     <PackageReference Include="Dapr.AspNetCore" />
@@ -24,6 +20,12 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Restaurants.Api.IntegrationTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\..\.dockerignore">
+      <Link>.dockerignore</Link>
+    </Content>
   </ItemGroup>
 
 </Project>

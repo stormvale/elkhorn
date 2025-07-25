@@ -5,68 +5,25 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Divider,
   Box,
-  Typography
+  Typography,
+  Stack,
 } from '@mui/material';
-import {
-  Home as HomeIcon,
-  Restaurant as RestaurantIcon,
-  FormatQuote as QuoteIcon,
-  Palette as ThemeIcon,
-  Dashboard as DashboardIcon
-} from '@mui/icons-material';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../app/store';
-import routes from '../../routes/routes';
-
-// Icon mapping for different routes
-const getIconForPath = (path: string) => {
-  switch (path) {
-    case '/home':
-      return <HomeIcon />;
-    case '/restaurants':
-      return <RestaurantIcon />;
-    case '/quotes':
-      return <QuoteIcon />;
-    case '/theme':
-      return <ThemeIcon />;
-    default:
-      return <DashboardIcon />;
-  }
-};
-
-// Get display name for routes
-const getDisplayName = (path: string) => {
-  switch (path) {
-    case '/home':
-      return 'Home';
-    case '/restaurants':
-      return 'Restaurants';
-    case '/quotes':
-      return 'Quotes';
-    case '/theme':
-      return 'Theme';
-    default:
-      return path.replace('/', '').charAt(0).toUpperCase() + path.slice(2);
-  }
-};
+import { useAuthContext } from '../../hooks/useAuthContext';
+import sidebarRoutes from '../../routes/routes';
+import SchoolChip from '../../components/SchoolChip';
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { currentUser, currentSchool } = useAuthContext();
 
   // Filter routes that require auth and check user roles
-  const availableRoutes = routes.filter(route => {
-    // Skip login page and routes that don't require auth
-    if (!route.requiresAuth || route.path === '/login' || route.path === '/') {
-      return false;
-    }
-
+  const availableRoutes = sidebarRoutes.filter(route => {
+   
     // Check if user has required roles
-    if (route.allowedRoles.length > 0 && user) {
-      return user.roles.some((userRole: string) => route.allowedRoles.includes(userRole));
+    if (route.allowedRoles.length > 0 && currentUser) {
+      return currentUser.roles.some((userRole: string) => route.allowedRoles.includes(userRole));
     }
 
     return true;
@@ -74,15 +31,7 @@ const Sidebar: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%', height: '100%' }}>
-      <Box sx={{ p: 2 }}>
-        <Typography variant="h6" color="text.secondary">
-          Navigation
-        </Typography>
-      </Box>
-      
-      <Divider />
-      
-      <List>
+      <List sx={{ pt: 0 }}>
         {availableRoutes.map((route) => (
           <ListItem key={route.path} disablePadding>
             <ListItemButton
@@ -96,28 +45,56 @@ const Sidebar: React.FC = () => {
               }}
             >
               <ListItemIcon>
-                {getIconForPath(route.path)}
+                {route.icon}
               </ListItemIcon>
-              <ListItemText primary={getDisplayName(route.path)} />
+              <ListItemText primary={route.displayName} />
             </ListItemButton>
           </ListItem>
         ))}
       </List>
 
       {/* User Info Section */}
-      <Box sx={{ position: 'absolute', bottom: 0, width: '100%', p: 2 }}>
-        <Divider sx={{ mb: 2 }} />
-        {user && (
+      <Box sx={{ 
+        position: 'absolute', 
+        bottom: 0, 
+        width: '100%', 
+        p: 2,
+        bgcolor: 'grey.50',
+        borderTop: 1,
+        borderColor: 'divider'
+      }}>
+        {currentUser && (
           <Box>
-            <Typography variant="caption" color="text.secondary">
-              Signed in as:
-            </Typography>
-            <Typography variant="body2" noWrap>
-              {user.email}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              Roles: {user.roles.join(', ')}
-            </Typography>
+            <Stack spacing={1.5} sx={{ mb: 1 }}>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography variant="body2" noWrap fontWeight="medium">
+                  {currentUser.name}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" noWrap>
+                  {currentUser.roles.join(', ') || 'No roles assigned'}
+                </Typography>
+              </Box>
+            </Stack>
+
+            {/* School Context */}
+            {currentSchool && (
+              <Box sx={{ mb: 2 }}>
+                <SchoolChip size="small" variant="outlined" />
+              </Box>
+            )}
+
+            {/* Children List */}
+            {currentSchool?.children && currentSchool.children.length > 0 && (
+              <Box>
+                <Stack spacing={0.5}>
+                  {currentSchool.children.map((child: any) => (
+                    <Typography variant="caption" color="text.secondary" noWrap>
+                      {`${child.name} - ${child.grade}`}
+                    </Typography>
+                  ))}
+                </Stack>
+              </Box>
+            )}
           </Box>
         )}
       </Box>

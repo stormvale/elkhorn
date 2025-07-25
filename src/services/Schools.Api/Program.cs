@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using Schools.Api.EfCore;
@@ -35,6 +37,21 @@ builder.Services.AddOpenApi(o =>
     o.AddScalarTransformers();
 });
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(opt => builder.Configuration.Bind("JwtBearerOptions", opt));
+
+// Authorization policies go here...
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("PacAdmin", policy => policy.RequireRole("Admin", "PacAdmin"));
+
+builder.Services.AddCors(options =>
+    options.AddDefaultPolicy(policyBuilder => policyBuilder
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+    )
+);
+
 builder.Services.AddDaprClient();
 builder.Services.AddProblemDetails(opt =>
 {
@@ -42,9 +59,15 @@ builder.Services.AddProblemDetails(opt =>
         ctx.ProblemDetails.Extensions.TryAdd("requestId", ctx.HttpContext.TraceIdentifier);
 });
 
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    // enum values will be serialized as strings
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
 var app = builder.Build();
 
-//app.UseHttpsRedirection();
+app.UseCors();
 app.UseCloudEvents();
 app.UseExceptionHandler();
 
@@ -58,7 +81,9 @@ app.MapGetById();
 app.MapList();
 app.MapDelete();
 
-var pac = app.MapGroup("{schoolId:Guid}/pac");
+// pac endpoints (requires Admin or PacAdmin role)
+var pac = app.MapGroup("{schoolId:Guid}/pac").RequireAuthorization("PacAdmin");
 pac.MapCreateLunchItem();
+pac.MapRemoveLunchItem();
 
 await app.RunAsync();

@@ -17,7 +17,10 @@ public static class List
                 .ToList()
                 .AsReadOnly();
         })
-        .WithSummary("List")
-        .WithTags("Schools");
+        .WithName("ListSchools")
+        .WithSummary("List all Schools")
+        .WithTags("Schools")
+        .AllowAnonymous()
+        .Produces<List<SchoolResponse>>();
     }
 }

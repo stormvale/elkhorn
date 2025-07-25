@@ -23,8 +23,8 @@ public class FakeAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var claims = new[] {
-            new Claim(ClaimTypes.NameIdentifier, "test-user-id"),
-            new Claim(ClaimTypes.Name, "Test User"),
+            new Claim(ClaimTypes.NameIdentifier, "admin-user-id"),
+            new Claim(ClaimTypes.Name, "Admin User"),
             new Claim(ClaimTypes.Role, "Admin")
         };
 

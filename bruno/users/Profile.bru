@@ -1,0 +1,11 @@
+meta {
+  name: Profile
+  type: http
+  seq: 4
+}
+
+get {
+  url: https://{{host.users.api}}/profile
+  body: none
+  auth: inherit
+}

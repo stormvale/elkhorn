@@ -1,0 +1,34 @@
+meta {
+  name: Register - Rock City
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://{{host.schools.api}}/
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "externalId": "291",
+    "name": "Rock City Elementary",
+    "address": {
+      "street": "123 Departure Bay Rd",
+      "city": "Nanaimo",
+      "postCode": "A1B2C3",
+      "state": "BC"
+    },
+    "contact": {
+      "name": "Trina Norgan",
+      "email": "trina@sd86.test",
+      "phone": null,
+      "type": "Principal"
+    }
+  }
+}
+
+vars:post-response {
+  schoolId: res.body.schoolId
+}
