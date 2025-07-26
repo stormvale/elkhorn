@@ -1,12 +1,12 @@
-name: api-schools
+name: api-users
 
 on:
   push:
     branches: [ master ]
-    paths: [ 'src/services/Schools.Api/**', 'src/ServiceDefaults/**', 'src/Contracts/Schools/**' ]
+    paths: [ 'src/services/Users.Api/**', 'src/ServiceDefaults/**', 'src/Contracts/Users/**' ]
   pull_request:
     branches: [ master ]
-    paths: [ 'src/services/Schools.Api/**', 'src/ServiceDefaults/**', 'src/Contracts/Schools/**' ]
+    paths: [ 'src/services/Users.Api/**', 'src/ServiceDefaults/**', 'src/Contracts/Users/**' ]
   workflow_dispatch:
 
 permissions:
@@ -14,7 +14,7 @@ permissions:
   packages: write # needed to publish image to ghcr
 
 env:
-  project_name: Schools.Api
+  project_name: Users.Api
 
 jobs:
   build-test:
@@ -35,8 +35,21 @@ jobs:
       - name: Build project
         run: dotnet build src/services/${{ env.project_name }} --configuration Release --no-restore
 
-      - name: Run tests
-        run: dotnet test test/unit/${{ env.project_name }}.Tests --configuration Release --collect:"XPlat Code Coverage" --logger trx
+      - name: Unit tests
+        run: dotnet test test/unit/${{ env.project_name }}.Tests --configuration Release --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory test/results/unit
+
+      - name: Integration tests
+        run: dotnet test test/integration/${{ env.project_name }}.IntegrationTests --configuration Release --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory test/results/integration
+
+      - name: Merge coverage reports
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.1.23
+        with:
+          reports: |
+            test/results/unit/*/coverage.cobertura.xml;
+            test/results/integration/*/coverage.cobertura.xml;
+          targetdir: test/results/coverage-merged
+          reporttypes: Cobertura
+          tag: '${{ github.run_number }}_${{ github.run_id }}'
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -44,8 +57,8 @@ jobs:
         with:
           name: test-results-${{ env.project_name }}
           path: |
-            test/**/TestResults/*.trx
-            test/**/TestResults/*/coverage.cobertura.xml
+            test/results/*/*.trx
+            test/results/coverage-merged
           retention-days: 1
 
   publish-results:
@@ -85,7 +98,7 @@ jobs:
           hide_branch_rate: false
           hide_complexity: false
           indicators: true
-          output: file
+          output: both # GitHub Action log and file
           thresholds: "50 70"
 
       - name: Publish coverage report
@@ -93,6 +106,7 @@ jobs:
         with:
           # recreate: true
           header: test-results-${{ env.project_name }}
+          message: ${{ env.project_name }} coverage report
           path: code-coverage-results.md
 
   docker-build-tag-push:
@@ -118,10 +132,16 @@ jobs:
           images: ghcr.io/stormvale/${{ env.project_name }} # docker action will handle the lowercase stuff
           flavor: latest=auto
           tags: |
-            type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
+            type=ref,event=pr
+            type=ref,event=tag
+            type=sha
             type=raw,value=latest,enable={{is_default_branch}}
+          labels: |
+            org.opencontainers.image.title=${{ env.project_name }}
+            org.opencontainers.image.vendor=stormvale
+            org.opencontainers.image.licenses=['AGPL-3.0-or-later', 'CC-BY-NC-4.0']
 
       - name: Login to GHCR
         uses: docker/login-action@v3
@@ -139,10 +159,11 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+      # imageName=${{ fromJSON(steps.build-push.outputs.metadata)['image.name'] }}
       - name: 'Set output: imageName'
         id: get-build-name
         run: |
-          imageName=${{ fromJSON(steps.build-push.outputs.metadata)['image.name'] }}
+          imageName=ghcr.io/stormvale/users.api:${{github.sha}}
           echo "image_name=${imageName}" >> "$GITHUB_OUTPUT"
 
   deploy:
@@ -151,11 +172,10 @@ jobs:
     environment: ${{ matrix.environment }}
 
     # only run on pushes to master (ie. merges into master)
-    # if: (github.event_name == 'push') && (github.ref == 'refs/heads/master')
-    if: false
+    if: (github.event_name == 'push') && (github.ref == 'refs/heads/master')
 
     env:
-      app_name_template: ca-schools-elkhorn-{0}-wus2
+      app_name_template: ca-users-elkhorn-{0}-wus2
 
     permissions:
       id-token: write # needed for az login
@@ -165,7 +185,10 @@ jobs:
       matrix:
         environment: [development] # production
         include:
-          - env_short: dev
+          - environment: development
+            env_short: dev
+          # - environment: production
+          #   env_short: prod
 
     steps:
       - name: Show deploy info
@@ -178,15 +201,15 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       
-      - name: 'Az account show'
+      - name: Az account show
         run: az account show
 
       # - name: Deploy to Azure Web Apps
-      #   uses: azure/webapps-deploy@v3
-      #   with:
-      #     app-name: ${{ format(env.web_app_name, matrix.env_short) }}
-      #     images: ${{ needs.docker-build-tag-push.outputs.image_name }}
-
+      #  uses: azure/webapps-deploy@v3
+      #  with:
+      #    app-name: ${{ format(env.web_app_name, matrix.env_short) }}
+      #    images: ${{ needs.docker-build-tag-push.outputs.image_name }}
+          
       - name: Deploy to Azure Container App
         uses: azure/container-apps-deploy-action@v1
         with:
