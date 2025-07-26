@@ -36,7 +36,7 @@ jobs:
         run: dotnet build src/services/${{ env.project_name }} --configuration Release --no-restore
 
       - name: Unit tests
-        run: dotnet test test/unit/${{ env.project_name }}.Tests --configuration Release --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory test/results/unit
+        run: dotnet test test/unit/${{ env.project_name }}.Tests --configuration Release --collect:"XPlat Code Coverage" --logger trx --results-directory test/results/unit
 
       - name: Integration tests
         run: dotnet test test/integration/${{ env.project_name }}.IntegrationTests --configuration Release --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory test/results/integration
