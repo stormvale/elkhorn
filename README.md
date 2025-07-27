@@ -1,10 +1,6 @@
 # Project: Elkhorn
 
-Project: Elkhorn is a distributed, cloud-native application intended to ease interactions between
-schools and families. Built to serve as a learning/experimentation platform for several techniques
-and technologies, including Dapr, .NET Aspire, EF Core for Azure Cosmos DB, React, Redux Toolkit,
-TestContainers, Yarp, Authenticaion (OIDC via MSAL, Auth2), Terraform modularization, GitHub Actions,
-various Azure Services, and other stuff.
+Project: Elkhorn is a distributed, cloud-native application intended to ease interactions between schools and families. Built to serve as a learning/experimentation platform for several techniques and technologies, including Dapr, .NET Aspire, EF Core for Azure Cosmos DB, React, Redux Toolkit, TestContainers, Yarp, Authenticaion (OIDC via MSAL, Auth2) and other stuff.
 
 ## Structure
 
