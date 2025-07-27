@@ -1,8 +1,6 @@
 # Project: Elkhorn
 
-Project: Elkhorn is a distributed, cloud-native application intended to ease interactions between schools and families. Built to serve as a learning/experimentation platform
-
-for managing restaurants, schools, lunches, and orders, built with .NET, Dapr, Azure Cosmos DB, and React.
+Project: Elkhorn is a distributed, cloud-native application intended to ease interactions between schools and families. Built to serve as a learning/experimentation platform for several techniques and technologies, including Dapr, .NET Aspire, EF Core for Azure Cosmos DB, React, Redux Toolkit, TestContainers, Yarp, Authenticaion (OIDC via MSAL, Auth2) and other stuff.
 
 ## Structure
 
@@ -24,9 +22,9 @@ for managing restaurants, schools, lunches, and orders, built with .NET, Dapr, A
 - [.NET 9 SDK](https://dotnet.microsoft.com/download)
 - [Node.js & npm](https://nodejs.org/)
 - [Dapr CLI](https://docs.dapr.io/get-dapr/)
-- [Docker Desktop]((https://docs.docker.com/desktop/setup/install/windows-install/))
+- [Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/)
 
-### Running the Application
+### Running the application locally
 
 1. **Run the docker-compose file (for local stmp email service)**
    ```sh
@@ -37,7 +35,7 @@ for managing restaurants, schools, lunches, and orders, built with .NET, Dapr, A
    ```sh
    dapr init
    ```
-   (verify that the `dapr_*` containers are running.)
+   (verify in Docker Desktop that the `dapr_*` containers are running.)
 
 
 3. **Run AppHost**
