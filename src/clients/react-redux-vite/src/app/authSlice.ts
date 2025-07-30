@@ -12,6 +12,7 @@ export interface UserChild {
   lastName: string;
   grade: string;
   schoolId: string;
+  schoolName: string;
 }
 
 // this is meant as a utility type to represent an authorized user. if we

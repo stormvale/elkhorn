@@ -86,7 +86,8 @@ const AuthRedirect = () => {
             firstName: child.firstName,
             lastName: child.lastName,
             grade: child.grade,
-            schoolId: child.schoolId
+            schoolId: child.schoolId,
+            schoolName: child.schoolName
           }));
 
           const userSchools: UserSchool[] = dbUser.children.map(child => ({
