@@ -12,14 +12,16 @@ public class Child : AggregateRoot, IAuditable
 {
     [JsonConstructor] private Child(Guid id) : base(id) { /* ef constructor */ }
     
-    public static Result<Child> Create(Guid id, string firstName, string lastName, Guid parentId, Guid schoolId)
+    public static Result<Child> Create(string firstName, string lastName, Guid parentId, Guid schoolId, string schoolName, string grade)
     {
-        var child = new Child(id)
+        var child = new Child(Guid.CreateVersion7())
         {
             FirstName = firstName,
             LastName = lastName,
             ParentId = parentId,
             SchoolId = schoolId,
+            SchoolName = schoolName, 
+            Grade = grade,
             CreatedUtc = DateTimeOffset.UtcNow
         };
 
@@ -30,9 +32,14 @@ public class Child : AggregateRoot, IAuditable
     
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
-    public Guid ParentId { get; private set; } // this is a UserId
+    
+    /// <summary>
+    /// The User ID of the Parent/Guardian
+    /// </summary>
+    public Guid ParentId { get; private set; }
     public string Grade { get; set; }
     public Guid SchoolId { get; private set; }
+    public string SchoolName { get; private set; }
     
     #region IAuditable
 

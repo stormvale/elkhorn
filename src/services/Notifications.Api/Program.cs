@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using Notifications.Api.Features;
 using Notifications.Api.Services;
@@ -28,7 +30,14 @@ builder.Services.AddOpenApi(o =>
     o.AddScalarTransformers();
 });
 
-builder.Services.AddDaprClient();
+builder.Services.AddDaprClient(config =>
+{
+    // let the dapr client know that enum values will be serialized as strings
+    var jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    config.UseJsonSerializationOptions(jsonSerializerOptions);
+});
+
 builder.Services.AddTransient<EmailSender>();
 
 var app = builder.Build();
@@ -38,6 +47,7 @@ app.MapSubscribeHandler();
 app.MapOpenApi();
 app.MapDefaultEndpoints();
 
+// endpoints
 app.MapLunchScheduled();
 
 app.Run();

@@ -28,7 +28,8 @@ public static class RemoveLunchItem
             }
 
             await db.SaveChangesAsync(ct);
-            await dapr.PublishEventAsync("pubsub", "pac-events", new PacLunchItemRemoved(schoolId, req.Name), ct);
+            await dapr.PublishEventAsync("pubsub", "pac-events", new PacLunchItemRemoved(schoolId, req.Name),
+                ct);
 
             return TypedResults.NoContent();
         })
@@ -36,6 +37,7 @@ public static class RemoveLunchItem
         .WithSummary("Remove PAC Lunch Item")
         .WithTags("Pac")
         .Produces(StatusCodes.Status204NoContent)
-        .Produces(StatusCodes.Status404NotFound);
+        .Produces(StatusCodes.Status404NotFound)
+        .Produces(StatusCodes.Status401Unauthorized);
     }
 }

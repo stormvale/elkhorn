@@ -1,20 +1,35 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { authStorage } from '../utils/authStorage';
-import { UserSchoolDto } from '../features/users/api/apiSlice-generated';
 
+export interface UserSchool {
+  schoolId: string;
+  schoolName: string;
+}
+
+export interface UserChild {
+  childId: string;
+  firstName: string;
+  lastName: string;
+  grade: string;
+  schoolId: string;
+}
+
+// this is meant as a utility type to represent an authorized user. if we
+// can get this closer to the actual user data structure, we can use that instead.
 export interface AuthUser {
   id: string;
   name: string;
   email: string;
   roles: string[];
-  availableSchools: UserSchoolDto[];
+  schools: UserSchool[];
+  children: UserChild[];
 }
 
 interface AuthState {
   isAuthenticated: boolean;
   currentUser: AuthUser | null;
   accessToken: string | null;
-  currentSchool: UserSchoolDto | null;
+  currentSchool: UserSchool | null;
 }
 
 interface SetCredentialsPayload {
@@ -71,9 +86,9 @@ export const authSlice = createSlice({
       authStorage.clearAuthData();
     },
 
-    setCurrentSchool: (state, action: PayloadAction<UserSchoolDto>) => {
+    setCurrentSchool: (state, action: PayloadAction<UserSchool>) => {
       state.currentSchool = action.payload;
-      sessionStorage.setItem('schoolId', state.currentSchool.id);
+      sessionStorage.setItem('schoolId', state.currentSchool.schoolId);
     },
 
     // restoreAuthStateFromLocalStorage: (state) => {

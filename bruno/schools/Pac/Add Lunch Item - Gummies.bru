@@ -1,0 +1,22 @@
+meta {
+  name: Add Lunch Item - Gummies
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://{{host.schools.api}}/{{schoolId}}/pac/lunch-items
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "Name": "Gummies",
+    "Price": 1.25
+  }
+}
+
+vars:post-response {
+  mealId: res.body.mealId
+}

@@ -24,7 +24,6 @@ export const useAuthContext = () => {
     isAuthenticated,
     currentUser,
     currentSchool,
-    availableSchools: currentUser?.availableSchools || [],
     logout
   };
 }

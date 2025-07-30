@@ -1,5 +1,5 @@
 meta {
-  name: Register
+  name: Register User
   type: http
   seq: 1
 }
@@ -12,13 +12,9 @@ post {
 
 body:json {
   {
+    "id": "{{userId}}",
     "name": "Bob Admin",
-    "address": {
-      "street": "123 Admin Close",
-      "city": "Seattle",
-      "postCode": "56789",
-      "state": "WA"
-    }
+    "email": "bob@email.com"
   }
 }
 

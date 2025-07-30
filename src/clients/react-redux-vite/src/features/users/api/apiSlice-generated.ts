@@ -10,16 +10,17 @@ const injectedRtkApi = api.injectEndpoints({
     getUserById: build.query<GetUserByIdApiResponse, GetUserByIdApiArg>({
       query: queryArg => ({ url: `/${queryArg}` }),
     }),
-    profile: build.query<ProfileApiResponse, ProfileApiArg>({
-      query: () => ({ url: `/profile` }),
+    deleteUser: build.mutation<DeleteUserApiResponse, DeleteUserApiArg>({
+      query: queryArg => ({ url: `/${queryArg}`, method: "DELETE" }),
     }),
-    linkUserToSchool: build.mutation<
-      LinkUserToSchoolApiResponse,
-      LinkUserToSchoolApiArg
+    registerChild: build.mutation<
+      RegisterChildApiResponse,
+      RegisterChildApiArg
     >({
       query: queryArg => ({
-        url: `/${queryArg.userId}/schools/${queryArg.schoolId}`,
+        url: `/${queryArg.userId}/kids`,
         method: "POST",
+        body: queryArg.registerChildRequest,
       }),
     }),
   }),
@@ -33,12 +34,12 @@ export type ListUsersApiResponse = /** status 200 OK */ UserResponse[]
 export type ListUsersApiArg = void
 export type GetUserByIdApiResponse = /** status 200 OK */ UserResponse
 export type GetUserByIdApiArg = string
-export type ProfileApiResponse = /** status 200 OK */ UserProfileResponse
-export type ProfileApiArg = void
-export type LinkUserToSchoolApiResponse = unknown
-export type LinkUserToSchoolApiArg = {
+export type DeleteUserApiResponse = unknown
+export type DeleteUserApiArg = string
+export type RegisterChildApiResponse = /** status 200 OK */ ChildResponse
+export type RegisterChildApiArg = {
   userId: string
-  schoolId: string
+  registerChildRequest: RegisterChildRequest
 }
 export type RegisterUserResponse = {
   userId: string
@@ -48,32 +49,34 @@ export type RegisterUserRequest = {
   name: string
   email: string
 }
+export type ChildResponse = {
+  childId: string
+  firstName: string
+  lastName: string
+  parentId: string
+  schoolId: string
+  schoolName: string
+  grade: string
+}
 export type UserResponse = {
   id: string
   name: string
   email: string
+  children: ChildResponse[]
+  schoolIds: string[]
   version: number
 }
-export type ChildDto = {
-  id: string
-  name: string
+export type RegisterChildRequest = {
+  firstName: string
+  lastName: string
+  schoolId: string
+  schoolName: string
   grade: string
-}
-export type UserSchoolDto = {
-  id: string
-  name: string
-  children: ChildDto[]
-}
-export type UserProfileResponse = {
-  id: string
-  email: string
-  displayName: string | null
-  schools: UserSchoolDto[]
 }
 export const {
   useRegisterUserMutation,
   useListUsersQuery,
   useGetUserByIdQuery,
-  useProfileQuery,
-  useLinkUserToSchoolMutation,
+  useDeleteUserMutation,
+  useRegisterChildMutation,
 } = injectedRtkApi

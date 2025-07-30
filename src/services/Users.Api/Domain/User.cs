@@ -19,8 +19,7 @@ public class User : AggregateRoot, IAuditable
         var school = new User(id)
         {
             Name = name,
-            Email = email,
-            SchoolIds = []
+            Email = email
         };
 
         return Result.Success(school);
@@ -28,28 +27,19 @@ public class User : AggregateRoot, IAuditable
 
     public string Name { get; private set; }
     public string Email { get; private set; }
-    public List<string> SchoolIds { get; private set; } = []; // EF core can't do List<Guid> with Cosmos
     public List<Child> Children { get; } = [];
 
-    public Result LinkSchool(Guid schoolId)
+    public List<Guid> SchoolIds => [.. Children.Select(c => c.SchoolId)];
+
+    public Result RegisterChild(Child child)
     {
-        if (SchoolIds.Contains(schoolId.ToString()))
+        if (Children.Any(x => x.Name == child.Name))
         {
-            return Result.Failure(UserErrors.AlreadyLinkedToSchool(Id, schoolId));
+            return Result.Failure(UserErrors.ChildAlreadyRegistered(Id, child.Name));
         }
         
-        SchoolIds.Add(schoolId.ToString());
+        Children.Add(child);
         return Result.Success();
-    }
-    
-    public void RegisterChild(string firstName, string lastName, Guid schoolId)
-    {
-        var child = Child.Create(Guid.CreateVersion7(), firstName, lastName, Id, schoolId);
-
-        if (child.IsSuccess)
-        {
-            Children.Add(child.Value);
-        }
     }
     
     #region IAuditable

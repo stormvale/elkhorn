@@ -1,6 +1,9 @@
 ﻿using Contracts.Restaurants.Messages;
 using Dapr.Client;
+using Domain.Results;
+using Restaurants.Api.DomainErrors;
 using Restaurants.Api.EfCore;
+using Restaurants.Api.Extensions;
 
 namespace Restaurants.Api.Features.Meals;
 
@@ -8,12 +11,12 @@ public static class DeleteMeal
 {
     public static void MapDeleteMeal(this RouteGroupBuilder group)
     {
-        group.MapDelete("/{mealId:Guid}", async Task<IResult> (Guid restaurantId, Guid mealId, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
+        group.MapDelete("/{mealId:Guid}", async (Guid restaurantId, Guid mealId, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
         {
             var restaurant = await db.Restaurants.FindAsync([restaurantId], ct);
             if (restaurant is null)
             {
-                return TypedResults.NotFound();
+                return Result.Failure(RestaurantErrors.NotFound(restaurantId)).ToProblemDetails();
             }
             
             restaurant.RemoveMeal(mealId);
@@ -25,6 +28,8 @@ public static class DeleteMeal
         })
         .WithName("DeleteRestaurantMeal")
         .WithSummary("Delete Restaurant Meal")
-        .WithTags("Meals");
+        .WithTags("Meals")
+        .Produces(StatusCodes.Status204NoContent)
+        .Produces(StatusCodes.Status404NotFound);
     }
 }

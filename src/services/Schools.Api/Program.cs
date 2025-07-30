@@ -1,5 +1,5 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using Schools.Api.EfCore;
@@ -37,12 +37,15 @@ builder.Services.AddOpenApi(o =>
     o.AddScalarTransformers();
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(opt => builder.Configuration.Bind("JwtBearerOptions", opt));
-
-// Authorization policies go here...
+// Using custom Header-based authorization policies
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("PacAdmin", policy => policy.RequireRole("Admin", "PacAdmin"));
+    .AddPolicy("PacAdmin", policy =>
+        policy.RequireAssertion(context =>
+        {
+            var httpContext = context.Resource as HttpContext;
+            var roles = httpContext?.Request.Headers["X-User-Roles"].ToString().Split(',') ?? [];
+            return roles.Contains("PacAdmin");
+        }));
 
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policyBuilder => policyBuilder
@@ -52,7 +55,14 @@ builder.Services.AddCors(options =>
     )
 );
 
-builder.Services.AddDaprClient();
+builder.Services.AddDaprClient(config =>
+{
+    // let the dapr client know that enum values will be serialized as strings
+    var jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    config.UseJsonSerializationOptions(jsonSerializerOptions);
+});
+
 builder.Services.AddProblemDetails(opt =>
 {
     opt.CustomizeProblemDetails = ctx =>
@@ -82,7 +92,7 @@ app.MapList();
 app.MapDelete();
 
 // pac endpoints (requires Admin or PacAdmin role)
-var pac = app.MapGroup("{schoolId:Guid}/pac").RequireAuthorization("PacAdmin");
+var pac = app.MapGroup("{schoolId:Guid}/pac");
 pac.MapCreateLunchItem();
 pac.MapRemoveLunchItem();
 

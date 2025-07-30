@@ -30,7 +30,9 @@ public static class CreateLunchItem
         .WithName("CreatePacLunchItem")
         .WithSummary("Create PAC Lunch Item")
         .WithTags("Pac")
+        .RequireAuthorization("PacAdmin")
         .Produces(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status404NotFound);
+        .Produces(StatusCodes.Status404NotFound)
+        .Produces(StatusCodes.Status401Unauthorized);
     }
 }

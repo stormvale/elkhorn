@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Contracts.Common;
 
 namespace Contracts.Users.Requests;
 

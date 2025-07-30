@@ -22,7 +22,18 @@ public static class MappingExtensions
         domainObject.Id,
         domainObject.Name,
         domainObject.Email,
-        domainObject.SchoolIds.ToArray(),
+        [.. domainObject.Children.Select(ToChildResponse)],
+        [.. domainObject.SchoolIds],
         domainObject.Version
+    );
+    
+    public static ChildResponse ToChildResponse(this Child domainObject) => new(
+        domainObject.Id,
+        domainObject.FirstName,
+        domainObject.LastName,
+        domainObject.ParentId,
+        domainObject.SchoolId,
+        domainObject.SchoolName,
+        domainObject.Grade
     );
 }

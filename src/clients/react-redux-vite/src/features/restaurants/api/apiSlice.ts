@@ -14,32 +14,32 @@ export const restaurantsApiSlice = restaurantsApi.enhanceEndpoints({
     },
 
     getRestaurantById: {
-      providesTags: (result) => result ? [{ type: "Restaurants", id: result.id }] : [],
+      providesTags: (result) => result ? [{ type: "Restaurants", id: result.id }] : []
     },
 
     registerRestaurant: {
-      invalidatesTags: [{ type: "Restaurants", id: "LIST" }],
+      invalidatesTags: [{ type: "Restaurants", id: "LIST" }]
     },
 
     deleteRestaurant: {
       invalidatesTags: (_result, _error, arg) => [
         { type: "Restaurants", id: arg },
         { type: "Restaurants", id: "LIST" },
-      ],
+      ]
     },
 
     createRestaurantMeal: {
       invalidatesTags: (_result, _error, args) => [
         { type: "Restaurants", id: args.restaurantId },
-        { type: "Meals", id: "LIST" },
-      ],
+        { type: "Meals", id: "LIST" }
+      ]
     },
 
     deleteRestaurantMeal: {
       invalidatesTags: (_result, _error, args) => [
         { type: "Restaurants", id: args.restaurantId },
         { type: "Meals", id: args.mealId }
-      ],
+      ]
     },
   }
 });

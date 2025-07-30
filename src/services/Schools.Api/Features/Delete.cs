@@ -31,7 +31,6 @@ public static class Delete
             .WithName("DeleteSchool")
             .WithSummary("Delete School")
             .WithTags("Schools")
-            .RequireAuthorization()
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status404NotFound);

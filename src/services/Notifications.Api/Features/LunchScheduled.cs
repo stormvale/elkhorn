@@ -1,5 +1,4 @@
 ﻿using Contracts.Lunches.Messages;
-using Dapr;
 using Notifications.Api.Services;
 
 namespace Notifications.Api.Features;

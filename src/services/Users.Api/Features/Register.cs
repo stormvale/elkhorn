@@ -30,11 +30,11 @@ public static class Register
             return TypedResults.CreatedAtRoute(
                 new RegisterUserResponse(user.Id),
                 routeName: GetById.RouteName,
-                routeValues: new { id = user.Id }
+                routeValues: new { userId = user.Id }
             );
         })
         .WithName("RegisterUser")
-        .WithSummary("Register")
+        .WithSummary("Register User")
         .WithTags("Users")
         .Produces<RegisterUserResponse>(StatusCodes.Status201Created);
     }

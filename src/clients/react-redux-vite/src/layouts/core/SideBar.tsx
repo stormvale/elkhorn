@@ -83,18 +83,6 @@ const Sidebar: React.FC = () => {
               </Box>
             )}
 
-            {/* Children List */}
-            {currentSchool?.children && currentSchool.children.length > 0 && (
-              <Box>
-                <Stack spacing={0.5}>
-                  {currentSchool.children.map((child: any) => (
-                    <Typography variant="caption" color="text.secondary" noWrap>
-                      {`${child.name} - ${child.grade}`}
-                    </Typography>
-                  ))}
-                </Stack>
-              </Box>
-            )}
           </Box>
         )}
       </Box>

@@ -2,9 +2,12 @@
 using Contracts.Restaurants.Requests;
 using Contracts.Restaurants.Responses;
 using Dapr.Client;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Domain.Results;
+using Microsoft.AspNetCore.Mvc;
 using Restaurants.Api.Domain;
+using Restaurants.Api.DomainErrors;
 using Restaurants.Api.EfCore;
+using Restaurants.Api.Extensions;
 
 namespace Restaurants.Api.Features.Meals;
 
@@ -12,15 +15,12 @@ public static class CreateMeal
 {
     public static void MapCreateMeal(this RouteGroupBuilder group)
     {
-        group.MapPost("/", async Task<Results<Ok<CreateMealResponse>, ProblemHttpResult>> (Guid restaurantId, CreateMealRequest req, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
+        group.MapPost("/", async (Guid restaurantId, CreateMealRequest req, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
         {
             var restaurant = await db.Restaurants.FindAsync([restaurantId], ct);
             if (restaurant is null)
             {
-                return TypedResults.Problem(
-                    detail: $"Restaurant with Id {restaurantId} was not found",
-                    statusCode: StatusCodes.Status404NotFound,
-                    title: "Restaurant not found");
+                return Result.Failure(RestaurantErrors.NotFound(restaurantId)).ToProblemDetails();
             }
             
             var meal = new Meal(Guid.CreateVersion7(), req.Name, req.Price);
@@ -36,6 +36,8 @@ public static class CreateMeal
         })
         .WithName("CreateRestaurantMeal")
         .WithSummary("Create Restaurant Meal")
-        .WithTags("Meals");
+        .WithTags("Meals")
+        .Produces<CreateMealResponse>()
+        .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
     }
 }
