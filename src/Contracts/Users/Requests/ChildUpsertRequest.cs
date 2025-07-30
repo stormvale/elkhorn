@@ -10,7 +10,7 @@ namespace Contracts.Users.Requests;
 /// <param name="SchoolId">ID of the School which the Child attends.</param>
 /// <param name="SchoolName">Name of the School which the Child attends.</param>
 /// <param name="Grade">Grade that the Child is in.</param>
-public record RegisterChildRequest(
+public record ChildUpsertRequest(
     
     [Required]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "FirstName must be between 3 and 50 characters.")]

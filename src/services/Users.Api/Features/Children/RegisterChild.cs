@@ -14,7 +14,7 @@ public static class RegisterChild
 {
     public static void MapRegisterChild(this RouteGroupBuilder group)
     {
-        group.MapPost("/", async (Guid userId, RegisterChildRequest req, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
+        group.MapPost("/", async (Guid userId, ChildUpsertRequest req, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
         {
             var user = await db.Users.FindAsync([userId], ct);
             if (user is null)
@@ -45,6 +45,7 @@ public static class RegisterChild
         .WithName("RegisterChild")
         .WithSummary("Register Child")
         .WithTags("Users", "Children")
-        .Produces<ChildResponse>();
+        .Produces<ChildResponse>()
+        .Produces(StatusCodes.Status404NotFound);
     }
 }

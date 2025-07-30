@@ -86,12 +86,11 @@ app.MapRegister();
 app.MapGetById();
 app.MapList();
 app.MapDelete();
-//app.MapProfile();
-//app.MapLinkSchool();
 
 // children endpoints
-var userKids = app.MapGroup("{userId:Guid}/kids");
-userKids.MapRegisterChild();
+var userChildren = app.MapGroup("{userId:Guid}/children");
+userChildren.MapRegisterChild();
+userChildren.MapUpdateChild();
 
 await app.RunAsync();
 

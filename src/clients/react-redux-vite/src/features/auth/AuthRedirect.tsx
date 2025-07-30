@@ -4,7 +4,7 @@ import { useMsal } from '@azure/msal-react';
 import { useAppDispatch } from '../../app/hooks';
 import { AuthUser, setCredentials, setCurrentSchool, UserChild, UserSchool } from '../../app/authSlice';
 import { useGetUserByIdQuery, useRegisterUserMutation } from '../users/api/apiSlice';
-import { RegisterUserRequest } from '../users/api/apiSlice-generated';
+import { UserUpsertRequest } from '../users/api/apiSlice-generated';
 
 const AuthRedirect = () => {
   const navigate = useNavigate();
@@ -56,7 +56,7 @@ const AuthRedirect = () => {
         if (error) {
           console.log('User not found in database, registering new user...');
 
-          const registerUserRequest: RegisterUserRequest = {
+          const registerUserRequest: UserUpsertRequest = {
             id: userId,
             name: account.name ?? '',
             email: account.username

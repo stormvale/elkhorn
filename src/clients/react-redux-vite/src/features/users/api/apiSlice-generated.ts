@@ -18,9 +18,16 @@ const injectedRtkApi = api.injectEndpoints({
       RegisterChildApiArg
     >({
       query: queryArg => ({
-        url: `/${queryArg.userId}/kids`,
+        url: `/${queryArg.userId}/children`,
         method: "POST",
-        body: queryArg.registerChildRequest,
+        body: queryArg.childUpsertRequest,
+      }),
+    }),
+    updateChild: build.mutation<UpdateChildApiResponse, UpdateChildApiArg>({
+      query: queryArg => ({
+        url: `/${queryArg.userId}/children/${queryArg.childId}`,
+        method: "PUT",
+        body: queryArg.childUpsertRequest,
       }),
     }),
   }),
@@ -29,7 +36,7 @@ const injectedRtkApi = api.injectEndpoints({
 export { injectedRtkApi as usersApi }
 export type RegisterUserApiResponse =
   /** status 201 Created */ RegisterUserResponse
-export type RegisterUserApiArg = RegisterUserRequest
+export type RegisterUserApiArg = UserUpsertRequest
 export type ListUsersApiResponse = /** status 200 OK */ UserResponse[]
 export type ListUsersApiArg = void
 export type GetUserByIdApiResponse = /** status 200 OK */ UserResponse
@@ -39,12 +46,18 @@ export type DeleteUserApiArg = string
 export type RegisterChildApiResponse = /** status 200 OK */ ChildResponse
 export type RegisterChildApiArg = {
   userId: string
-  registerChildRequest: RegisterChildRequest
+  childUpsertRequest: ChildUpsertRequest
+}
+export type UpdateChildApiResponse = unknown
+export type UpdateChildApiArg = {
+  userId: string
+  childId: string
+  childUpsertRequest: ChildUpsertRequest
 }
 export type RegisterUserResponse = {
   userId: string
 }
-export type RegisterUserRequest = {
+export type UserUpsertRequest = {
   id: string
   name: string
   email: string
@@ -66,12 +79,19 @@ export type UserResponse = {
   schoolIds: string[]
   version: number
 }
-export type RegisterChildRequest = {
+export type ChildUpsertRequest = {
   firstName: string
   lastName: string
   schoolId: string
   schoolName: string
   grade: string
+}
+export type ProblemDetails = {
+  type?: string | null
+  title?: string | null
+  status?: number | null
+  detail?: string | null
+  instance?: string | null
 }
 export const {
   useRegisterUserMutation,
@@ -79,4 +99,5 @@ export const {
   useGetUserByIdQuery,
   useDeleteUserMutation,
   useRegisterChildMutation,
+  useUpdateChildMutation,
 } = injectedRtkApi

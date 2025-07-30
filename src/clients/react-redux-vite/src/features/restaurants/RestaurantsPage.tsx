@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  Container, 
-  Typography, 
-  Box,
-  Alert
-} from '@mui/material';
+import { Container, Typography, Box, Alert } from '@mui/material';
 import { 
   useListRestaurantsQuery, 
   useRegisterRestaurantMutation, 

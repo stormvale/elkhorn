@@ -21,7 +21,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             childBuilder.Property(x => x.FirstName).HasMaxLength(50);
             childBuilder.Property(x => x.LastName).HasMaxLength(50);
             childBuilder.Property(x => x.Grade).HasMaxLength(20);
-            childBuilder.Property(x => x.ParentId).HasMaxLength(20);
+            childBuilder.Property(x => x.SchoolName).HasMaxLength(50);
         });
     }
 }

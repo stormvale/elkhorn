@@ -1,22 +1,51 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Container, 
-  Typography, 
-  Paper, 
   Box,
-  Button,
-  Card,
-  CardContent
+  Typography
 } from '@mui/material';
-import { Add as AddIcon, Person as PersonIcon } from '@mui/icons-material';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import { UserChild } from '../../app/authSlice';
+import { useGetUserByIdQuery } from './api/apiSlice-generated';
+import { ChildrenList, QuickActions, ChildDialog } from './components';
 
 const ManageChildren: React.FC = () => {
   const { currentUser } = useAuthContext();
+  const [showChildDialog, setShowChildDialog] = useState(false);
+  const [editingChild, setEditingChild] = useState<UserChild | undefined>(undefined);
+
+  // Use the API query to get fresh user data and enable refetching
+  const { 
+    data: userData, 
+    refetch: refetchUser 
+  } = useGetUserByIdQuery(currentUser?.id || '', {
+    skip: !currentUser?.id, // Skip the query if no user ID
+  });
+
+  // Use the API data if available, fallback to auth context data
+  const displayUser = userData || currentUser;
 
   const handleAddChild = () => {
-    // TODO: Implement add child functionality
-    console.log('Add child clicked');
+    setEditingChild(undefined);
+    setShowChildDialog(true);
+  };
+
+  const handleEditChild = (child: UserChild) => {
+    setEditingChild(child);
+    setShowChildDialog(true);
+  };
+
+  const handleChildMenuClick = (child: UserChild) => {
+    // TODO: Implement child menu functionality
+    console.log('Child menu clicked:', child);
+  };
+
+  const handleRegisterSuccess = () => {
+    // Refetch user data to get the updated children list
+    refetchUser();
+    setShowChildDialog(false);
+    setEditingChild(undefined);
+    console.log('Child registered successfully');
   };
 
   return (
@@ -33,88 +62,35 @@ const ManageChildren: React.FC = () => {
       <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
         {/* Current Children */}
         <Box sx={{ flex: { md: 2 } }}>
-          <Paper sx={{ p: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-              <Typography variant="h6">
-                Your Children
-              </Typography>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={handleAddChild}
-              >
-                Add Child
-              </Button>
-            </Box>
-
-            {currentUser?.children && currentUser.children.length > 0 ? (
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2 }}>
-                {currentUser.children.map((child, index) => (
-                  <Card variant="outlined" key={child.childId || index}>
-                    <CardContent>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        <PersonIcon color="primary" sx={{ mr: 1 }} />
-                        <Typography variant="h6">
-                          {child.firstName} {child.lastName}
-                        </Typography>
-                      </Box>
-                      <Typography variant="body2" color="text.secondary">
-                        Grade: {child.grade}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        School: {child.schoolName }
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                ))}
-              </Box>
-            ) : (
-              <Box sx={{ textAlign: 'center', py: 4 }}>
-                <PersonIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
-                <Typography variant="body1" color="text.secondary">
-                  No children registered yet
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Click "Add Child" to get started
-                </Typography>
-              </Box>
-            )}
-          </Paper>
+          <ChildrenList
+            children={displayUser?.children || []}
+            onAddChild={handleAddChild}
+            onEditChild={handleEditChild}
+            onChildMenuClick={handleChildMenuClick}
+          />
         </Box>
 
         {/* Quick Actions */}
         <Box sx={{ flex: { md: 1 } }}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Quick Actions
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Button 
-                variant="outlined" 
-                fullWidth
-                startIcon={<AddIcon />}
-                onClick={handleAddChild}
-              >
-                Register New Child
-              </Button>
-              <Button 
-                variant="outlined" 
-                fullWidth
-                disabled
-              >
-                Update Child Info
-              </Button>
-              <Button 
-                variant="outlined" 
-                fullWidth
-                disabled
-              >
-                Transfer School
-              </Button>
-            </Box>
-          </Paper>
+          <QuickActions
+            onAddChild={handleAddChild}
+            // onUpdateChild={handleUpdateChild} // TODO: Implement
+            // onTransferSchool={handleTransferSchool} // TODO: Implement
+          />
         </Box>
       </Box>
+
+      {/* Child Dialog for Add/Edit */}
+      <ChildDialog
+        open={showChildDialog}
+        child={editingChild}
+        userId={displayUser?.id || ''}
+        onClose={() => {
+          setShowChildDialog(false);
+          setEditingChild(undefined);
+        }}
+        onSuccess={handleRegisterSuccess}
+      />
     </Container>
   );
 };

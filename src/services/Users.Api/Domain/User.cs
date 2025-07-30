@@ -10,7 +10,7 @@ namespace Users.Api.Domain;
 /// The User's ID comes from the 'oid' claim because it is the immutable ID
 /// of the user in Entra ID across all apps in the tenant.
 /// </summary>
-public class User : AggregateRoot, IAuditable
+public sealed class User : AggregateRoot, IAuditable
 {
     [JsonConstructor] private User(Guid id) : base(id) { /* ef constructor */ }
     

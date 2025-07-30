@@ -8,7 +8,7 @@ namespace Users.Api.Domain;
 /// <summary>
 /// This will probably move out into its own service. Just doing it here for now
 /// </summary>
-public class Child : AggregateRoot, IAuditable
+public sealed class Child : Entity
 {
     [JsonConstructor] private Child(Guid id) : base(id) { /* ef constructor */ }
     
@@ -29,17 +29,29 @@ public class Child : AggregateRoot, IAuditable
     }
 
     public string Name => $"{FirstName} {LastName}";
-    
     public string FirstName { get; private set; }
     public string LastName { get; private set; }
     
     /// <summary>
-    /// The User ID of the Parent/Guardian
+    /// The UserID of the Parent/Guardian
     /// </summary>
     public Guid ParentId { get; private set; }
-    public string Grade { get; set; }
+    public string Grade { get; private set; }
     public Guid SchoolId { get; private set; }
     public string SchoolName { get; private set; }
+
+    public void UpdatePersonalInfo(string firstName, string lastName)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+    }
+
+    public void UpdateSchoolInfo(Guid schoolId, string schoolName, string grade)
+    {
+        SchoolId = schoolId;
+        SchoolName = schoolName;
+        Grade = grade;
+    }
     
     #region IAuditable
 
