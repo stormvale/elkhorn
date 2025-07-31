@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
@@ -5,6 +6,7 @@ using Scalar.AspNetCore;
 using ServiceDefaults.Exceptions;
 using Users.Api.EfCore;
 using Users.Api.Features;
+using Users.Api.Features.Children;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,7 +51,14 @@ builder.Services.AddCors(options =>
     )
 );
 
-builder.Services.AddDaprClient();
+builder.Services.AddDaprClient(config =>
+{
+    // let the dapr client know that enum values will be serialized as strings
+    var jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    config.UseJsonSerializationOptions(jsonSerializerOptions);
+});
+
 builder.Services.AddProblemDetails(opt =>
 {
     opt.CustomizeProblemDetails = ctx =>
@@ -77,8 +86,12 @@ app.MapRegister();
 app.MapGetById();
 app.MapList();
 app.MapDelete();
-app.MapProfile();
-app.MapLinkSchool();
+
+// children endpoints
+var userChildren = app.MapGroup("{userId:Guid}/children");
+userChildren.MapRegisterChild();
+userChildren.MapUpdateChild();
+userChildren.MapRemoveChild();
 
 await app.RunAsync();
 

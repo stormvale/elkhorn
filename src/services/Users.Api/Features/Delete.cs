@@ -11,7 +11,7 @@ public static class Delete
 {
     public static void MapDelete(this WebApplication app)
     {
-        app.MapDelete("/{userId:Guid}", async Task<IResult> (Guid userId, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
+        app.MapDelete("/{userId:Guid}", async (Guid userId, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
         {
             var user = await db.Users.FindAsync([userId], ct);
             if (user is null)
@@ -29,7 +29,6 @@ public static class Delete
         .WithName("DeleteUser")
         .WithSummary("Delete User")
         .WithTags("Users")
-        .RequireAuthorization()
         .Produces(StatusCodes.Status204NoContent)
         .Produces(StatusCodes.Status401Unauthorized)
         .Produces(StatusCodes.Status404NotFound);

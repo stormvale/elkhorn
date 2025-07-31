@@ -20,7 +20,6 @@ public static class List
         .WithName("ListSchools")
         .WithSummary("List all Schools")
         .WithTags("Schools")
-        .AllowAnonymous()
         .Produces<List<SchoolResponse>>();
     }
 }

@@ -11,7 +11,7 @@ public static class Delete
 {
     public static void MapDelete(this WebApplication app)
     {
-        app.MapDelete("/{id:Guid}", async Task<IResult> (Guid id, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
+        app.MapDelete("/{id:Guid}", async (Guid id, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
         {
             var restaurant = await db.Restaurants.FindAsync([id], ct);
             if (restaurant is null)
@@ -30,7 +30,6 @@ public static class Delete
         .WithName("DeleteRestaurant")
         .WithSummary("Delete Restaurant")
         .WithTags("Restaurants")
-        .RequireAuthorization()
         .Produces(StatusCodes.Status204NoContent)
         .Produces(StatusCodes.Status401Unauthorized)
         .Produces(StatusCodes.Status404NotFound);

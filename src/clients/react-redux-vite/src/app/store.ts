@@ -4,7 +4,6 @@ import { setupListeners } from "@reduxjs/toolkit/query"
 import { quotesApiSlice } from "../features/quotes/quotesApiSlice"
 import { restaurantsApiSlice } from "../features/restaurants/api/apiSlice"
 import { themeSlice } from "../theme/themeSlice"
-import { errorMiddleware } from "../middleware/errorMiddleware"
 import { notificationSlice } from "../features/notifications/notificationSlice"
 import { authSlice } from "./authSlice"
 import { usersApiSlice } from "../features/users/api/apiSlice"
@@ -37,7 +36,7 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
         .concat(restaurantsApiSlice.middleware)
         .concat(schoolsApiSlice.middleware)
         .concat(usersApiSlice.middleware)
-        .concat(errorMiddleware)
+        //.concat(errorMiddleware)
     },
     preloadedState,
   })

@@ -41,7 +41,6 @@ public static class Register
         .WithName("RegisterSchool")
         .WithSummary("Register new School")
         .WithTags("Schools")
-        .RequireAuthorization()
         .Produces<RegisterSchoolResponse>(StatusCodes.Status201Created);
     }
 }

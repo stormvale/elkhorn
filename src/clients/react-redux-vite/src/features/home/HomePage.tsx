@@ -1,4 +1,4 @@
-import { Typography, Stack, Container, Button, Box } from '@mui/material';
+import { Typography, Stack, Container, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hooks/useAuthContext';
 
@@ -31,12 +31,6 @@ const Home = () => {
         <Typography textAlign="center" variant="body1" color="text.secondary">
           Stay connected with your child's education
         </Typography>
-        
-        <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.50', borderRadius: 2 }}>
-          <Typography variant="body1" gutterBottom>
-            <Button variant='contained'>Add Children</Button>
-          </Typography>
-        </Box>
 
         {/* Placeholder for future features */}
         <Box sx={{ mt: 4, p: 3, bgcolor: 'grey.50', borderRadius: 2 }}>
@@ -44,14 +38,14 @@ const Home = () => {
             Coming Soon:
           </Typography>
           <ul>
-            <li>District & School announcements</li>
-            <li>Messages from teachers</li>
+            <li>District, School & PAC announcements</li>
+            <li>Direct/class messages from teachers</li>
+            <li>Parent-teacher conference scheduling</li>
             <li>Hot Lunch orders</li>
             <li>Lost-property tracking</li>
             <li>Event notifications</li>
-            <li>Grade updates</li>
+            <li>Report cards</li>
             <li>Field-trips</li>
-            <li>Parent-teacher conference scheduling</li>
           </ul>
         </Box>
       </Stack>

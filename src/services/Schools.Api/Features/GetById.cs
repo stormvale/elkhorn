@@ -23,7 +23,6 @@ public static class GetById
         .WithName(RouteName)
         .WithSummary("Get School by Id")
         .WithTags("Schools")
-        .RequireAuthorization()
         .Produces<SchoolResponse>()
         .Produces(StatusCodes.Status404NotFound);
     }

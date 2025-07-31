@@ -1,5 +1,5 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Restaurants.Api.EfCore;
 using Restaurants.Api.Features;
@@ -37,11 +37,18 @@ builder.Services.AddOpenApi(o =>
     o.AddScalarTransformers();
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(opt => builder.Configuration.Bind("JwtBearerOptions", opt));
+// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//     .AddJwtBearer(opt => builder.Configuration.Bind("JwtBearerOptions", opt));
 
 // Authorization policies go here...
-builder.Services.AddAuthorizationBuilder();
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("AdminOnly", policy =>
+        policy.RequireAssertion(context =>
+        {
+            var httpContext = context.Resource as HttpContext;
+            var role = httpContext?.Request.Headers["X-User-Role"].ToString();
+            return role == "Admin";
+        }));
 
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policyBuilder => policyBuilder
@@ -51,7 +58,14 @@ builder.Services.AddCors(options =>
     )
 );
 
-builder.Services.AddDaprClient();
+builder.Services.AddDaprClient(config =>
+{
+    // let the dapr client know that enum values will be serialized as strings
+    var jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    config.UseJsonSerializationOptions(jsonSerializerOptions);
+});
+
 builder.Services.AddProblemDetails(opt =>
 {
     opt.CustomizeProblemDetails = ctx =>

@@ -1,8 +1,11 @@
-﻿namespace Contracts.Users.Responses;
+﻿using Contracts.Users.DTOs;
+
+namespace Contracts.Users.Responses;
 
 public sealed record UserResponse(
     Guid Id,
     string Name,
     string Email,
-    string[] SchoolIds,
+    ChildResponse[] Children,
+    Guid[] SchoolIds,
     uint Version);

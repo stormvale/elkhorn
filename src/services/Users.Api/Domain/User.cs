@@ -2,6 +2,7 @@
 using Domain.Abstractions;
 using Domain.Interfaces;
 using Domain.Results;
+using Google.Protobuf.WellKnownTypes;
 using Users.Api.DomainErrors;
 
 namespace Users.Api.Domain;
@@ -10,7 +11,7 @@ namespace Users.Api.Domain;
 /// The User's ID comes from the 'oid' claim because it is the immutable ID
 /// of the user in Entra ID across all apps in the tenant.
 /// </summary>
-public class User : AggregateRoot, IAuditable
+public sealed class User : AggregateRoot, IAuditable
 {
     [JsonConstructor] private User(Guid id) : base(id) { /* ef constructor */ }
     
@@ -20,7 +21,7 @@ public class User : AggregateRoot, IAuditable
         {
             Name = name,
             Email = email,
-            SchoolIds = []
+            CreatedUtc = DateTimeOffset.UtcNow
         };
 
         return Result.Success(school);
@@ -28,28 +29,31 @@ public class User : AggregateRoot, IAuditable
 
     public string Name { get; private set; }
     public string Email { get; private set; }
-    public List<string> SchoolIds { get; private set; } = []; // EF core can't do List<Guid> with Cosmos
     public List<Child> Children { get; } = [];
 
-    public Result LinkSchool(Guid schoolId)
+    public List<Guid> SchoolIds => [.. Children.Select(c => c.SchoolId).Distinct()];
+
+    public Result RegisterChild(Child child)
     {
-        if (SchoolIds.Contains(schoolId.ToString()))
+        if (Children.Any(x => x.Name == child.Name))
         {
-            return Result.Failure(UserErrors.AlreadyLinkedToSchool(Id, schoolId));
+            return Result.Failure(UserErrors.ChildAlreadyRegistered(Id, child.Name));
         }
         
-        SchoolIds.Add(schoolId.ToString());
+        Children.Add(child);
         return Result.Success();
     }
     
-    public void RegisterChild(string firstName, string lastName, Guid schoolId)
+    public Result RemoveChild(Guid childId)
     {
-        var child = Child.Create(Guid.CreateVersion7(), firstName, lastName, Id, schoolId);
-
-        if (child.IsSuccess)
+        var child = Children.FirstOrDefault(x => x.Id == childId);
+        if (child is null)
         {
-            Children.Add(child.Value);
+            return Result.Failure(UserErrors.ChildNotFound(Id, childId));
         }
+        
+        Children.Remove(child);
+        return Result.Success();
     }
     
     #region IAuditable

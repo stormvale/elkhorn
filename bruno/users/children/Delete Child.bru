@@ -1,0 +1,11 @@
+meta {
+  name: Delete Child
+  type: http
+  seq: 2
+}
+
+delete {
+  url: https://{{host.users.api}}/{{userId}}/children/01985ddc-4377-796b-b946-20a63973ef58
+  body: none
+  auth: inherit
+}
