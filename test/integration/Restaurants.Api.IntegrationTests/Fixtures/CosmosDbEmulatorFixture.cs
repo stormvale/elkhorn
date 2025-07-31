@@ -21,7 +21,7 @@ public sealed class CosmosDbEmulatorFixture : IAsyncLifetime
 
     public CosmosClient CosmosClient { get; private set; } = null!;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await _cosmosContainer.StartAsync();
 
@@ -30,7 +30,7 @@ public sealed class CosmosDbEmulatorFixture : IAsyncLifetime
         await CreateDatabaseIfNotExistsWithRetry(CosmosClient).ConfigureAwait(false);
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _cosmosContainer.DisposeAsync();
         CosmosClient.Dispose();

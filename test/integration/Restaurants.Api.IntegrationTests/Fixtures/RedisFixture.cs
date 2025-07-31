@@ -9,7 +9,7 @@ public sealed class RedisFixture : IAsyncLifetime
     public string Host => Container.Hostname;
     public int Port => Container.GetMappedPublicPort(6379);
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         Container = new RedisBuilder()
             .WithImage("redis:7")
@@ -20,5 +20,5 @@ public sealed class RedisFixture : IAsyncLifetime
         await Container.StartAsync();
     }
 
-    public async Task DisposeAsync() => await Container.DisposeAsync();
+    public async ValueTask DisposeAsync() => await Container.DisposeAsync();
 }
