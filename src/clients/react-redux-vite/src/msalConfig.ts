@@ -18,7 +18,7 @@ export const msalConfig: Configuration = {
       // This must match exactly one of the URIs registered in Microsoft Entra => App Registration => Authentication.
       redirectUri: isLocal
       ? 'http://localhost:57575/signin-oidc'
-      : 'https://calm-dune-09478071e-19.westus2.1.azurestaticapps.net/signin-oidc',
+      : 'https://calm-dune-09478071e.1.azurestaticapps.net/signin-oidc',
 
       // the page to navigate after logout.
       postLogoutRedirectUri: '/login',
