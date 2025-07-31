@@ -9,8 +9,9 @@ import {
   Typography,
   Stack,
   Collapse,
+  IconButton,
 } from '@mui/material';
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { ExpandLess, ExpandMore, Settings } from '@mui/icons-material';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import sidebarRoutes, { sidebarSections } from '../../routes/routes';
@@ -140,7 +141,7 @@ const Sidebar: React.FC = () => {
       }}>
         {currentUser && (
           <Box>
-            <Stack spacing={1.5} sx={{ mb: 1 }}>
+            <Stack direction="row" spacing={1.5} sx={{ mb: 1, alignItems: 'flex-start' }}>
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Typography variant="body2" noWrap fontWeight="medium">
                   {currentUser.name}
@@ -149,6 +150,23 @@ const Sidebar: React.FC = () => {
                   {currentUser.roles.join(', ') || 'No roles assigned'}
                 </Typography>
               </Box>
+              
+              {/* Settings Icon */}
+              <IconButton
+                component={RouterLink}
+                to="/manage-children"
+                size="small"
+                sx={{ 
+                  color: 'text.secondary',
+                  '&:hover': {
+                    color: 'primary.main',
+                    bgcolor: 'action.hover'
+                  }
+                }}
+                title="Manage Children"
+              >
+                <Settings fontSize="small" />
+              </IconButton>
             </Stack>
 
             {/* School Context */}

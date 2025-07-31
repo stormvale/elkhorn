@@ -1,12 +1,9 @@
 import HomePage from '../features/home/HomePage';
 import RestaurantsPage from '../features/restaurants/RestaurantsPage';
-import ManageChildren from '../features/users/ManageChildren';
 import {
   Home as HomeIcon,
   Restaurant as RestaurantIcon,
   Group as GroupIcon,
-  Settings as SettingsIcon,
-  Person as PersonIcon,
 } from '@mui/icons-material';
 
 interface RouteConfig {
@@ -39,17 +36,6 @@ const sidebarRoutes: RouteConfig[] = [
     requiresAuth: true,
     allowedRoles: [],
     section: 'pac'
-  },
-  
-  // User Settings Section
-  {
-    path: '/manage-children',
-    element: <ManageChildren />,
-    icon: <PersonIcon />,
-    displayName: "Manage Children",
-    requiresAuth: true,
-    allowedRoles: [],
-    section: 'settings'
   }
 ];
 
@@ -58,11 +44,6 @@ export const sidebarSections = {
   pac: {
     title: 'PAC',
     icon: <GroupIcon />,
-    defaultOpen: false
-  },
-  settings: {
-    title: 'User Settings',
-    icon: <SettingsIcon />,
     defaultOpen: false
   }
 };

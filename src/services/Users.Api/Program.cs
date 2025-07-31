@@ -91,6 +91,7 @@ app.MapDelete();
 var userChildren = app.MapGroup("{userId:Guid}/children");
 userChildren.MapRegisterChild();
 userChildren.MapUpdateChild();
+userChildren.MapRemoveChild();
 
 await app.RunAsync();
 

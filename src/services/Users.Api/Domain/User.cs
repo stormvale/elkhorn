@@ -42,6 +42,18 @@ public sealed class User : AggregateRoot, IAuditable
         return Result.Success();
     }
     
+    public Result RemoveChild(Guid childId)
+    {
+        var child = Children.FirstOrDefault(x => x.Id == childId);
+        if (child is null)
+        {
+            return Result.Failure(UserErrors.ChildNotFound(Id, childId));
+        }
+        
+        Children.Remove(child);
+        return Result.Success();
+    }
+    
     #region IAuditable
 
     public DateTimeOffset CreatedUtc { get; init; }

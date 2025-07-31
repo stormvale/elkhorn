@@ -4,6 +4,7 @@ import sidebarRoutes from "./routes";
 import Layout from "../layouts/core/MainLayout";
 import AuthLanding from "../features/auth/AuthLanding";
 import AuthRedirect from "../features/auth/AuthRedirect";
+import ManageChildren from "../features/users/ManageChildren";
 
 export default function AppRouter() {
   return (
@@ -24,10 +25,19 @@ export default function AppRouter() {
         />
       ))}
 
-      // these are routes that we don't want to appear in the sidebar
+      {/* Routes that don't appear in the sidebar */}
       <Route path="/" element={<AuthLanding />} />
       <Route path="/login" element={<AuthLanding />} />
       <Route path="/signin-oidc" element={<AuthRedirect />} />
+      
+      {/* Settings/Management routes accessible via User Info Section */}
+      <Route path="/manage-children" element={
+        <Layout>
+          <SecureRoute allowedRoles={[]}>
+            <ManageChildren />
+          </SecureRoute>
+        </Layout>
+      } />
 
     </Routes>
   );

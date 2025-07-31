@@ -30,6 +30,12 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.childUpsertRequest,
       }),
     }),
+    removeChild: build.mutation<RemoveChildApiResponse, RemoveChildApiArg>({
+      query: queryArg => ({
+        url: `/${queryArg.userId}/children/${queryArg.childId}`,
+        method: "DELETE",
+      }),
+    }),
   }),
   overrideExisting: false,
 })
@@ -53,6 +59,11 @@ export type UpdateChildApiArg = {
   userId: string
   childId: string
   childUpsertRequest: ChildUpsertRequest
+}
+export type RemoveChildApiResponse = unknown
+export type RemoveChildApiArg = {
+  userId: string
+  childId: string
 }
 export type RegisterUserResponse = {
   userId: string
@@ -100,4 +111,5 @@ export const {
   useDeleteUserMutation,
   useRegisterChildMutation,
   useUpdateChildMutation,
+  useRemoveChildMutation,
 } = injectedRtkApi

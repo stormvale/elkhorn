@@ -1,5 +1,4 @@
-﻿using Contracts.Users.Requests;
-using Dapr.Client;
+﻿using Dapr.Client;
 using Domain.Results;
 using Microsoft.AspNetCore.Mvc;
 using Users.Api.DomainErrors;
@@ -8,11 +7,11 @@ using Users.Api.Extensions;
 
 namespace Users.Api.Features.Children;
 
-public static class UpdateChild
+public static class RemoveChild
 {
-    public static void MapUpdateChild(this RouteGroupBuilder group)
+    public static void MapRemoveChild(this RouteGroupBuilder group)
     {
-        group.MapPut("/{childId:Guid}", async (Guid userId, Guid childId, ChildUpsertRequest req, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
+        group.MapDelete("/{childId:Guid}", async (Guid userId, Guid childId, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
         {
             var user = await db.Users.FindAsync([userId], ct);
             if (user is null)
@@ -20,20 +19,17 @@ public static class UpdateChild
                 return Result.Failure(UserErrors.NotFound(userId)).ToProblemDetails();
             }
         
-            var child = user.Children.FirstOrDefault(x => x.Id == childId);
-            if (child is null)
+            var removeChildResult = user.RemoveChild(childId);
+            if (removeChildResult.IsFailure)
             {
-                return Result.Failure(UserErrors.ChildNotFound(userId, childId)).ToProblemDetails();
+                return removeChildResult.ToProblemDetails();
             }
             
-            child.UpdatePersonalInfo(req.FirstName, req.LastName);
-            child.UpdateSchoolInfo(req.SchoolId, req.SchoolName, req.Grade);
             await db.SaveChangesAsync(ct);
-            
             return TypedResults.Ok();
         })
-        .WithName("UpdateChild")
-        .WithSummary("Update Child")
+        .WithName("RemoveChild")
+        .WithSummary("Remove Child")
         .WithTags("Users", "Children")
         .Produces(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
