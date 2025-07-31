@@ -2,6 +2,7 @@
 using Domain.Abstractions;
 using Domain.Interfaces;
 using Domain.Results;
+using Google.Protobuf.WellKnownTypes;
 using Users.Api.DomainErrors;
 
 namespace Users.Api.Domain;
@@ -19,7 +20,8 @@ public sealed class User : AggregateRoot, IAuditable
         var school = new User(id)
         {
             Name = name,
-            Email = email
+            Email = email,
+            CreatedUtc = DateTimeOffset.UtcNow
         };
 
         return Result.Success(school);
@@ -29,7 +31,7 @@ public sealed class User : AggregateRoot, IAuditable
     public string Email { get; private set; }
     public List<Child> Children { get; } = [];
 
-    public List<Guid> SchoolIds => [.. Children.Select(c => c.SchoolId)];
+    public List<Guid> SchoolIds => [.. Children.Select(c => c.SchoolId).Distinct()];
 
     public Result RegisterChild(Child child)
     {

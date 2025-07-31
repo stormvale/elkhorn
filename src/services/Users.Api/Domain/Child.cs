@@ -21,8 +21,7 @@ public sealed class Child : Entity
             ParentId = parentId,
             SchoolId = schoolId,
             SchoolName = schoolName, 
-            Grade = grade,
-            CreatedUtc = DateTimeOffset.UtcNow
+            Grade = grade
         };
 
         return Result.Success(child);
@@ -52,11 +51,4 @@ public sealed class Child : Entity
         SchoolName = schoolName;
         Grade = grade;
     }
-    
-    #region IAuditable
-
-    public DateTimeOffset CreatedUtc { get; private init; }
-    public DateTimeOffset? LastModifiedUtc { get; set; }
-
-    #endregion
 }

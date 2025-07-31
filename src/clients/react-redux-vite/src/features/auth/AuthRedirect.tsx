@@ -11,6 +11,7 @@ const AuthRedirect = () => {
   const dispatch = useAppDispatch();
   const { instance } = useMsal();
 
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const { data: dbUser, isLoading: loadingUser, error } = useGetUserByIdQuery(userId!, { skip: !userId });
   const [registerUser, { isLoading: registeringUser } ] = useRegisterUserMutation();
@@ -27,7 +28,9 @@ const AuthRedirect = () => {
           
           const idTokenClaims = response.account.idTokenClaims ?? {};
           const userOid = idTokenClaims['oid'];
+
           setUserId(userOid!);
+          setAccessToken(response.accessToken);
         } else {
           navigate('/');
         }
@@ -75,7 +78,6 @@ const AuthRedirect = () => {
             children: []
           };
 
-          const accessToken = instance.getActiveAccount()?.idToken;
           dispatch(setCredentials({ accessToken: accessToken || '', user: authUser }));
           
         } else if (dbUser) {
@@ -110,7 +112,6 @@ const AuthRedirect = () => {
             children: userChildren
           };
 
-          const accessToken = instance.getActiveAccount()?.idToken;
           dispatch(setCredentials({ accessToken: accessToken || '', user: authUser }));
           dispatch(setCurrentSchool(authUser.schools[0] ?? null));
         }

@@ -44,9 +44,7 @@ jobs:
       - name: Merge coverage reports
         uses: danielpalme/ReportGenerator-GitHub-Action@5.1.23
         with:
-          reports: |
-            test/results/unit/*/coverage.cobertura.xml;
-            test/results/integration/*/coverage.cobertura.xml;
+          reports: test/results/unit/*/coverage.cobertura.xml;test/results/integration/*/coverage.cobertura.xml;
           targetdir: test/results/coverage-merged
           reporttypes: Cobertura
           tag: '${{ github.run_number }}_${{ github.run_id }}'
