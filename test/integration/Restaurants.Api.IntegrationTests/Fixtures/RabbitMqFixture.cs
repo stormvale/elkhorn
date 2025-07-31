@@ -9,7 +9,7 @@ public sealed class RabbitMqFixture : IAsyncLifetime
     public RabbitMqContainer Container { get; private set; }
     public RabbitMqConsumer Consumer { get; private set; }
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         Container = new RabbitMqBuilder()
             .WithImage("rabbitmq:latest")
@@ -26,5 +26,5 @@ public sealed class RabbitMqFixture : IAsyncLifetime
         
     }
 
-    public async Task DisposeAsync() => await Container.DisposeAsync();
+    public async ValueTask DisposeAsync() => await Container.DisposeAsync();
 }
