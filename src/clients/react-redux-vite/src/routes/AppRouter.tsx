@@ -28,7 +28,7 @@ export default function AppRouter() {
       {/* Routes that don't appear in the sidebar */}
       <Route path="/" element={<AuthLanding />} />
       <Route path="/login" element={<AuthLanding />} />
-      <Route path="/signin-oidc" element={<AuthRedirect />} />
+      <Route path="/auth-redirect" element={<AuthRedirect />} />
       
       {/* Settings/Management routes accessible via User Info Section */}
       <Route path="/manage-children" element={

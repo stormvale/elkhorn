@@ -9,10 +9,9 @@ public static class MappingExtensions
     {
         var restaurantLunchItems = lunch.AvailableRestaurantItems.Select(x =>
             new LunchItemResponse(
-                x.Name,
-                x.Price,
-                x.AvailableModifiers.Select(m => new LunchItemModifierResponse(m.Name, m.PriceAdjustment)
-                ).ToList()
+                Name: x.Name,
+                Price: x.Price,
+                AvailableModifiers: [.. x.AvailableModifiers.Select(m => new LunchItemModifierResponse(m.Name, m.PriceAdjustment))]
             )
         ).ToList();
             

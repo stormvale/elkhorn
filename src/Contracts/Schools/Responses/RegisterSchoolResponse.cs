@@ -1,3 +1,3 @@
-﻿namespace SchoolHub.Contracts.Schools.Responses;
+﻿namespace Contracts.Schools.Responses;
 
 public sealed record RegisterSchoolResponse(Guid SchoolId);
