@@ -11,7 +11,9 @@ public static class List
     {
         app.MapGet("/", async (AppDbContext db, CancellationToken ct) =>
         {
-            var result = await db.Lunches.ToListAsync(ct);
+            var result = await db.Lunches
+                .AsNoTracking()
+                .ToListAsync(ct);
 
             return result.Select(x => x.ToLunchResponse()).ToList();
         })

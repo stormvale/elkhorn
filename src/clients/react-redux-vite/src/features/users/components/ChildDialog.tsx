@@ -17,7 +17,8 @@ import { useListSchoolsQuery } from '../../schools/api/apiSlice-generated';
 import { 
   useRegisterChildMutation, 
   useUpdateChildMutation,
-  ChildUpsertRequest 
+  ChildUpsertRequest, 
+  ChildResponse
 } from '../api/apiSlice-generated';
 import { UserChild } from '../../../app/authSlice';
 
@@ -26,7 +27,7 @@ interface ChildDialogProps {
   userId: string;
   child?: UserChild; // If provided, we're in edit mode
   onClose: () => void;
-  onSuccess?: () => void;
+  onSuccess: (newChild: ChildResponse) => void;
 }
 
 const ChildDialog: React.FC<ChildDialogProps> = ({
@@ -76,22 +77,12 @@ const ChildDialog: React.FC<ChildDialogProps> = ({
   const handleSubmit = async () => {
     try {
       if (isEditMode && child) {
-        // Update existing child
-        await updateChild({
-          userId,
-          childId: child.childId,
-          childUpsertRequest: childForm
-        }).unwrap();
+        await updateChild({ userId, childId: child.childId, childUpsertRequest: childForm }).unwrap();
+        onClose();
       } else {
-        // Register new child
-        await registerChild({
-          userId,
-          childUpsertRequest: childForm
-        }).unwrap();
-      }
-      
-      // Reset form only if creating new child
-      if (!isEditMode) {
+        // new child
+        const result = await registerChild({userId, childUpsertRequest: childForm}).unwrap();
+
         setChildForm({
           firstName: '',
           lastName: '',
@@ -99,10 +90,9 @@ const ChildDialog: React.FC<ChildDialogProps> = ({
           schoolName: '',
           grade: ''
         });
+
+        onSuccess?.(result);
       }
-      
-      onClose();
-      onSuccess?.();
     } catch (error) {
       console.error(`Failed to ${isEditMode ? 'update' : 'register'} child:`, error);
     }

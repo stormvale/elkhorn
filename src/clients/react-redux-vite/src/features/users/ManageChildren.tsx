@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import { 
-  Container, 
-  Box,
-  Typography
-} from '@mui/material';
+import { Container, Box, Typography } from '@mui/material';
 import { useAuthContext } from '../../hooks/useAuthContext';
-import { UserChild } from '../../app/authSlice';
-import { useGetUserByIdQuery } from './api/apiSlice-generated';
+import { addChild, UserChild } from '../../app/authSlice';
+import { ChildResponse, useGetUserByIdQuery } from './api/apiSlice-generated';
 import { ChildrenList, QuickActions, ChildDialog } from './components';
+import { useAppDispatch } from '../../app/hooks';
 
 const ManageChildren: React.FC = () => {
   const { currentUser } = useAuthContext();
+  const dispatch = useAppDispatch();
   const [showChildDialog, setShowChildDialog] = useState(false);
   const [editingChild, setEditingChild] = useState<UserChild | undefined>(undefined);
 
@@ -40,12 +38,20 @@ const ManageChildren: React.FC = () => {
     console.log('Child menu clicked:', child);
   };
 
-  const handleRegisterSuccess = () => {
-    // Refetch user data to get the updated children list
+  const handleRegisterSuccess = (newChild: ChildResponse) => {
     refetchUser();
     setShowChildDialog(false);
     setEditingChild(undefined);
-    console.log('Child registered successfully');
+
+    const userChild: UserChild = {
+      childId: newChild.childId,
+      firstName: newChild.firstName,
+      lastName: newChild.lastName,
+      schoolId: newChild.schoolId,
+      schoolName: newChild.schoolName,
+      grade: newChild.grade
+    };
+    dispatch(addChild(userChild));
   };
 
   return (

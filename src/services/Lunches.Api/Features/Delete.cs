@@ -1,5 +1,4 @@
 ﻿using Contracts.Lunches.Messages;
-using Contracts.Restaurants.Messages;
 using Dapr.Client;
 using Domain.Results;
 using Lunches.Api.DomainErrors;

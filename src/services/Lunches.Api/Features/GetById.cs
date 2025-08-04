@@ -4,6 +4,7 @@ using Lunches.Api.DomainErrors;
 using Lunches.Api.EfCore;
 using Lunches.Api.Extensions;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lunches.Api.Features;
 
@@ -15,7 +16,9 @@ public static class GetById
     {
         app.MapGet("/{id:Guid}", async (Guid id, AppDbContext db, CancellationToken ct) =>
         {
-            var result = await db.Lunches.FindAsync([id], ct);
+            var result = await db.Lunches
+                .AsNoTracking()
+                .SingleOrDefaultAsync(x => x.Id == id, ct);
 
             return result is null
                 ? Result.Failure(LunchErrors.NotFound(id)).ToProblemDetails()
