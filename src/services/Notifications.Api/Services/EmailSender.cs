@@ -25,7 +25,7 @@ public class EmailSender(DaprClient daprClient, ILogger<EmailSender> logger)
                     <p>Ordering will close 3 days before at midnight on {message.Date.AddDays(-3)}</p>
                     """;
         
-        await daprClient.InvokeBindingAsync("email", "create", body, metadata);
+        await daprClient.InvokeBindingAsync("notify-lunch-scheduled", "create", body, metadata);
     }
     
     public async Task SendEmailForLunchCancelled(LunchCancelledMessage message)
@@ -45,6 +45,6 @@ public class EmailSender(DaprClient daprClient, ILogger<EmailSender> logger)
                     <p>No more orders will be accepted. Any existing orders will be refunded.</p>
                     """;
         
-        await daprClient.InvokeBindingAsync("email", "create", body, metadata);
+        await daprClient.InvokeBindingAsync("notify-lunch-cancelled", "create", body, metadata);
     }
 }

@@ -22,7 +22,7 @@ public static class Delete
             db.Users.Remove(user);
             await db.SaveChangesAsync(ct);
 
-            await dapr.PublishEventAsync("pubsub", "user-events", new UserDeletedMessage(userId), ct);
+            await dapr.PublishEventAsync("pubsub", "users-events", new UserDeletedMessage(userId), ct);
 
             return TypedResults.NoContent();
         })

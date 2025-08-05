@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Domain.Abstractions;
 using Domain.Common;
+using ServiceDefaults.MultiTenancy;
 
 namespace Restaurants.Api.Domain;
 

@@ -1,17 +1,33 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Restaurants.Api.EfCore;
+using Restaurants.Api.EfCore.Interceptors;
 using Restaurants.Api.Features;
 using Restaurants.Api.Features.Meals;
 using Scalar.AspNetCore;
 using ServiceDefaults.Exceptions;
+using ServiceDefaults.MultiTenancy;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddCosmosDbContext<AppDbContext>("cosmos-db", "elkhornDb");
-builder.EnrichCosmosDbContext<AppDbContext>();
+builder.AddTenantServices();
+
+// register any EF Core interceptors (prefer singletons if possible) and inject them into the DbContext
+builder.Services.AddScoped<SetTenantIdInterceptor>();
+builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("cosmos-db")!;
+    options.UseCosmos(connectionString, "elkhornDb");
+
+    var interceptor = serviceProvider.GetRequiredService<SetTenantIdInterceptor>();
+    options.AddInterceptors(interceptor);
+});
+
+// builder.AddCosmosDbContext<AppDbContext>("cosmos-db", "elkhornDb");
+// builder.EnrichCosmosDbContext<AppDbContext>();
 
 // if using multiple exception handlers, the order here matters
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -36,9 +52,6 @@ builder.Services.AddOpenApi(o =>
     // required if using Scalar.AspNetCore extensions package
     o.AddScalarTransformers();
 });
-
-// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//     .AddJwtBearer(opt => builder.Configuration.Bind("JwtBearerOptions", opt));
 
 // Authorization policies go here...
 builder.Services.AddAuthorizationBuilder()
@@ -80,10 +93,10 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 var app = builder.Build();
 
-//app.UseHttpsRedirection();
 app.UseCors();
 app.UseCloudEvents();
 app.UseExceptionHandler();
+app.UseTenantResolutionMiddleware();
 
 app.MapOpenApi();
 app.MapDefaultEndpoints();

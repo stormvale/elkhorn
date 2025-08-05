@@ -37,7 +37,7 @@ public static class RegisterChild
             var newChild = createChildResult.Value!;
             await db.SaveChangesAsync(ct);
             
-            await dapr.PublishEventAsync("pubsub", "user-events",
+            await dapr.PublishEventAsync("pubsub", "users-events",
                 new ChildRegisteredMessage(user.Id, newChild.Id, newChild.SchoolId), ct);
             
             return TypedResults.Ok(newChild.ToChildResponse());

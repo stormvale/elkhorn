@@ -1,4 +1,6 @@
-﻿namespace Domain.Abstractions;
+﻿using Domain.Interfaces;
+
+namespace Domain.Abstractions;
 
 public interface IAggregateRoot<out TId> : IEntity<TId>
 {
@@ -10,7 +12,7 @@ public interface IAggregateRoot<out TId> : IEntity<TId>
 /// </summary>
 public abstract class AggregateRoot(Guid id) : AggregateRoot<Guid>(id);
 
-public abstract class AggregateRoot<TId>(TId id) : Entity<TId>(id), IAggregateRoot<TId>
+public abstract class AggregateRoot<TId>(TId id) : Entity<TId>(id), IAggregateRoot<TId>, ITenantAware
     where TId : notnull
 {
     /// <summary>
@@ -18,6 +20,8 @@ public abstract class AggregateRoot<TId>(TId id) : Entity<TId>(id), IAggregateRo
     /// EfCore: automatically set if mapped using 'IsRowVersion' in the configuration.
     /// </summary>
     public uint Version { get; set; }
+
+    public string TenantId { get; set; } = string.Empty;
 }
 
 
