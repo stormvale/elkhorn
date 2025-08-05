@@ -30,7 +30,7 @@ public class EmailSender(DaprClient daprClient, ILogger<EmailSender> logger)
     
     public async Task SendEmailForLunchCancelled(LunchCancelledMessage message)
     {
-        logger.LogInformation("Received a LunchCancelledMessagefor: {MessageLunchId}", message.LunchId);
+        logger.LogInformation("Received a LunchCancelledMessage for: {MessageLunchId}", message.LunchId);
         
         var metadata = new Dictionary<string, string>
         {
