@@ -1,7 +1,7 @@
 ﻿using Contracts.Schools.Messages;
 using Contracts.Schools.Requests;
+using Contracts.Schools.Responses;
 using Dapr.Client;
-using SchoolHub.Contracts.Schools.Responses;
 using Schools.Api.Domain;
 using Schools.Api.EfCore;
 using Schools.Api.Extensions;

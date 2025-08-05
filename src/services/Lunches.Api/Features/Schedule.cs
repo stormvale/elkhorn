@@ -1,10 +1,12 @@
 ﻿using Contracts.Lunches.Messages;
 using Contracts.Lunches.Requests;
+using Contracts.Lunches.Responses;
 using Contracts.Restaurants.Responses;
 using Contracts.Schools.Responses;
 using Dapr.Client;
 using Lunches.Api.Domain;
 using Lunches.Api.EfCore;
+using Lunches.Api.Extensions;
 
 namespace Lunches.Api.Features;
 
@@ -22,16 +24,16 @@ public static class Schedule
 
             var pacLunchItems = school.Pac.LunchItems.Select(x =>
                 new LunchItem(
-                    x.Name,
-                    x.Price,
-                    [])
+                    Name: x.Name,
+                    Price: x.Price,
+                    AvailableModifiers: [])
             ).ToList();
 
             var restaurantLunchItems = restaurant.Menu.Select(x =>
                 new LunchItem(
-                    x.Name,
-                    x.Price,
-                    x.AvailableModifiers.Select(y => new LunchItemModifier(y.Name, y.PriceAdjustment)).ToList())
+                    Name: x.Name,
+                    Price: x.Price,
+                    AvailableModifiers: [.. x.AvailableModifiers.Select(y => new LunchItemModifier(y.Name, y.PriceAdjustment))])
             ).ToList();
             
             var lunch = new Lunch(Guid.CreateVersion7(), req.SchoolId, req.RestaurantId, req.Date);
@@ -41,14 +43,18 @@ public static class Schedule
             await db.Lunches.AddAsync(lunch, ct);
             await db.SaveChangesAsync(ct);
             
-            await dapr.PublishEventAsync("pubsub", "lunches-events",
+            await dapr.PublishEventAsync("pubsub", "lunch-events",
                 new LunchScheduledMessage(lunch.Id, lunch.Date, school.Name, restaurant.Name), ct);
             
             return TypedResults.CreatedAtRoute(
-                lunch.Id,
+                lunch.ToLunchResponse(),
                 routeName: GetById.RouteName,
                 routeValues: new { id = lunch.Id }
             );
-        }).WithSummary("Schedule");
+        })
+        .WithName("ScheduleLunch")
+        .WithSummary("Schedule new Lunch")
+        .WithTags("Lunches")
+        .Produces<LunchResponse>(StatusCodes.Status201Created);
     }
 }

@@ -50,5 +50,7 @@ app.MapDefaultEndpoints();
 // endpoints
 app.MapSchedule();
 app.MapGetById();
+app.MapList();
+app.MapCancel();
 
 await app.RunAsync();

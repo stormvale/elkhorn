@@ -31,7 +31,6 @@ public static class Delete
         .WithSummary("Delete Restaurant")
         .WithTags("Restaurants")
         .Produces(StatusCodes.Status204NoContent)
-        .Produces(StatusCodes.Status401Unauthorized)
         .Produces(StatusCodes.Status404NotFound);
     }
 }

@@ -49,5 +49,6 @@ app.MapDefaultEndpoints();
 
 // endpoints
 app.MapLunchScheduled();
+app.MapLunchCancelled();
 
 app.Run();

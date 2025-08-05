@@ -92,6 +92,31 @@ export const authSlice = createSlice({
       sessionStorage.setItem('schoolId', state.currentSchool.schoolId);
     },
 
+    addChild: (state, action: PayloadAction<UserChild>) => {
+      if (state.currentUser) {
+        state.currentUser.children = state.currentUser.children || [];
+        state.currentUser.children.push(action.payload);
+
+        // add childs school if doesn't already exist
+        state.currentUser.schools = state.currentUser.schools || [];
+        const schoolExists = state.currentUser.schools.some(school => school.schoolId === action.payload.schoolId);
+        if (!schoolExists) {
+          state.currentUser.schools.push({
+            schoolId: action.payload.schoolId,
+            schoolName: action.payload.schoolName
+          });
+
+          // also set current school if not already set
+          if (!state.currentSchool) {
+            state.currentSchool = {
+              schoolId: action.payload.schoolId,
+              schoolName: action.payload.schoolName
+            };
+            sessionStorage.setItem('schoolId', state.currentSchool.schoolId);
+          }
+        }
+      }
+    }
     // restoreAuthStateFromLocalStorage: (state) => {
     //   const { accessToken, user } = authStorage.getAuthState();
     //   const isTokenValid = accessToken ? authStorage.isTokenValid() : false;
@@ -115,7 +140,7 @@ export const {
   setCredentials,
   clearCredentials,
   //restoreAuthStateFromLocalStorage,
-  //setSchoolContext,
+  addChild,
   setCurrentSchool 
 } = authSlice.actions;
 
