@@ -3,6 +3,7 @@ import { combineSlices, configureStore } from "@reduxjs/toolkit"
 import { setupListeners } from "@reduxjs/toolkit/query"
 import { quotesApiSlice } from "../features/quotes/quotesApiSlice"
 import { restaurantsApiSlice } from "../features/restaurants/api/apiSlice"
+import { lunchesApiSlice } from "../features/lunches/api/apiSlice"
 import { themeSlice } from "../theme/themeSlice"
 import { notificationSlice } from "../features/notifications/notificationSlice"
 import { authSlice } from "./authSlice"
@@ -13,6 +14,7 @@ import { schoolsApiSlice } from "../features/schools/api/apiSlice"
 const rootReducer = combineSlices(
   quotesApiSlice,
   restaurantsApiSlice,
+  lunchesApiSlice,
   schoolsApiSlice,
   usersApiSlice,
   themeSlice,
@@ -34,6 +36,7 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
       return getDefaultMiddleware()
         .concat(quotesApiSlice.middleware)
         .concat(restaurantsApiSlice.middleware)
+        .concat(lunchesApiSlice.middleware)
         .concat(schoolsApiSlice.middleware)
         .concat(usersApiSlice.middleware)
         //.concat(errorMiddleware)

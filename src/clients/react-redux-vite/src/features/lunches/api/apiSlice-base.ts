@@ -5,7 +5,8 @@ import { msalInstance } from '../../../msalConfig';
 
 // the endpoints for this api are generated from the OpenAPI spec
 export const apiBase = createApi({
-  reducerPath: 'schoolsApi',
+  reducerPath: 'lunchesApi',
+  tagTypes: ['Lunch'],
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_LUNCHES_API_URL,
     prepareHeaders: async (headers, { getState }) => {
@@ -14,7 +15,7 @@ export const apiBase = createApi({
       // first try to get token from MSAL silently
       const accounts = msalInstance.getAllAccounts();
       if (accounts.length > 0) {
-        console.log('🔑 Attempting to get Schools API token from MSAL silently...');
+        console.log('🔑 Attempting to get Lunches API token from MSAL silently...');
         
         try {
           const tokenResponse = await msalInstance.acquireTokenSilent({
@@ -24,7 +25,7 @@ export const apiBase = createApi({
           
           token = tokenResponse.accessToken;
         } catch (msalError) {
-          console.warn('⚠️ Could not acquire Schools API token silently from MSAL:', msalError);
+          console.warn('⚠️ Could not acquire Lunches API token silently from MSAL:', msalError);
         }
       }
 
@@ -43,7 +44,7 @@ export const apiBase = createApi({
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       } else {
-        console.warn('❗No token available to set Authorization header for Schools API request');
+        console.warn('❗No token available to set Authorization header for Lunches API request');
       }
 
       headers.set('Accept', 'application/json');

@@ -51,6 +51,6 @@ app.MapDefaultEndpoints();
 app.MapSchedule();
 app.MapGetById();
 app.MapList();
-app.MapDelete();
+app.MapCancel();
 
 await app.RunAsync();

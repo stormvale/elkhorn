@@ -1,8 +1,10 @@
 import HomePage from '../features/home/HomePage';
+import LunchesPage from '../features/lunches/LunchesPage';
 import RestaurantsPage from '../features/restaurants/RestaurantsPage';
 import {
   Home as HomeIcon,
   Restaurant as RestaurantIcon,
+  LunchDining as LunchIcon,
   Group as GroupIcon,
 } from '@mui/icons-material';
 
@@ -33,6 +35,15 @@ const sidebarRoutes: RouteConfig[] = [
     element: <RestaurantsPage />,
     icon: <RestaurantIcon />,
     displayName: "Restaurants",
+    requiresAuth: true,
+    allowedRoles: [],
+    section: 'pac'
+  },
+  {
+    path: '/lunches',
+    element: <LunchesPage />,
+    icon: <LunchIcon />,
+    displayName: "Lunches",
     requiresAuth: true,
     allowedRoles: [],
     section: 'pac'

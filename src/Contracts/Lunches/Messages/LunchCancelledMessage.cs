@@ -2,7 +2,7 @@
 
 namespace Contracts.Lunches.Messages;
 
-public record LunchDeletedMessage(
+public record LunchCancelledMessage(
     
     [property: JsonPropertyName("lunchId")]
     Guid LunchId);

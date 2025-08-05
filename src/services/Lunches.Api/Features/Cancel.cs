@@ -7,9 +7,9 @@ using Lunches.Api.Extensions;
 
 namespace Lunches.Api.Features;
 
-public static class Delete
+public static class Cancel
 {
-    public static void MapDelete(this WebApplication app)
+    public static void MapCancel(this WebApplication app)
     {
         app.MapDelete("/{id:Guid}", async (Guid id, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
         {
@@ -23,14 +23,14 @@ public static class Delete
             db.Lunches.Remove(lunch);
             await db.SaveChangesAsync(ct);
 
-            await dapr.PublishEventAsync("pubsub", "lunch-events", new LunchDeletedMessage(id), ct);
+            await dapr.PublishEventAsync("pubsub", "lunch-events", new LunchCancelledMessage(id), ct);
             
-            return TypedResults.NoContent();
+            return TypedResults.Ok();
         })
-        .WithName("DeleteLunch")
-        .WithSummary("Delete Lunch")
+        .WithName("CancelLunch")
+        .WithSummary("Cancel Lunch")
         .WithTags("Lunches")
-        .Produces(StatusCodes.Status204NoContent)
+        .Produces(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status404NotFound);
     }
 }

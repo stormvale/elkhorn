@@ -13,7 +13,7 @@ const injectedRtkApi = api.injectEndpoints({
     getLunchById: build.query<GetLunchByIdApiResponse, GetLunchByIdApiArg>({
       query: queryArg => ({ url: `/${queryArg}` }),
     }),
-    deleteLunch: build.mutation<DeleteLunchApiResponse, DeleteLunchApiArg>({
+    cancelLunch: build.mutation<CancelLunchApiResponse, CancelLunchApiArg>({
       query: queryArg => ({ url: `/${queryArg}`, method: "DELETE" }),
     }),
   }),
@@ -26,8 +26,8 @@ export type ListLunchesApiResponse = /** status 200 OK */ LunchResponse[]
 export type ListLunchesApiArg = void
 export type GetLunchByIdApiResponse = /** status 200 OK */ LunchResponse
 export type GetLunchByIdApiArg = string
-export type DeleteLunchApiResponse = unknown
-export type DeleteLunchApiArg = string
+export type CancelLunchApiResponse = unknown
+export type CancelLunchApiArg = string
 export type LunchItemModifierResponse = {
   name: string
   priceAdjustment: number
@@ -54,5 +54,5 @@ export const {
   useScheduleLunchMutation,
   useListLunchesQuery,
   useGetLunchByIdQuery,
-  useDeleteLunchMutation,
+  useCancelLunchMutation,
 } = injectedRtkApi
