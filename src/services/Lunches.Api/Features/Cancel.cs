@@ -25,12 +25,12 @@ public static class Cancel
 
             await dapr.PublishEventAsync("pubsub", "lunch-events", new LunchCancelledMessage(id), ct);
             
-            return TypedResults.Ok();
+            return TypedResults.NoContent();
         })
         .WithName("CancelLunch")
         .WithSummary("Cancel Lunch")
         .WithTags("Lunches")
-        .Produces(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status204NoContent)
         .Produces(StatusCodes.Status404NotFound);
     }
 }
