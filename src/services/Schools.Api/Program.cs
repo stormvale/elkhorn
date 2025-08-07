@@ -97,3 +97,5 @@ pac.MapCreateLunchItem();
 pac.MapRemoveLunchItem();
 
 await app.RunAsync();
+
+namespace Schools.Api { public interface ISchoolsApiAssemblyMarker; }

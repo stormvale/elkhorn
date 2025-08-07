@@ -19,7 +19,6 @@ public static class LunchScheduled
 
                 return TypedResults.Ok();
             })
-        .WithSummary("Lunch Scheduled")
-        .WithTopic("pubsub", "lunch-events"); // subscribes to the topic
+        .WithSummary("Lunch Scheduled");
     }
 }

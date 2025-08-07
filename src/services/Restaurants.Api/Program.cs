@@ -17,15 +17,27 @@ builder.AddTenantServices();
 
 // register any EF Core interceptors (prefer singletons if possible) and inject them into the DbContext
 builder.Services.AddScoped<SetTenantIdInterceptor>();
+
 builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
 {
     var connectionString = builder.Configuration.GetConnectionString("cosmos-db")!;
-    options.UseCosmos(connectionString, "elkhornDb");
+    options.UseCosmos(connectionString, "elkhornDb", cosmosOptions =>
+    {
+        // This configures the HttpClient used by the Cosmos DB client to trust the self-signed
+        // certificate from the local emulator. Required for local development with the Cosmos DB emulator.
+        cosmosOptions.HttpClientFactory(() => new HttpClient(new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+        }));
+        cosmosOptions.ConnectionMode(Microsoft.Azure.Cosmos.ConnectionMode.Gateway);
+        cosmosOptions.LimitToEndpoint();
+    });
 
     var interceptor = serviceProvider.GetRequiredService<SetTenantIdInterceptor>();
     options.AddInterceptors(interceptor);
 });
 
+// AddCosmosDbContext enables DbContext pooling. With pooling, the DbContext is configured from the root service provider where scoped services are not available.
 // builder.AddCosmosDbContext<AppDbContext>("cosmos-db", "elkhornDb");
 // builder.EnrichCosmosDbContext<AppDbContext>();
 

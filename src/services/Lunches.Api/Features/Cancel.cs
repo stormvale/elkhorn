@@ -23,7 +23,7 @@ public static class Cancel
             db.Lunches.Remove(lunch);
             await db.SaveChangesAsync(ct);
 
-            await dapr.PublishEventAsync("pubsub", "lunch-events", new LunchCancelledMessage(id), ct);
+            await dapr.PublishEventAsync("pubsub", "lunches-events", new LunchCancelledMessage(id), ct);
             
             return TypedResults.NoContent();
         })

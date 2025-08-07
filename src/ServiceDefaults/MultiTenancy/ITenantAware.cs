@@ -2,5 +2,5 @@
 
 public interface ITenantAware
 {
-    string TenantId { get; set; }
+    Guid TenantId { get; set; }
 }

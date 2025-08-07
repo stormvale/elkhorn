@@ -4,5 +4,5 @@ namespace Contracts.Restaurants.Messages;
 
 public record RestaurantRegisteredMessage(Guid RestaurantId, string Name) : ITenantAware
 {
-    public string TenantId { get; set; } = string.Empty;
+    public Guid TenantId { get; set; }
 }

@@ -10,7 +10,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>().ToContainer("users")
-            .HasPartitionKey(x => x.Id);
+            .HasPartitionKey(x => x.PartitionKey)
+            //.HasQueryFilter(x => x.TenantId == tenantContext.TenantId)
+            .HasKey(x => x.Id);
 
         modelBuilder.Entity<User>().Property(x => x.Name).HasMaxLength(100);
         modelBuilder.Entity<User>().Property(x => x.Email).HasMaxLength(100);

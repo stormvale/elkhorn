@@ -6,7 +6,7 @@
 /// </summary>
 public sealed class TenantContext
 {
-    public string TenantId { get; private set; } = string.Empty;
+    public Guid TenantId { get; private set; }
     
-    public void SetTenantId(string tenantId) => TenantId = tenantId;
+    public void SetTenantId(Guid tenantId) => TenantId = tenantId;
 }

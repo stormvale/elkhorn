@@ -10,10 +10,10 @@ public class TenantResolutionMiddleware(RequestDelegate next)
         // the tenantId claim from the access token and forward it as this custom header.
         if (context.Request.Headers.TryGetValue("X-Tenant-Id", out var headerValue))
         {
-            var tenantId = headerValue.ToString();
+            var tenantIdHeader = headerValue.ToString();
             
             // Set the tenant ID on the scoped TenantContext.
-            if (!string.IsNullOrEmpty(tenantId))
+            if (!string.IsNullOrEmpty(tenantIdHeader) && Guid.TryParse(tenantIdHeader, out var tenantId))
             {
                 tenantContext.SetTenantId(tenantId);
             }

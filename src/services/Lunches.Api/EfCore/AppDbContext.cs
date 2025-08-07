@@ -10,8 +10,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Lunch>().ToContainer("lunches")
-            .HasPartitionKey(x => x.Id)
-            .HasDefaultTimeToLive(null);
+            .HasPartitionKey(x => x.PartitionKey)
+            //.HasQueryFilter(x => x.TenantId == tenantContext.TenantId)
+            .HasKey(x => x.Id);
     }
 }
 

@@ -1,8 +1,8 @@
-﻿using System.Text.Json.Serialization;
+﻿using ServiceDefaults.MultiTenancy;
 
 namespace Contracts.Restaurants.Messages;
 
-public record RestaurantModifiedMessage(
-    
-    [property: JsonPropertyName("restaurantId")]
-    Guid RestaurantId);
+public record RestaurantModifiedMessage(Guid RestaurantId) : ITenantAware
+{
+    public Guid TenantId { get; set; }
+}

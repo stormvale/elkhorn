@@ -22,11 +22,11 @@ var cosmos = builder.AddAzureCosmosDB("cosmos-db")
 // we are using a single database with a container per service.
 var elkhornDb = cosmos.AddCosmosDatabase("elkhornDb");
 
-elkhornDb.AddContainer("restaurants", "/id");
-elkhornDb.AddContainer("schools", "/id");
-elkhornDb.AddContainer("lunches", "/id");
-elkhornDb.AddContainer("orders", "/id");
-elkhornDb.AddContainer("users", "/id");
+elkhornDb.AddContainer("restaurants", ["/PartitionKey", "/id"]);
+elkhornDb.AddContainer("schools", ["/PartitionKey", "/id"]);
+elkhornDb.AddContainer("lunches", ["/PartitionKey", "/id"]);
+elkhornDb.AddContainer("orders", ["/PartitionKey", "/id"]);
+elkhornDb.AddContainer("users", ["/PartitionKey", "/id"]);
 
 #endregion
 
@@ -40,7 +40,7 @@ var daprOptions = new DaprComponentOptions
 var secretstore = builder.AddDaprComponent("secretstore", "secretstores.local.file", daprOptions);
 var statestore = builder.AddDaprComponent("statestore", "state.redis", daprOptions);
 var email = builder.AddDaprComponent("email", "bindings.smtp", daprOptions);
-var pubSub = builder.AddDaprPubSub("pubsub");
+var pubSub = builder.AddDaprPubSub("pubsub", daprOptions);
 
 #endregion
 
@@ -57,7 +57,11 @@ var schoolsApi = builder.AddProject<Schools_Api>("schools-api")
     .WithReference(cosmos);
 
 var lunchesApi = builder.AddProject<Lunches_Api>("lunches-api")
-    .WithDaprSidecar()
+    .WithDaprSidecar(new DaprSidecarOptions
+    {
+        LogLevel = "debug",           // Options: debug, info, warn, error, fatal, panic
+        EnableApiLogging = true       // Optional: enables API call logging
+    })
     .WithReference(pubSub)
     .WithReference(cosmos);
 

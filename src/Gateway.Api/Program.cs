@@ -2,6 +2,7 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Identity.Web;
+using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,11 +11,36 @@ builder.AddServiceDefaults();
 // add and configure YARP from the appsettings.json configuration
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
-    .AddServiceDiscoveryDestinationResolver();
+    .AddServiceDiscoveryDestinationResolver()
+    .AddTransforms(builderContext =>
+    {
+        builderContext.AddRequestTransform(async transformContext =>
+        {
+            var user = transformContext.HttpContext.User;
+
+            if (user.Identity?.IsAuthenticated == true)
+            {
+                // when the access token is parsed into a ClaimsPrincipal, the 'tid' claim type is mapped to the full URI.
+                var tenantId = user.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
+                if (!string.IsNullOrEmpty(tenantId))
+                {
+                    // this is used by the TenantResolutionMiddleware to set the TenantId on the TenantContext
+                    transformContext.ProxyRequest.Headers.Add("X-Tenant-ID", tenantId);
+                }
+
+                var roles = user.FindAll("roles").Select(r => r.Value);
+                if (roles.Any())
+                {
+                    transformContext.ProxyRequest.Headers.Add("X-User-Roles", string.Join(",", roles));
+                }
+            }
+        });
+    });
 
 // Default authorization policy which YARP will apply to incoming JWT tokens before executing any transforms
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+    //.AddJwtBearer(opt => builder.Configuration.Bind("JwtBearerOptions", opt));
 
 builder.Services.AddAuthorization();
 

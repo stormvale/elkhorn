@@ -1,8 +1,7 @@
-﻿using System.Text.Json.Serialization;
-using Domain.Abstractions;
+﻿using Domain.Abstractions;
 using Domain.Interfaces;
 using Domain.Results;
-using Google.Protobuf.WellKnownTypes;
+using System.Text.Json.Serialization;
 using Users.Api.DomainErrors;
 
 namespace Users.Api.Domain;
@@ -14,7 +13,7 @@ namespace Users.Api.Domain;
 public sealed class User : AggregateRoot, IAuditable
 {
     [JsonConstructor] private User(Guid id) : base(id) { /* ef constructor */ }
-    
+
     public static Result<User> Create(Guid id, string name, string email)
     {
         var school = new User(id)
@@ -39,11 +38,11 @@ public sealed class User : AggregateRoot, IAuditable
         {
             return Result.Failure(UserErrors.ChildAlreadyRegistered(Id, child.Name));
         }
-        
+
         Children.Add(child);
         return Result.Success();
     }
-    
+
     public Result RemoveChild(Guid childId)
     {
         var child = Children.FirstOrDefault(x => x.Id == childId);
@@ -51,11 +50,11 @@ public sealed class User : AggregateRoot, IAuditable
         {
             return Result.Failure(UserErrors.ChildNotFound(Id, childId));
         }
-        
+
         Children.Remove(child);
         return Result.Success();
     }
-    
+
     #region IAuditable
 
     public DateTimeOffset CreatedUtc { get; init; }

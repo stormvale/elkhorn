@@ -12,7 +12,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<School>().ToContainer("schools")
-            .HasPartitionKey(x => x.Id);
+            .HasPartitionKey(x => x.PartitionKey)
+            //.HasQueryFilter(x => x.TenantId == tenantContext.TenantId)
+            .HasKey(x => x.Id);
 
         modelBuilder.Entity<School>().Property(x => x.Name).HasMaxLength(100);
         modelBuilder.Entity<School>().Property(x => x.ExternalId).HasMaxLength(20);

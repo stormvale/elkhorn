@@ -1,6 +1,4 @@
-﻿using Domain.Interfaces;
-
-namespace Domain.Abstractions;
+﻿namespace Domain.Abstractions;
 
 public interface IAggregateRoot<out TId> : IEntity<TId>
 {
@@ -10,9 +8,13 @@ public interface IAggregateRoot<out TId> : IEntity<TId>
 /// <summary>
 /// The default base AggregateRoot with a Guid identifier.
 /// </summary>
-public abstract class AggregateRoot(Guid id) : AggregateRoot<Guid>(id);
+public abstract class AggregateRoot(Guid id) : AggregateRoot<Guid>(id)
+{
+    // The Partition Key will be the last 5 characters of the ID
+    public string PartitionKey { get; init; } = id.ToString()[^5..];
+}
 
-public abstract class AggregateRoot<TId>(TId id) : Entity<TId>(id), IAggregateRoot<TId>, ITenantAware
+public abstract class AggregateRoot<TId>(TId id) : Entity<TId>(id), IAggregateRoot<TId>
     where TId : notnull
 {
     /// <summary>
@@ -20,8 +22,6 @@ public abstract class AggregateRoot<TId>(TId id) : Entity<TId>(id), IAggregateRo
     /// EfCore: automatically set if mapped using 'IsRowVersion' in the configuration.
     /// </summary>
     public uint Version { get; set; }
-
-    public string TenantId { get; set; } = string.Empty;
 }
 
 

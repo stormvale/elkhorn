@@ -20,14 +20,14 @@ public class SetTenantIdInterceptor(TenantContext tenantContext) : SaveChangesIn
 
     private void UpdateTenantId(DbContext? context)
     {
-        if (context == null || string.IsNullOrEmpty(tenantContext.TenantId))
+        if (context == null || tenantContext.TenantId == Guid.Empty)
         {
             return;
         }
 
         foreach (var entry in context.ChangeTracker.Entries())
         {
-            if (entry.State == EntityState.Added && entry.Entity is ITenantAware tenantAwareEntity)
+            if (entry is { State: EntityState.Added, Entity: ITenantAware tenantAwareEntity })
             {
                 tenantAwareEntity.TenantId = tenantContext.TenantId;
             }

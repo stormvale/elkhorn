@@ -5,7 +5,7 @@ using ServiceDefaults.MultiTenancy;
 
 namespace Restaurants.Api.Domain;
 
-public class Restaurant : AggregateRoot
+public class Restaurant : AggregateRoot, ITenantAware
 {
     [JsonConstructor] private Restaurant() : base(id: Guid.Empty) { /* ef constructor */ }
     
@@ -16,10 +16,11 @@ public class Restaurant : AggregateRoot
         Contact = contact;
     }
     
+    public Guid TenantId { get; set; }
     public string Name { get; private set; }
     public Address Address { get; private set; }
     public Contact Contact { get; private set; }
-    public ICollection<Meal> Menu { get; private set; } = [];
+    public ICollection<Meal> Menu { get; } = [];
     
     public void AddMeal(Meal meal)
     {

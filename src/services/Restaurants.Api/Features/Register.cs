@@ -21,9 +21,6 @@ public static class Register
 
             await db.Restaurants.AddAsync(restaurant, ct);
             await db.SaveChangesAsync(ct);
-
-            // await dapr.PublishEventAsync("pubsub", "restaurants-events",
-            //     new RestaurantRegisteredMessage(restaurant.Id, restaurant.Name), ct);
             
             await publisher.PublishEventAsync("pubsub", "restaurants-events",
                 new RestaurantRegisteredMessage(restaurant.Id, restaurant.Name), ct);
