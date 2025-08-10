@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using Schools.Api.EfCore;
@@ -47,37 +45,20 @@ builder.Services.AddAuthorizationBuilder()
             return roles.Contains("PacAdmin");
         }));
 
-builder.Services.AddCors(options =>
-    options.AddDefaultPolicy(policyBuilder => policyBuilder
-        .AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader()
-    )
-);
-
-builder.Services.AddDaprClient(config =>
-{
-    // let the dapr client know that enum values will be serialized as strings
-    var jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-    jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    config.UseJsonSerializationOptions(jsonSerializerOptions);
-});
-
 builder.Services.AddProblemDetails(opt =>
 {
     opt.CustomizeProblemDetails = ctx =>
         ctx.ProblemDetails.Extensions.TryAdd("requestId", ctx.HttpContext.TraceIdentifier);
 });
 
-builder.Services.ConfigureHttpJsonOptions(options =>
+builder.Services.ConfigureHttpJsonOptions(options => Extensions.CreateJsonSerializerOptions());
+builder.Services.AddDaprClient(config =>
 {
-    // enum values will be serialized as strings
-    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    config.UseJsonSerializationOptions(Extensions.CreateJsonSerializerOptions());
 });
 
 var app = builder.Build();
 
-app.UseCors();
 app.UseCloudEvents();
 app.UseExceptionHandler();
 

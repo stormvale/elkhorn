@@ -7,12 +7,20 @@ namespace ServiceDefaults.MultiTenancy;
 // Extension methods for tenant-related services
 public static class TenantServiceDefaults
 {
-    public static IHostApplicationBuilder AddTenantServices(this IHostApplicationBuilder builder)
+    /// <summary>
+    /// Adds services required for multi-tenancy, including:
+    /// <list type="bullet">
+    ///   <item><term>scoped <see cref="TenantContext" />.</term></item>
+    ///   <item><term>scoped <see cref="ITenantAwarePublisher" /> for DaprClient.</term></item>
+    ///   <item><term>scoped <see cref="ITenantAwareServiceInvoker" /> for DaprClient.</term></item>
+    /// </list>
+    /// </summary>
+    /// <param name="builder">The <see cref="IHostApplicationBuilder" /> to read config from and add services to.</param>
+    public static void AddTenantServices(this IHostApplicationBuilder builder)
     {
         builder.Services.AddScoped<TenantContext>();
         builder.Services.AddScoped<ITenantAwarePublisher, DaprTenantAwarePublisher>();
-
-        return builder;
+        builder.Services.AddScoped<ITenantAwareServiceInvoker, DaprTenantAwareServiceInvoker>();
     }
     
     /// <summary>

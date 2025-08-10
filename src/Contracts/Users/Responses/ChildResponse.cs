@@ -1,6 +1,4 @@
-﻿using Contracts.Users.DTOs;
-
-namespace Contracts.Users.Responses;
+﻿namespace Contracts.Users.Responses;
 
 public sealed record ChildResponse(
     Guid ChildId,

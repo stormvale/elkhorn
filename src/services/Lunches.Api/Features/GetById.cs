@@ -3,7 +3,6 @@ using Domain.Results;
 using Lunches.Api.DomainErrors;
 using Lunches.Api.EfCore;
 using Lunches.Api.Extensions;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lunches.Api.Features;

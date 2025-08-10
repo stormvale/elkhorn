@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Restaurants.Api.EfCore;
@@ -23,14 +21,17 @@ builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
     var connectionString = builder.Configuration.GetConnectionString("cosmos-db")!;
     options.UseCosmos(connectionString, "elkhornDb", cosmosOptions =>
     {
-        // This configures the HttpClient used by the Cosmos DB client to trust the self-signed
-        // certificate from the local emulator. Required for local development with the Cosmos DB emulator.
-        cosmosOptions.HttpClientFactory(() => new HttpClient(new HttpClientHandler
+        if (builder.Environment.IsDevelopment())
         {
-            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-        }));
-        cosmosOptions.ConnectionMode(Microsoft.Azure.Cosmos.ConnectionMode.Gateway);
-        cosmosOptions.LimitToEndpoint();
+            // This configures the HttpClient used by the Cosmos DB client to trust the self-signed
+            // certificate from the local emulator. Required for local development with the Cosmos DB emulator.
+            cosmosOptions.HttpClientFactory(() => new HttpClient(new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            }));
+            cosmosOptions.ConnectionMode(Microsoft.Azure.Cosmos.ConnectionMode.Gateway);
+            cosmosOptions.LimitToEndpoint();
+        }
     });
 
     var interceptor = serviceProvider.GetRequiredService<SetTenantIdInterceptor>();
@@ -75,37 +76,29 @@ builder.Services.AddAuthorizationBuilder()
             return role == "Admin";
         }));
 
-builder.Services.AddCors(options =>
-    options.AddDefaultPolicy(policyBuilder => policyBuilder
-        .AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader()
-    )
-);
-
-builder.Services.AddDaprClient(config =>
-{
-    // let the dapr client know that enum values will be serialized as strings
-    var jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-    jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    config.UseJsonSerializationOptions(jsonSerializerOptions);
-});
-
 builder.Services.AddProblemDetails(opt =>
 {
     opt.CustomizeProblemDetails = ctx =>
         ctx.ProblemDetails.Extensions.TryAdd("requestId", ctx.HttpContext.TraceIdentifier);
 });
 
-builder.Services.ConfigureHttpJsonOptions(options =>
+// builder.Services.AddCors(options =>
+//     options.AddDefaultPolicy(policyBuilder => policyBuilder
+//         .AllowAnyOrigin()
+//         .AllowAnyMethod()
+//         .AllowAnyHeader()
+//     )
+// );
+
+builder.Services.ConfigureHttpJsonOptions(options => Extensions.CreateJsonSerializerOptions());
+builder.Services.AddDaprClient(config =>
 {
-    // enum values will be serialized as strings
-    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    config.UseJsonSerializationOptions(Extensions.CreateJsonSerializerOptions());
 });
 
 var app = builder.Build();
 
-app.UseCors();
+//app.UseCors();
 app.UseCloudEvents();
 app.UseExceptionHandler();
 app.UseTenantResolutionMiddleware();
