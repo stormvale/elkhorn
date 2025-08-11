@@ -3,13 +3,16 @@ using Scalar.AspNetCore;
 using Schools.Api.EfCore;
 using Schools.Api.Features;
 using Schools.Api.Features.Pac;
+using ServiceDefaults;
 using ServiceDefaults.Exceptions;
+using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.EfCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddCosmosDbContext<AppDbContext>("cosmos-db", "elkhornDb");
-builder.EnrichCosmosDbContext<AppDbContext>();
+builder.AddTenantServices();
+builder.AddTenantAwareDbContext<AppDbContext>("cosmos-db", "elkhornDb");
 
 // if using multiple exception handlers, the order here matters
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -51,16 +54,17 @@ builder.Services.AddProblemDetails(opt =>
         ctx.ProblemDetails.Extensions.TryAdd("requestId", ctx.HttpContext.TraceIdentifier);
 });
 
-builder.Services.ConfigureHttpJsonOptions(options => Extensions.CreateJsonSerializerOptions());
+builder.Services.ConfigureHttpJsonOptions(options => JsonExtensions.CreateJsonSerializerOptions());
 builder.Services.AddDaprClient(config =>
 {
-    config.UseJsonSerializationOptions(Extensions.CreateJsonSerializerOptions());
+    config.UseJsonSerializationOptions(JsonExtensions.CreateJsonSerializerOptions());
 });
 
 var app = builder.Build();
 
 app.UseCloudEvents();
 app.UseExceptionHandler();
+app.UseTenantResolutionMiddleware();
 
 app.MapOpenApi();
 app.MapDefaultEndpoints();

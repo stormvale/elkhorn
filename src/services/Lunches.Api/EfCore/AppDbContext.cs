@@ -1,9 +1,12 @@
 ﻿using Lunches.Api.Domain;
 using Microsoft.EntityFrameworkCore;
+using ServiceDefaults.MultiTenancy;
 
 namespace Lunches.Api.EfCore;
 
-public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+public sealed class AppDbContext(
+    DbContextOptions<AppDbContext> options,
+    TenantContext tenantContext) : DbContext(options)
 {
     public DbSet<Lunch> Lunches { get; set; }
 
@@ -11,7 +14,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     {
         modelBuilder.Entity<Lunch>().ToContainer("lunches")
             .HasPartitionKey(x => x.PartitionKey)
-            //.HasQueryFilter(x => x.TenantId == tenantContext.TenantId)
+            .HasQueryFilter(x => x.TenantId == tenantContext.TenantId)
             .HasKey(x => x.Id);
     }
 }

@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Restaurants.Api.EfCore;
-using Restaurants.Api.EfCore.Interceptors;
 using Restaurants.Api.Features;
 using Restaurants.Api.Features.Meals;
 using Scalar.AspNetCore;
+using ServiceDefaults;
+using ServiceDefaults.EfCore;
 using ServiceDefaults.Exceptions;
 using ServiceDefaults.MultiTenancy;
 
@@ -13,30 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.AddTenantServices();
 
-// register any EF Core interceptors (prefer singletons if possible) and inject them into the DbContext
-builder.Services.AddScoped<SetTenantIdInterceptor>();
-
-builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
-{
-    var connectionString = builder.Configuration.GetConnectionString("cosmos-db")!;
-    options.UseCosmos(connectionString, "elkhornDb", cosmosOptions =>
-    {
-        if (builder.Environment.IsDevelopment())
-        {
-            // This configures the HttpClient used by the Cosmos DB client to trust the self-signed
-            // certificate from the local emulator. Required for local development with the Cosmos DB emulator.
-            cosmosOptions.HttpClientFactory(() => new HttpClient(new HttpClientHandler
-            {
-                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-            }));
-            cosmosOptions.ConnectionMode(Microsoft.Azure.Cosmos.ConnectionMode.Gateway);
-            cosmosOptions.LimitToEndpoint();
-        }
-    });
-
-    var interceptor = serviceProvider.GetRequiredService<SetTenantIdInterceptor>();
-    options.AddInterceptors(interceptor);
-});
+builder.AddTenantAwareDbContext<AppDbContext>("cosmos-db", "elkhornDb");
 
 // AddCosmosDbContext enables DbContext pooling. With pooling, the DbContext is configured from the root service provider where scoped services are not available.
 // builder.AddCosmosDbContext<AppDbContext>("cosmos-db", "elkhornDb");
@@ -82,23 +60,14 @@ builder.Services.AddProblemDetails(opt =>
         ctx.ProblemDetails.Extensions.TryAdd("requestId", ctx.HttpContext.TraceIdentifier);
 });
 
-// builder.Services.AddCors(options =>
-//     options.AddDefaultPolicy(policyBuilder => policyBuilder
-//         .AllowAnyOrigin()
-//         .AllowAnyMethod()
-//         .AllowAnyHeader()
-//     )
-// );
-
-builder.Services.ConfigureHttpJsonOptions(options => Extensions.CreateJsonSerializerOptions());
+builder.Services.ConfigureHttpJsonOptions(options => JsonExtensions.CreateJsonSerializerOptions());
 builder.Services.AddDaprClient(config =>
 {
-    config.UseJsonSerializationOptions(Extensions.CreateJsonSerializerOptions());
+    config.UseJsonSerializationOptions(JsonExtensions.CreateJsonSerializerOptions());
 });
 
 var app = builder.Build();
 
-//app.UseCors();
 app.UseCloudEvents();
 app.UseExceptionHandler();
 app.UseTenantResolutionMiddleware();

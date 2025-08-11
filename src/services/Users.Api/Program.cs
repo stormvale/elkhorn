@@ -3,7 +3,9 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
+using ServiceDefaults.EfCore;
 using ServiceDefaults.Exceptions;
+using ServiceDefaults.MultiTenancy;
 using Users.Api.EfCore;
 using Users.Api.Features;
 using Users.Api.Features.Children;
@@ -11,8 +13,8 @@ using Users.Api.Features.Children;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddCosmosDbContext<AppDbContext>("cosmos-db", "elkhornDb");
-builder.EnrichCosmosDbContext<AppDbContext>();
+builder.AddTenantServices();
+builder.AddTenantAwareDbContext<AppDbContext>("cosmos-db", "elkhornDb");
 
 // if using multiple exception handlers, the order here matters
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

@@ -1,9 +1,10 @@
 ﻿using Domain.Abstractions;
+using ServiceDefaults.MultiTenancy;
 
 namespace Lunches.Api.Domain;
 
 // saga? (Scheduled, OpenForOrders, OrderingClosed, Delivered, Complete, Canceled)
-public class Lunch : AggregateRoot
+public class Lunch : AggregateRoot, ITenantAware
 {
     // ef core constructor?
     
@@ -14,6 +15,7 @@ public class Lunch : AggregateRoot
         Date = date;
     }
 
+    public Guid TenantId { get; set; }
     public DateOnly Date { get; private set; }
     public Guid SchoolId { get; private set; }
     public Guid RestaurantId { get; private set; }

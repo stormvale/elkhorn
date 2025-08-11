@@ -4,6 +4,8 @@ using ServiceDefaults.MultiTenancy;
 
 namespace Restaurants.Api.EfCore;
 
+// TODO: IDbContextFactory?
+
 public sealed class AppDbContext(
     DbContextOptions<AppDbContext> options,
     TenantContext tenantContext) : DbContext(options)

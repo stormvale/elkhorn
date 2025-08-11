@@ -2,6 +2,8 @@
 using Domain.Interfaces;
 using Domain.Results;
 using System.Text.Json.Serialization;
+using ServiceDefaults.EfCore.Interfaces;
+using ServiceDefaults.MultiTenancy;
 using Users.Api.DomainErrors;
 
 namespace Users.Api.Domain;
@@ -10,7 +12,7 @@ namespace Users.Api.Domain;
 /// The User's ID comes from the 'oid' claim because it is the immutable ID
 /// of the user in Entra ID across all apps in the tenant.
 /// </summary>
-public sealed class User : AggregateRoot, IAuditable
+public sealed class User : AggregateRoot, ITenantAware, IAuditable
 {
     [JsonConstructor] private User(Guid id) : base(id) { /* ef constructor */ }
 
@@ -26,6 +28,7 @@ public sealed class User : AggregateRoot, IAuditable
         return Result.Success(school);
     }
 
+    public Guid TenantId { get; set; }
     public string Name { get; private set; }
     public string Email { get; private set; }
     public List<Child> Children { get; } = [];

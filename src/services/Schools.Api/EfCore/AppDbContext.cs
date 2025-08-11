@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Schools.Api.Domain;
+using ServiceDefaults.MultiTenancy;
 
 namespace Schools.Api.EfCore;
 
-// TODO: add an IDbContextFactory
-
-public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+public sealed class AppDbContext(
+    DbContextOptions<AppDbContext> options,
+    TenantContext tenantContext) : DbContext(options)
 {
     public DbSet<School> Schools { get; set; }
 
@@ -13,7 +14,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     {
         modelBuilder.Entity<School>().ToContainer("schools")
             .HasPartitionKey(x => x.PartitionKey)
-            //.HasQueryFilter(x => x.TenantId == tenantContext.TenantId)
+            .HasQueryFilter(x => x.TenantId == tenantContext.TenantId)
             .HasKey(x => x.Id);
 
         modelBuilder.Entity<School>().Property(x => x.Name).HasMaxLength(100);

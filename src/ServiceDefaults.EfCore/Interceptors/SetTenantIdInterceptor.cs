@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using ServiceDefaults.MultiTenancy;
 
-namespace Lunches.Api.EfCore.Interceptors;
+namespace ServiceDefaults.EfCore.Interceptors;
 
 public class SetTenantIdInterceptor(TenantContext tenantContext) : SaveChangesInterceptor
 {

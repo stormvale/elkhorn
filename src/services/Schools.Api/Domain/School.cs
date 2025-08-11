@@ -3,10 +3,12 @@ using Domain.Abstractions;
 using Domain.Common;
 using Domain.Interfaces;
 using Domain.Results;
+using ServiceDefaults.EfCore.Interfaces;
+using ServiceDefaults.MultiTenancy;
 
 namespace Schools.Api.Domain;
 
-public class School : AggregateRoot, IAuditable
+public class School : AggregateRoot, ITenantAware, IAuditable
 {
     [JsonConstructor] private School(Guid id) : base(id) { /* ef constructor */ }
     
@@ -24,6 +26,7 @@ public class School : AggregateRoot, IAuditable
         return Result.Success(school);
     }
 
+    public Guid TenantId { get; set; }
     public string Name { get; private set; }
     public string ExternalId { get; private set; }
     public Address Address { get; private set; }
