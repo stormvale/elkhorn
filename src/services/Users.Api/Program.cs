@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using ServiceDefaults;
@@ -39,9 +38,6 @@ builder.Services.AddOpenApi(o =>
     o.AddScalarTransformers();
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(opt => builder.Configuration.Bind("JwtBearerOptions", opt));
-
 // Authorization policies go here...
 builder.Services.AddAuthorizationBuilder();
 
@@ -55,6 +51,7 @@ var app = builder.Build();
 
 app.UseCloudEvents();
 app.UseExceptionHandler();
+app.UseTenantResolutionMiddleware();
 
 app.MapOpenApi();
 app.MapDefaultEndpoints();

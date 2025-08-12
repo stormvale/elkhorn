@@ -13,20 +13,10 @@ public sealed class AppDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Lunch>().ToContainer("lunches")
-            .HasPartitionKey(x => x.PartitionKey)
+            .HasPartitionKey(x => x.TenantId)
             .HasQueryFilter(x => x.TenantId == tenantContext.TenantId)
-            .OwnsMany(x => x.AvailablePacItems, builder =>
-            {
-                builder.WithOwner();
-                // builder.OwnsMany(m => m.AvailableModifiers, modifierBuilder =>
-                // {
-                //     modifierBuilder.WithOwner();
-                // });
-            })
-            .OwnsMany(x => x.AvailableRestaurantItems, builder =>
-            {
-                builder.WithOwner();
-            })
+            .OwnsMany(x => x.AvailablePacItems, builder => builder.WithOwner())
+            .OwnsMany(x => x.AvailableRestaurantItems, builder => builder.WithOwner())
             .HasKey(x => x.Id);
     }
 }

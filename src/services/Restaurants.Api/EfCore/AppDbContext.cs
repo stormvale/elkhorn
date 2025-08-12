@@ -16,7 +16,7 @@ public sealed class AppDbContext(
     {
         modelBuilder.Entity<Restaurant>()
             .ToContainer("restaurants")
-            .HasPartitionKey(x => x.PartitionKey)
+            .HasPartitionKey(x => x.TenantId)
             .HasQueryFilter(x => x.TenantId == tenantContext.TenantId)
             .OwnsMany(r => r.Menu, mealBuilder =>
             {

@@ -8,11 +8,7 @@ public interface IAggregateRoot<out TId> : IEntity<TId>
 /// <summary>
 /// The default base AggregateRoot with a Guid identifier.
 /// </summary>
-public abstract class AggregateRoot(Guid id) : AggregateRoot<Guid>(id)
-{
-    // The Partition Key will be the last 5 characters of the ID
-    public string PartitionKey { get; init; } = id.ToString()[^5..];
-}
+public abstract class AggregateRoot(Guid id) : AggregateRoot<Guid>(id) { }
 
 public abstract class AggregateRoot<TId>(TId id) : Entity<TId>(id), IAggregateRoot<TId>
     where TId : notnull

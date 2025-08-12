@@ -13,7 +13,7 @@ public sealed class AppDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>().ToContainer("users")
-            .HasPartitionKey(x => x.PartitionKey)
+            .HasPartitionKey(x => x.TenantId)
             .HasQueryFilter(x => x.TenantId == tenantContext.TenantId)
             .HasKey(x => x.Id);
 
