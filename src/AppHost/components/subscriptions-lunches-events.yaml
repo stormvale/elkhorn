@@ -7,7 +7,7 @@ scopes:
 spec:
   pubsubname: pubsub
   topic: lunches-events
-  route:
+  routes:
     rules:
       - match: "event.type == 'LunchScheduledMessage'"
         path: /lunch-scheduled

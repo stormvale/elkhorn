@@ -15,6 +15,18 @@ public sealed class AppDbContext(
         modelBuilder.Entity<Lunch>().ToContainer("lunches")
             .HasPartitionKey(x => x.PartitionKey)
             .HasQueryFilter(x => x.TenantId == tenantContext.TenantId)
+            .OwnsMany(x => x.AvailablePacItems, builder =>
+            {
+                builder.WithOwner();
+                // builder.OwnsMany(m => m.AvailableModifiers, modifierBuilder =>
+                // {
+                //     modifierBuilder.WithOwner();
+                // });
+            })
+            .OwnsMany(x => x.AvailableRestaurantItems, builder =>
+            {
+                builder.WithOwner();
+            })
             .HasKey(x => x.Id);
     }
 }

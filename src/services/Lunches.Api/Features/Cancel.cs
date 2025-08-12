@@ -4,6 +4,7 @@ using Domain.Results;
 using Lunches.Api.DomainErrors;
 using Lunches.Api.EfCore;
 using Lunches.Api.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lunches.Api.Features;
 
@@ -11,19 +12,23 @@ public static class Cancel
 {
     public static void MapCancel(this WebApplication app)
     {
-        app.MapDelete("/{id:Guid}", async (Guid id, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
+        app.MapDelete("/{lunchId:Guid}", async (Guid lunchId, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
         {
-            var lunch = await db.Lunches.FindAsync([id], ct);
+            var lunch = await db.Lunches
+                .AsNoTracking()
+                .Where(x => x.Id == lunchId)
+                .FirstOrDefaultAsync(ct);
+            
             if (lunch is null)
             {
-                return Result.Failure(LunchErrors.NotFound(id)).ToProblemDetails();
+                return Result.Failure(LunchErrors.NotFound(lunchId)).ToProblemDetails();
             }
             
             // 'ExecuteDelete' and 'ExecuteDeleteAsync' are not supported by the CosmosDb provider
             db.Lunches.Remove(lunch);
             await db.SaveChangesAsync(ct);
 
-            await dapr.PublishEventAsync("pubsub", "lunches-events", new LunchCancelledMessage(id), ct);
+            await dapr.PublishEventAsync("pubsub", "lunches-events", new LunchCancelledMessage(lunchId), ct);
             
             return TypedResults.NoContent();
         })

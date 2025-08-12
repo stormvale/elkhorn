@@ -3,6 +3,8 @@ kind: Component
 metadata:
   name: email
   namespace: default
+scopes:
+  - notifications-api
 spec:
   type: bindings.smtp
   version: v1
@@ -19,5 +21,3 @@ spec:
       value: "true"
     - name: emailFrom
       value: "no-reply@elkhorn.ca"
-scopes:
-  - notifications-api

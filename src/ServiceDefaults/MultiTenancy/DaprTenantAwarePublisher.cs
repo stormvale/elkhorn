@@ -10,7 +10,7 @@ public class DaprTenantAwarePublisher(DaprClient daprClient, TenantContext tenan
         
         Dictionary<string, string> metaData = new()
         {
-            { "type", typeof(T).Name }
+            { "cloudevent.type", typeof(T).Name }
         };
         
         await daprClient.PublishEventAsync(pubSubName, topicName, data, metaData, ct);
