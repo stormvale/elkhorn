@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.AddTenantServices();
-
+builder.AddJsonConfiguration();
 builder.AddTenantAwareDbContext<AppDbContext>("cosmos-db", "elkhornDb");
 
 // if using multiple exception handlers, the order here matters
@@ -42,12 +42,6 @@ builder.Services.AddProblemDetails(opt =>
 {
     opt.CustomizeProblemDetails = ctx =>
         ctx.ProblemDetails.Extensions.TryAdd("requestId", ctx.HttpContext.TraceIdentifier);
-});
-
-builder.Services.ConfigureHttpJsonOptions(options => JsonExtensions.CreateJsonSerializerOptions());
-builder.Services.AddDaprClient(config =>
-{
-    config.UseJsonSerializationOptions(JsonExtensions.CreateJsonSerializerOptions());
 });
 
 var app = builder.Build();

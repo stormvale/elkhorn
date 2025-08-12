@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Restaurants.Api.EfCore;
 using Restaurants.Api.Features;
@@ -13,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.AddTenantServices();
-
+builder.AddJsonConfiguration();
 builder.AddTenantAwareDbContext<AppDbContext>("cosmos-db", "elkhornDb");
 
 // AddCosmosDbContext enables DbContext pooling. With pooling, the DbContext is configured from the root service provider where scoped services are not available.
@@ -58,12 +57,6 @@ builder.Services.AddProblemDetails(opt =>
 {
     opt.CustomizeProblemDetails = ctx =>
         ctx.ProblemDetails.Extensions.TryAdd("requestId", ctx.HttpContext.TraceIdentifier);
-});
-
-builder.Services.ConfigureHttpJsonOptions(options => JsonExtensions.CreateJsonSerializerOptions());
-builder.Services.AddDaprClient(config =>
-{
-    config.UseJsonSerializationOptions(JsonExtensions.CreateJsonSerializerOptions());
 });
 
 var app = builder.Build();

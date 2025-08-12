@@ -1,4 +1,6 @@
-﻿namespace ServiceDefaults.EfCore.Interfaces;
+﻿using ServiceDefaults.EfCore.Interceptors;
+
+namespace ServiceDefaults.EfCore.Interfaces;
 
 /// <summary>
 /// Interface for entities that need auditing. Provides properties to track when an entity was created
