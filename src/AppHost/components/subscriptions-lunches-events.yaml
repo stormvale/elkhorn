@@ -2,14 +2,14 @@
 kind: Subscription
 metadata:
   name: lunches-events-subscription
+scopes:
+  - notifications-api
 spec:
+  pubsubname: pubsub
   topic: lunches-events
   route:
     rules:
-      - match: "event.type == 'LunchScheduled'"
+      - match: "event.type == 'LunchScheduledMessage'"
         path: /lunch-scheduled
-      - match: "event.type == 'LunchCancelled'"
+      - match: "event.type == 'LunchCancelledMessage'"
         path: /lunch-cancelled
-  pubsubname: pubsub
-scopes:
-  - notifications-api

@@ -16,22 +16,19 @@ public static class JsonConfigurationExtensions
     /// <returns>The <see cref="IServiceCollection" /> with JSON configuration services added.</returns>
     public static void AddJsonConfiguration(this IHostApplicationBuilder builder)
     {
-        var sharedOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-        sharedOptions.Converters.Add(new JsonStringEnumConverter());
-        
         builder.Services.ConfigureHttpJsonOptions(options =>
         {
-            foreach (var converter in sharedOptions.Converters)
-            {
-                options.SerializerOptions.Converters.Add(converter);
-            }
+            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
         
         // TODO: should be made more explicit to the caller that this method adds the DaprClient.
         // probably move this somewhere else.
         builder.Services.AddDaprClient(config =>
         {
-            config.UseJsonSerializationOptions(sharedOptions);
+            var serializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+            serializerOptions.Converters.Add(new JsonStringEnumConverter());
+            
+            config.UseJsonSerializationOptions(serializerOptions);
         });
     }
 }
