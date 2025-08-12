@@ -39,12 +39,12 @@ public class RestaurantApiTests : IClassFixture<CosmosDbEmulatorFixture>, IDispo
         );
 
         // POST request to the registration endpoint
-        var postResult = await _restaurantsHttpClient.PostAsJsonAsync("/", request);
+        var postResult = await _restaurantsHttpClient.PostAsJsonAsync("/", request, cancellationToken: TestContext.Current.CancellationToken);
         postResult.StatusCode.ShouldBe(HttpStatusCode.Created);
         postResult.Headers.Location.ShouldNotBeNull();
         
         // check the response content
-        var postResponse = await postResult.Content.ReadFromJsonAsync<RegisterRestaurantResponse>();
+        var postResponse = await postResult.Content.ReadFromJsonAsync<RegisterRestaurantResponse>(TestContext.Current.CancellationToken);
         postResponse.ShouldNotBeNull();
         postResponse.RestaurantId.ShouldNotBe(Guid.Empty);
         
@@ -57,19 +57,20 @@ public class RestaurantApiTests : IClassFixture<CosmosDbEmulatorFixture>, IDispo
         // fetch resource directly from Cosmos DB
         var container = _cosmosClient.GetContainer("TestDb", "restaurants");
         var cosmosResponse = await container.ReadItemAsync<dynamic>(
-            postResponse.RestaurantId.ToString(), 
-            new PartitionKey(postResponse.RestaurantId.ToString()));
+            postResponse.RestaurantId.ToString(),
+            new PartitionKey(postResponse.RestaurantId.ToString()),
+            cancellationToken: TestContext.Current.CancellationToken);
 
         // verify the persisted data
         ((string)cosmosResponse.Resource["Name"]).ShouldBe(request.Name);
         ((string)cosmosResponse.Resource["Address"]["Street"]).ShouldBe(request.Address.Street);
         
         // GET request to the GetById endpoint
-        var getResult = await _restaurantsHttpClient.GetAsync(postResponse.RestaurantId.ToString());
+        var getResult = await _restaurantsHttpClient.GetAsync(postResponse.RestaurantId.ToString(), TestContext.Current.CancellationToken);
         getResult.StatusCode.ShouldBe(HttpStatusCode.OK);
         
         // check the response content
-        var restaurant = await getResult.Content.ReadFromJsonAsyncEnhanced<RestaurantResponse>();
+        var restaurant = await getResult.Content.ReadFromJsonAsyncEnhanced<RestaurantResponse>(ct: TestContext.Current.CancellationToken);
         restaurant.ShouldNotBeNull();
         restaurant.Id.ShouldNotBe(Guid.Empty);
         restaurant.Name.ShouldBe(request.Name);

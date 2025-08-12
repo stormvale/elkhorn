@@ -28,7 +28,7 @@ public static class Register
             return TypedResults.CreatedAtRoute(
                 new RegisterRestaurantResponse(restaurant.Id),
                 routeName: GetById.RouteName,
-                routeValues: new { id = restaurant.Id }
+                routeValues: new { restaurantId = restaurant.Id }
             );
         })
         .WithName("RegisterRestaurant")

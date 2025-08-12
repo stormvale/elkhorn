@@ -49,7 +49,7 @@ public static class Schedule
             return TypedResults.CreatedAtRoute(
                 lunch.ToLunchResponse(),
                 routeName: GetById.RouteName,
-                routeValues: new { id = lunch.Id }
+                routeValues: new { lunchId = lunch.Id }
             );
         })
         .WithName("ScheduleLunch")
