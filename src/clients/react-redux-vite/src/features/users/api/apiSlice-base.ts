@@ -18,7 +18,6 @@ export const apiBase = createApi({
         
         try {
           const tokenResponse = await msalInstance.acquireTokenSilent({
-            // scopes: ['api://c8b4f2d6-2193-4338-b7bc-74f2ad75844e/UsersApi.All'],
             scopes: ['api://a463a515-5631-4aba-bc16-23e4c0c76963/ApiAccess.All'],
             account: accounts[0]
           });

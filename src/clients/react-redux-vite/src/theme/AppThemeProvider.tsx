@@ -92,10 +92,10 @@ export const AppThemeProvider: React.FC<Props> = ({ children }) => {
       palette: {
         mode: mode as PaletteMode,
         primary: {
-          main: '#1c9c7c',
+          main: 'rgba(30, 30, 150, 1)',
         },
         secondary: {
-          main: '#9DF3C4',
+          main: 'rgba(30, 150, 30, 1)',
         },
         Ink: {
           Darkest: '#000000',
