@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.AddTenantServices();
 builder.AddJsonConfiguration();
+builder.AddDaprClientWithJsonConfiguration();
 
 builder.Services.AddOpenApi(o =>
 {

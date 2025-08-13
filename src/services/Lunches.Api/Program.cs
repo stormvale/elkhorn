@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.AddTenantServices();
 builder.AddJsonConfiguration();
+builder.AddDaprClientWithJsonConfiguration();
 builder.AddTenantAwareDbContext<AppDbContext>("cosmos-db", "elkhornDb");
 
 // if using multiple exception handlers, the order here matters
