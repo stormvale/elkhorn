@@ -7,25 +7,24 @@ import { msalInstance } from '../../../msalConfig';
 export const apiBase = createApi({
   reducerPath: 'restaurantsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_RESTAURANTS_API_URL,
+    baseUrl: `${import.meta.env.VITE_API_GATEWAY_URL}/restaurants`,
     prepareHeaders: async (headers, { getState }) => {
       let token: string | null = null;
 
       // first try to get token from MSAL silently
       const accounts = msalInstance.getAllAccounts();
       if (accounts.length > 0) {
-        console.log('🔑 Attempting to get Gateway API token from MSAL silently...');
+        console.log('🔑 Attempting to get API token from MSAL silently...');
         
         try {
           const tokenResponse = await msalInstance.acquireTokenSilent({
-            // scopes: ['api://f776afca-bc47-4fee-9c85-e86ee08578f5/RestaurantsApi.All'],
             scopes: ['api://a463a515-5631-4aba-bc16-23e4c0c76963/ApiAccess.All'],
             account: accounts[0]
           });
           
           token = tokenResponse.accessToken;
         } catch (msalError) {
-          console.warn('⚠️ Could not acquire Restaurants API token silently from MSAL:', msalError);
+          console.warn('⚠️ Could not acquire API token silently from MSAL:', msalError);
         }
       }
 

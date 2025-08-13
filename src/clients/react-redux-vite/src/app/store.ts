@@ -1,7 +1,6 @@
 import type { Action, ThunkAction } from "@reduxjs/toolkit"
 import { combineSlices, configureStore } from "@reduxjs/toolkit"
 import { setupListeners } from "@reduxjs/toolkit/query"
-import { quotesApiSlice } from "../features/quotes/quotesApiSlice"
 import { restaurantsApiSlice } from "../features/restaurants/api/apiSlice"
 import { lunchesApiSlice } from "../features/lunches/api/apiSlice"
 import { themeSlice } from "../theme/themeSlice"
@@ -9,13 +8,14 @@ import { notificationSlice } from "../features/notifications/notificationSlice"
 import { authSlice } from "./authSlice"
 import { usersApiSlice } from "../features/users/api/apiSlice"
 import { schoolsApiSlice } from "../features/schools/api/apiSlice"
+import { ordersApiSlice } from "../features/orders/api/apiSlice"
 
 // `combineSlices` automatically combines the reducers using the `reducerPath`
 const rootReducer = combineSlices(
-  quotesApiSlice,
   restaurantsApiSlice,
   lunchesApiSlice,
   schoolsApiSlice,
+  ordersApiSlice,
   usersApiSlice,
   themeSlice,
   authSlice,
@@ -34,10 +34,10 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
     // Adding the api middleware enables caching, invalidation, polling and other useful features of `rtk-query`.
     middleware: getDefaultMiddleware => {
       return getDefaultMiddleware()
-        .concat(quotesApiSlice.middleware)
         .concat(restaurantsApiSlice.middleware)
         .concat(lunchesApiSlice.middleware)
         .concat(schoolsApiSlice.middleware)
+        .concat(ordersApiSlice.middleware)
         .concat(usersApiSlice.middleware)
         //.concat(errorMiddleware)
     },

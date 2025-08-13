@@ -5,9 +5,9 @@ import { msalInstance } from '../../../msalConfig';
 
 // the endpoints for this api are generated from the OpenAPI spec
 export const apiBase = createApi({
-  reducerPath: 'lunchesApi',
+  reducerPath: 'ordersApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${import.meta.env.VITE_API_GATEWAY_URL}/lunches`,
+    baseUrl: `${import.meta.env.VITE_API_GATEWAY_URL}/orders`,
     prepareHeaders: async (headers, { getState }) => {
       let token: string | null = null;
 
