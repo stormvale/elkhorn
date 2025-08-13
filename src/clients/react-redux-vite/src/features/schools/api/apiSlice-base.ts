@@ -14,11 +14,11 @@ export const apiBase = createApi({
       // first try to get token from MSAL silently
       const accounts = msalInstance.getAllAccounts();
       if (accounts.length > 0) {
-        console.log('🔑 Attempting to get Schools API token from MSAL silently...');
+        console.log('🔑 Attempting to get Gateway API token from MSAL silently...');
         
         try {
           const tokenResponse = await msalInstance.acquireTokenSilent({
-            scopes: ['api://2c25e4f8-a05f-4450-bbdd-ef927a3ed271/SchoolsApi.All'],
+            scopes: ['api://a463a515-5631-4aba-bc16-23e4c0c76963/ApiAccess.All'],
             account: accounts[0]
           });
           

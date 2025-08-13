@@ -1,0 +1,68 @@
+﻿# If/when we move to a database-per-tenant model, we can have a DbContextFactory that will create
+# the DbContext for each tenant as required. We would need a way to get the connection string for
+# the current tenant (several options for this) and use that to create the DbContextOptions to use
+# when creating the DbContext.
+#
+# This would allow us to remove the global query filter for TenantId used in the model configurations,
+# since each DbContext database would now be for a single tenant.
+#
+# Below is a quick work-in-progress implementation:
+
+
+public class AppDbContextFactory : IDbContextFactory<AppDbContext>, IAppDbContextFactory
+{
+    private readonly DbContextOptions<AppDbContext> _options;
+    private readonly TenantContext _tenantContext;
+
+    public AppDbContextFactory(DbContextOptions<AppDbContext> options, TenantContext tenantContext)
+    {
+        _options = options;
+        _tenantContext = tenantContext;
+    }
+    
+    public AppDbContext CreateDbContext()
+    {
+        var tenantConnectionString = "<get connection_string for current tenant in the tenantContext>";
+        return CreateDbContext(tenantConnectionString);
+    }
+
+    public AppDbContext CreateDbContext(string connectionString)
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>(_options);
+        
+        optionsBuilder.UseCosmos(connectionString, "elkhornDb", cosmosOptions =>
+        {
+            if (builder.Environment.IsDevelopment())
+            {
+                // This configures the HttpClient used by the Cosmos DB client to trust the self-signed
+                // certificate from the local emulator. Required for local development with the Cosmos DB emulator.
+                cosmosOptions.HttpClientFactory(() => new HttpClient(new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                }));
+                cosmosOptions.ConnectionMode(Microsoft.Azure.Cosmos.ConnectionMode.Gateway);
+                cosmosOptions.LimitToEndpoint();
+            }
+        })
+        .EnableDetailedErrors()
+        .EnableSensitiveDataLogging()
+        .AddInterceptors(
+            new SetTenantIdInterceptor(_tenantContext),
+            new UpdateAuditableInterceptor())
+        .LogTo(Console.WriteLine);
+
+        return new AppDbContext(optionsBuilder.Options);
+    }
+}
+
+/// <summary>
+/// This interface performs the role of a "wrapper" over the factory. It has an additional
+/// method CreateDbContext(string connectionString), that allows you to explicitly specify
+/// for which tenant the database context should be created.
+/// </summary>
+public interface IAppDbContextFactory
+{
+    public AppDbContext CreateDbContext();
+
+    public AppDbContext CreateDbContext(string connectionString);
+}

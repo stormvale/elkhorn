@@ -22,11 +22,11 @@ var cosmos = builder.AddAzureCosmosDB("cosmos-db")
 // we are using a single database with a container per service.
 var elkhornDb = cosmos.AddCosmosDatabase("elkhornDb");
 
-elkhornDb.AddContainer("restaurants", ["/TenantId", "/id"]);
-elkhornDb.AddContainer("schools", ["/TenantId", "/id"]);
-elkhornDb.AddContainer("lunches", ["/TenantId", "/id"]);
-elkhornDb.AddContainer("orders", ["/TenantId", "/id"]);
-elkhornDb.AddContainer("users", ["/TenantId", "/id"]);
+elkhornDb.AddContainer("restaurants", ["/TenantId"]);
+elkhornDb.AddContainer("schools", ["/TenantId"]);
+elkhornDb.AddContainer("lunches", ["/TenantId"]);
+elkhornDb.AddContainer("orders", ["/TenantId"]);
+elkhornDb.AddContainer("users", ["/TenantId"]);
 
 #endregion
 

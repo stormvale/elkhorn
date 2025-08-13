@@ -4,11 +4,20 @@ using Microsoft.OpenApi.Models;
 using Orders.Api.EfCore;
 using Orders.Api.Features;
 using Scalar.AspNetCore;
+using ServiceDefaults;
+using ServiceDefaults.EfCore;
+using ServiceDefaults.Exceptions;
+using ServiceDefaults.MultiTenancy;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddCosmosDbContext<AppDbContext>("elkhornDb", "elkhornDb");
+builder.AddTenantServices();
+builder.AddJsonConfiguration();
+builder.AddDaprClientWithJsonConfiguration();
+builder.AddTenantAwareDbContext<AppDbContext>("cosmos-db", "elkhornDb");
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddOpenApi(o =>
 {
@@ -31,20 +40,21 @@ builder.Services.AddOpenApi(o =>
     o.AddScalarTransformers();
 });
 
-builder.Services.AddDaprClient(config =>
+builder.Services.AddProblemDetails(opt =>
 {
-    // let the dapr client know that enum values will be serialized as strings
-    var jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-    jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    config.UseJsonSerializationOptions(jsonSerializerOptions);
+    opt.CustomizeProblemDetails = ctx =>
+        ctx.ProblemDetails.Extensions.TryAdd("requestId", ctx.HttpContext.TraceIdentifier);
 });
 
 var app = builder.Build();
 
 app.UseCloudEvents();
-app.MapSubscribeHandler();
+app.UseExceptionHandler();
+app.UseTenantResolutionMiddleware();
+
 app.MapOpenApi();
 app.MapDefaultEndpoints();
+app.MapSubscribeHandler();
 
 // endpoints
 app.MapCreate();
@@ -52,3 +62,5 @@ app.MapGetById();
 app.MapList();
 
 await app.RunAsync();
+
+namespace Orders.Api { public interface IOrdersApiAssemblyMarker; }
