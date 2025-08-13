@@ -1,15 +1,22 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Lunches.Api.EfCore;
 using Lunches.Api.Features;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
+using ServiceDefaults;
+using ServiceDefaults.EfCore;
+using ServiceDefaults.Exceptions;
+using ServiceDefaults.MultiTenancy;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddCosmosDbContext<AppDbContext>("cosmos-db", "elkhornDb");
-builder.EnrichCosmosDbContext<AppDbContext>();
+builder.AddTenantServices();
+builder.AddJsonConfiguration();
+builder.AddDaprClientWithJsonConfiguration();
+builder.AddTenantAwareDbContext<AppDbContext>("cosmos-db", "elkhornDb");
+
+// if using multiple exception handlers, the order here matters
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddOpenApi(o =>
 {
@@ -32,20 +39,21 @@ builder.Services.AddOpenApi(o =>
     o.AddScalarTransformers();
 });
 
-builder.Services.AddDaprClient(config =>
+builder.Services.AddProblemDetails(opt =>
 {
-    // let the dapr client know that enum values will be serialized as strings
-    var jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-    jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    config.UseJsonSerializationOptions(jsonSerializerOptions);
+    opt.CustomizeProblemDetails = ctx =>
+        ctx.ProblemDetails.Extensions.TryAdd("requestId", ctx.HttpContext.TraceIdentifier);
 });
 
 var app = builder.Build();
 
 app.UseCloudEvents();
-app.MapSubscribeHandler();
+app.UseExceptionHandler();
+app.UseTenantResolutionMiddleware();
+
 app.MapOpenApi();
 app.MapDefaultEndpoints();
+app.MapSubscribeHandler();
 
 // endpoints
 app.MapSchedule();
@@ -54,3 +62,5 @@ app.MapList();
 app.MapCancel();
 
 await app.RunAsync();
+
+namespace Lunches.Api { public interface ILunchesApiAssemblyMarker; }

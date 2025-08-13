@@ -1,11 +1,11 @@
-﻿using Domain.Interfaces;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using ServiceDefaults.EfCore.Interfaces;
 
-namespace Schools.Api.EfCore.Interceptors;
+namespace ServiceDefaults.EfCore.Interceptors;
 
-internal sealed class UpdateAuditableInterceptor : SaveChangesInterceptor
+public sealed class UpdateAuditableInterceptor : SaveChangesInterceptor
 {
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
@@ -37,16 +37,19 @@ internal sealed class UpdateAuditableInterceptor : SaveChangesInterceptor
 
         foreach (var entry in entities)
         {
-            switch (entry.State)
+            switch (entry)
             {
-                case EntityState.Added:
+                case { State: EntityState.Added }:
                     SetCurrentPropertyValue(entry, nameof(IAuditable.CreatedUtc), utcNow);
                     break;
-                case EntityState.Modified:
+                case { State: EntityState.Modified }:
                     SetCurrentPropertyValue(entry, nameof(IAuditable.LastModifiedUtc), utcNow);
                     break;
             }
         }
+
+        return;
+
         static void SetCurrentPropertyValue(EntityEntry entry, string propertyName, DateTimeOffset utcNow) =>
             entry.Property(propertyName).CurrentValue = utcNow;
     }

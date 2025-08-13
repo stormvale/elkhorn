@@ -1,6 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using Domain.Abstractions;
-using Domain.Interfaces;
 using Domain.Results;
 
 namespace Users.Api.Domain;

@@ -1,13 +1,14 @@
 ﻿using Contracts.Restaurants.Messages;
 using Contracts.Restaurants.Requests;
 using Contracts.Restaurants.Responses;
-using Dapr.Client;
 using Domain.Results;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Restaurants.Api.Domain;
 using Restaurants.Api.DomainErrors;
 using Restaurants.Api.EfCore;
 using Restaurants.Api.Extensions;
+using ServiceDefaults.MultiTenancy;
 
 namespace Restaurants.Api.Features.Meals;
 
@@ -15,9 +16,12 @@ public static class CreateMeal
 {
     public static void MapCreateMeal(this RouteGroupBuilder group)
     {
-        group.MapPost("/", async (Guid restaurantId, CreateMealRequest req, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
+        group.MapPost("/", async (Guid restaurantId, CreateMealRequest req, AppDbContext db, ITenantAwarePublisher publisher, CancellationToken ct) =>
         {
-            var restaurant = await db.Restaurants.FindAsync([restaurantId], ct);
+            var restaurant = await db.Restaurants
+                .Where(x => x.Id == restaurantId)
+                .FirstOrDefaultAsync(ct);
+            
             if (restaurant is null)
             {
                 return Result.Failure(RestaurantErrors.NotFound(restaurantId)).ToProblemDetails();
@@ -29,8 +33,8 @@ public static class CreateMeal
             
             await db.SaveChangesAsync(ct);
             
-            await dapr.PublishEventAsync("pubsub", "restaurants-events",
-                new RestaurantModifiedMessage(restaurant.Id), ct);
+            await publisher.PublishEventAsync("pubsub", "restaurants-events",
+                new RestaurantModifiedMessage(restaurantId), ct);
 
             return TypedResults.Ok(new CreateMealResponse(meal.Id, restaurant.Id));
         })

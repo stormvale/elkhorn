@@ -24,7 +24,7 @@ public static class Register
             await db.Users.AddAsync(user, ct);
             await db.SaveChangesAsync(ct);
 
-            await dapr.PublishEventAsync("pubsub", "user-events",
+            await dapr.PublishEventAsync("pubsub", "users-events",
                 new UserRegisteredMessage(user.Id, user.Name), ct);
 
             return TypedResults.CreatedAtRoute(

@@ -1,8 +1,3 @@
-﻿using System.Text.Json.Serialization;
+﻿namespace Contracts.Lunches.Messages;
 
-namespace Contracts.Lunches.Messages;
-
-public record LunchCancelledMessage(
-    
-    [property: JsonPropertyName("lunchId")]
-    Guid LunchId);
+public record LunchCancelledMessage(Guid LunchId, string Route = "lunch-cancelled");

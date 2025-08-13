@@ -12,14 +12,11 @@ namespace Restaurants.Api.IntegrationTests.Services;
 ///   - replace the real authentication scheme with a test scheme
 ///   - injects fake claims (e.g. user ID, roles) to simulate authenticated users.
 /// </summary>
-public class FakeAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+public sealed class FakeAuthHandler(
+    IOptionsMonitor<AuthenticationSchemeOptions> options,
+    ILoggerFactory logger,
+    UrlEncoder encoder) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
-    public FakeAuthHandler(
-        IOptionsMonitor<AuthenticationSchemeOptions> options,
-        ILoggerFactory logger,
-        UrlEncoder encoder,
-        ISystemClock clock) : base(options, logger, encoder, clock) {}
-
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var claims = new[] {

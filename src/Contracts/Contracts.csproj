@@ -9,4 +9,8 @@
         <RepositoryUrl>https://github.com/stormvale/elkhorn</RepositoryUrl>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -19,7 +19,6 @@ public static class LunchCancelled
 
                 return TypedResults.Ok();
             })
-        .WithSummary("Lunch Cancelled")
-        .WithTopic("pubsub", "lunch-events"); // subscribes to the topic
+        .WithSummary("Lunch Cancelled");
     }
 }

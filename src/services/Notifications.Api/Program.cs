@@ -1,13 +1,16 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using Notifications.Api.Features;
 using Notifications.Api.Services;
 using Scalar.AspNetCore;
+using ServiceDefaults;
+using ServiceDefaults.MultiTenancy;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+builder.AddTenantServices();
+builder.AddJsonConfiguration();
+builder.AddDaprClientWithJsonConfiguration();
 
 builder.Services.AddOpenApi(o =>
 {
@@ -30,19 +33,13 @@ builder.Services.AddOpenApi(o =>
     o.AddScalarTransformers();
 });
 
-builder.Services.AddDaprClient(config =>
-{
-    // let the dapr client know that enum values will be serialized as strings
-    var jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-    jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    config.UseJsonSerializationOptions(jsonSerializerOptions);
-});
-
 builder.Services.AddTransient<EmailSender>();
 
 var app = builder.Build();
 
 app.UseCloudEvents();
+app.UseTenantResolutionMiddleware();
+
 app.MapSubscribeHandler();
 app.MapOpenApi();
 app.MapDefaultEndpoints();

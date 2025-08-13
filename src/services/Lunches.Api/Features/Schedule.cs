@@ -3,10 +3,10 @@ using Contracts.Lunches.Requests;
 using Contracts.Lunches.Responses;
 using Contracts.Restaurants.Responses;
 using Contracts.Schools.Responses;
-using Dapr.Client;
 using Lunches.Api.Domain;
 using Lunches.Api.EfCore;
 using Lunches.Api.Extensions;
+using ServiceDefaults.MultiTenancy;
 
 namespace Lunches.Api.Features;
 
@@ -14,12 +14,12 @@ public static class Schedule
 {
     public static void MapSchedule(this WebApplication app)
     {
-        app.MapPost("/", async (ScheduleLunchRequest req, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
+        app.MapPost("/", async (ScheduleLunchRequest req, AppDbContext db, ITenantAwareServiceInvoker invoker, ITenantAwarePublisher publisher, CancellationToken ct) =>
         {
-            var school = await dapr.InvokeMethodAsync<SchoolResponse>(
+            var school = await invoker.InvokeMethodAsync<SchoolResponse>(
                 HttpMethod.Get, "schools-api", $"/{req.SchoolId}", ct);
-            
-            var restaurant = await dapr.InvokeMethodAsync<RestaurantResponse>(
+
+            var restaurant = await invoker.InvokeMethodAsync<RestaurantResponse>(
                 HttpMethod.Get, "restaurants-api", $"/{req.RestaurantId}", ct);
 
             var pacLunchItems = school.Pac.LunchItems.Select(x =>
@@ -43,13 +43,13 @@ public static class Schedule
             await db.Lunches.AddAsync(lunch, ct);
             await db.SaveChangesAsync(ct);
             
-            await dapr.PublishEventAsync("pubsub", "lunch-events",
+            await publisher.PublishEventAsync("pubsub", "lunches-events", 
                 new LunchScheduledMessage(lunch.Id, lunch.Date, school.Name, restaurant.Name), ct);
             
             return TypedResults.CreatedAtRoute(
                 lunch.ToLunchResponse(),
                 routeName: GetById.RouteName,
-                routeValues: new { id = lunch.Id }
+                routeValues: new { lunchId = lunch.Id }
             );
         })
         .WithName("ScheduleLunch")

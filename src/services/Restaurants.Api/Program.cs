@@ -1,17 +1,24 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using Restaurants.Api.EfCore;
 using Restaurants.Api.Features;
 using Restaurants.Api.Features.Meals;
 using Scalar.AspNetCore;
+using ServiceDefaults;
+using ServiceDefaults.EfCore;
 using ServiceDefaults.Exceptions;
+using ServiceDefaults.MultiTenancy;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddCosmosDbContext<AppDbContext>("cosmos-db", "elkhornDb");
-builder.EnrichCosmosDbContext<AppDbContext>();
+builder.AddTenantServices();
+builder.AddJsonConfiguration();
+builder.AddDaprClientWithJsonConfiguration();
+builder.AddTenantAwareDbContext<AppDbContext>("cosmos-db", "elkhornDb");
+
+// AddCosmosDbContext enables DbContext pooling. With pooling, the DbContext is configured from the root service provider where scoped services are not available.
+// builder.AddCosmosDbContext<AppDbContext>("cosmos-db", "elkhornDb");
+// builder.EnrichCosmosDbContext<AppDbContext>();
 
 // if using multiple exception handlers, the order here matters
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -37,9 +44,6 @@ builder.Services.AddOpenApi(o =>
     o.AddScalarTransformers();
 });
 
-// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//     .AddJwtBearer(opt => builder.Configuration.Bind("JwtBearerOptions", opt));
-
 // Authorization policies go here...
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("AdminOnly", policy =>
@@ -50,40 +54,17 @@ builder.Services.AddAuthorizationBuilder()
             return role == "Admin";
         }));
 
-builder.Services.AddCors(options =>
-    options.AddDefaultPolicy(policyBuilder => policyBuilder
-        .AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader()
-    )
-);
-
-builder.Services.AddDaprClient(config =>
-{
-    // let the dapr client know that enum values will be serialized as strings
-    var jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-    jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    config.UseJsonSerializationOptions(jsonSerializerOptions);
-});
-
 builder.Services.AddProblemDetails(opt =>
 {
     opt.CustomizeProblemDetails = ctx =>
         ctx.ProblemDetails.Extensions.TryAdd("requestId", ctx.HttpContext.TraceIdentifier);
 });
 
-builder.Services.ConfigureHttpJsonOptions(options =>
-{
-    // enum values will be serialized as strings
-    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
-});
-
 var app = builder.Build();
 
-//app.UseHttpsRedirection();
-app.UseCors();
 app.UseCloudEvents();
 app.UseExceptionHandler();
+app.UseTenantResolutionMiddleware();
 
 app.MapOpenApi();
 app.MapDefaultEndpoints();

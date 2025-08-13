@@ -3,7 +3,6 @@ using Domain.Results;
 using Lunches.Api.DomainErrors;
 using Lunches.Api.EfCore;
 using Lunches.Api.Extensions;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lunches.Api.Features;
@@ -14,14 +13,14 @@ public static class GetById
 
     public static void MapGetById(this WebApplication app)
     {
-        app.MapGet("/{id:Guid}", async (Guid id, AppDbContext db, CancellationToken ct) =>
+        app.MapGet("/{lunchId:Guid}", async (Guid lunchId, AppDbContext db, CancellationToken ct) =>
         {
             var result = await db.Lunches
                 .AsNoTracking()
-                .SingleOrDefaultAsync(x => x.Id == id, ct);
+                .SingleOrDefaultAsync(x => x.Id == lunchId, ct);
 
             return result is null
-                ? Result.Failure(LunchErrors.NotFound(id)).ToProblemDetails()
+                ? Result.Failure(LunchErrors.NotFound(lunchId)).ToProblemDetails()
                 : TypedResults.Ok(result.ToLunchResponse());
         })
         .WithName(RouteName)

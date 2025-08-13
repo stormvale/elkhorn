@@ -8,7 +8,7 @@ public interface IAggregateRoot<out TId> : IEntity<TId>
 /// <summary>
 /// The default base AggregateRoot with a Guid identifier.
 /// </summary>
-public abstract class AggregateRoot(Guid id) : AggregateRoot<Guid>(id);
+public abstract class AggregateRoot(Guid id) : AggregateRoot<Guid>(id) { }
 
 public abstract class AggregateRoot<TId>(TId id) : Entity<TId>(id), IAggregateRoot<TId>
     where TId : notnull

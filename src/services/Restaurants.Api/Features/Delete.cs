@@ -1,9 +1,10 @@
 ﻿using Contracts.Restaurants.Messages;
-using Dapr.Client;
 using Domain.Results;
+using Microsoft.EntityFrameworkCore;
 using Restaurants.Api.DomainErrors;
 using Restaurants.Api.EfCore;
 using Restaurants.Api.Extensions;
+using ServiceDefaults.MultiTenancy;
 
 namespace Restaurants.Api.Features;
 
@@ -11,19 +12,23 @@ public static class Delete
 {
     public static void MapDelete(this WebApplication app)
     {
-        app.MapDelete("/{id:Guid}", async (Guid id, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
+        app.MapDelete("/{restaurantId:Guid}", async (Guid restaurantId, AppDbContext db, ITenantAwarePublisher publisher, CancellationToken ct) =>
         {
-            var restaurant = await db.Restaurants.FindAsync([id], ct);
+            var restaurant = await db.Restaurants
+                .AsNoTracking()
+                .Where(x => x.Id == restaurantId)
+                .FirstOrDefaultAsync(ct);
+            
             if (restaurant is null)
             {
-                return Result.Failure(RestaurantErrors.NotFound(id)).ToProblemDetails();
+                return Result.Failure(RestaurantErrors.NotFound(restaurantId)).ToProblemDetails();
             }
             
             // 'ExecuteDelete' and 'ExecuteDeleteAsync' are not supported by the CosmosDb provider
             db.Restaurants.Remove(restaurant);
             await db.SaveChangesAsync(ct);
 
-            await dapr.PublishEventAsync("pubsub", "restaurants-events", new RestaurantDeletedMessage(id), ct);
+            await publisher.PublishEventAsync("pubsub", "restaurants-events", new RestaurantDeletedMessage(restaurantId), ct);
             
             return TypedResults.NoContent();
         })
