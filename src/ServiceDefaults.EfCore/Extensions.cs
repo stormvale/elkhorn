@@ -42,10 +42,10 @@ public static class Extensions
                 }
             });
 
-            var tenanatInterceptor = serviceProvider.GetRequiredService<SetTenantIdInterceptor>();
+            var tenantInterceptor = serviceProvider.GetRequiredService<SetTenantIdInterceptor>();
             var auditInterceptor = serviceProvider.GetRequiredService<UpdateAuditableInterceptor>();
             
-            options.AddInterceptors(tenanatInterceptor, auditInterceptor);
+            options.AddInterceptors(tenantInterceptor, auditInterceptor);
         });
     }
 }

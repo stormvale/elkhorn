@@ -65,11 +65,11 @@ public sealed class CosmosDbEmulatorFixture : IAsyncLifetime
     {
         var database = await cosmosClient.CreateDatabaseIfNotExistsAsync("TestDb");
         
-        // create container (same container name as configured for DbContext)
+        // create the container (same container name as configured for DbContext)
         await database.Database.CreateContainerIfNotExistsAsync(
             id: "restaurants",
-            partitionKeyPath: "/id",
-            throughput: 400);
+            partitionKeyPath: "/TenantId",
+            throughput: 1000);
     }
     
     private static async Task CreateDatabaseIfNotExistsWithRetry(CosmosClient cosmosClient)
@@ -84,8 +84,8 @@ public sealed class CosmosDbEmulatorFixture : IAsyncLifetime
                 
                 await database.Database.CreateContainerIfNotExistsAsync(
                     id: "restaurants",
-                    partitionKeyPath: "/id",
-                    throughput: 400);
+                    partitionKeyPath: "/TenantId",
+                    throughput: 1000);
                     
                 break;
             }

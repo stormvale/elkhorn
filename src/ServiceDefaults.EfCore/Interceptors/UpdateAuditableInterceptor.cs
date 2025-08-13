@@ -5,7 +5,7 @@ using ServiceDefaults.EfCore.Interfaces;
 
 namespace ServiceDefaults.EfCore.Interceptors;
 
-internal sealed class UpdateAuditableInterceptor : SaveChangesInterceptor
+public sealed class UpdateAuditableInterceptor : SaveChangesInterceptor
 {
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {

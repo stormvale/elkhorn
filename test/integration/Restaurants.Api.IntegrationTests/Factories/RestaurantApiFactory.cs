@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Restaurants.Api.EfCore;
 using Restaurants.Api.IntegrationTests.Services;
+using ServiceDefaults.EfCore.Interceptors;
 
 namespace Restaurants.Api.IntegrationTests.Factories;
 
@@ -24,6 +25,8 @@ public class RestaurantApiFactory(string cosmosCosmosConnectionString) : WebAppl
     
     public FakeDaprClient FakeDaprClient { get; private set; }
 
+    public static Guid TestTenantId => Guid.Parse("4a79b424-eec8-4b1b-9309-d2987c8ac57f");
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Development");
@@ -34,14 +37,18 @@ public class RestaurantApiFactory(string cosmosCosmosConnectionString) : WebAppl
         builder.ConfigureTestServices(services =>
         {
             ConfigureEfCore(services);
-            ConfigureFakeAuthentication(services);
             ConfigureFakeDapr(services);
+            
+            // for now, we are calling the api directly (not via gateway) so we don't need auth
+            // ConfigureFakeAuthentication(services);
         });
     }
 
     /// <summary>
-    /// Replaces the EF Core configuration with one configured for the TestDb and also no SSL
+    /// Replaces the EF Core configuration with custom settings, including disabling SSL, Cosmos DB integration
+    /// and tenant-specific interceptors.
     /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/> to configure.</param>
     private void ConfigureEfCore(IServiceCollection services)
     {
         // remove everything related to ef core
@@ -51,13 +58,25 @@ public class RestaurantApiFactory(string cosmosCosmosConnectionString) : WebAppl
         
         foreach (var descriptor in descriptorsToRemove) services.Remove(descriptor);
         
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseCosmos(cosmosCosmosConnectionString, "TestDb", ConfigureCosmosDbContextNoSSL));
+        services.AddScoped<SetTenantIdInterceptor>();
+        services.AddScoped<UpdateAuditableInterceptor>();
+
+        services.AddDbContext<AppDbContext>((serviceProvider, options) =>
+        {
+            options.UseCosmos(cosmosCosmosConnectionString, "TestDb", ConfigureCosmosDbContextNoSSL);
+
+            var tenantInterceptor = serviceProvider.GetRequiredService<SetTenantIdInterceptor>();
+            var auditInterceptor = serviceProvider.GetRequiredService<UpdateAuditableInterceptor>();
+
+            options.AddInterceptors(tenantInterceptor, auditInterceptor);
+        });
     }
 
     /// <summary>
-    /// Adds a fake authentication scheme using a fake authentication handler
+    /// Configures authentication for testing purposes. Adds a fake authentication scheme
+    /// using <see cref="FakeAuthHandler"/> containing fake claims.
     /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/> to configure.</param>
     private static void ConfigureFakeAuthentication(IServiceCollection services)
     {
         // using a test auth scheme with known claims

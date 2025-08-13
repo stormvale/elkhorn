@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.AddTenantServices();
-builder.AddJsonConfiguration(); // also adds dapr client
+builder.AddJsonConfiguration();
 
 builder.Services.AddOpenApi(o =>
 {

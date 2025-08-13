@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Contracts.Common;
 using Contracts.Restaurants.Messages;
@@ -25,7 +24,8 @@ public class RestaurantApiTests : IClassFixture<CosmosDbEmulatorFixture>, IDispo
         var factory = new RestaurantApiFactory(cosmos.ConnectionString);
         
         _restaurantsHttpClient = factory.CreateClient();
-        _restaurantsHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test", "test-token");
+        _restaurantsHttpClient.DefaultRequestHeaders.Add("X-Tenant-Id", RestaurantApiFactory.TestTenantId.ToString());
+        
         _cosmosClient = cosmos.CosmosClient;
         _fakeDaprClient = factory.FakeDaprClient;
     }
@@ -58,7 +58,7 @@ public class RestaurantApiTests : IClassFixture<CosmosDbEmulatorFixture>, IDispo
         var container = _cosmosClient.GetContainer("TestDb", "restaurants");
         var cosmosResponse = await container.ReadItemAsync<dynamic>(
             postResponse.RestaurantId.ToString(),
-            new PartitionKey(postResponse.RestaurantId.ToString()),
+            new PartitionKey(RestaurantApiFactory.TestTenantId.ToString()),
             cancellationToken: TestContext.Current.CancellationToken);
 
         // verify the persisted data

@@ -4,7 +4,7 @@ using ServiceDefaults.MultiTenancy;
 
 namespace ServiceDefaults.EfCore.Interceptors;
 
-public class SetTenantIdInterceptor(TenantContext tenantContext) : SaveChangesInterceptor
+public sealed class SetTenantIdInterceptor(TenantContext tenantContext) : SaveChangesInterceptor
 {
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
