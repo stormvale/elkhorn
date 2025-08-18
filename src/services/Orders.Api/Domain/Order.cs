@@ -16,9 +16,9 @@ public class Order : AggregateRoot, ITenantAware
     public Guid TenantId { get; set; }
     public Guid LunchId { get; private set; }
     public Contact Parent { get; private set; }
-    public List<LunchOrderItem> Items { get; private set; } = [];
+    public List<IOrderItem> Items { get; } = [];
 
-    public void AddItem(LunchOrderItem item) => Items.Add(item);
+    public void AddItem(IOrderItem item) => Items.Add(item);
     
-    public decimal GetTotal() => Items.Sum(i => i.Price);
+    public decimal GetTotal() => Items.Sum(i => i.TotalPrice);
 }

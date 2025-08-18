@@ -18,6 +18,8 @@ public sealed class AppDbContext(
             .OwnsMany(x => x.AvailablePacItems, builder => builder.WithOwner())
             .OwnsMany(x => x.AvailableRestaurantItems, builder => builder.WithOwner())
             .HasKey(x => x.Id);
+        
+        modelBuilder.Entity<LunchItem>().Property(x => x.Name).HasMaxLength(100);
     }
 }
 

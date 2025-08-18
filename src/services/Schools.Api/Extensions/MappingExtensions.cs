@@ -30,7 +30,6 @@ public static class MappingExtensions
         school.ExternalId,
         school.Contact.ToResponse(),
         school.Address.ToResponse(),
-        school.Pac.ToResponse(),
-        school.Version
+        school.Pac.ToResponse()
     );
 }

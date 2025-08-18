@@ -1,9 +1,28 @@
-﻿namespace Lunches.Api.Domain;
+﻿using Domain.Abstractions;
+using Domain.Interfaces;
+using Domain.Results;
 
-public record LunchItem(string Name, decimal Price, List<LunchItemModifier> AvailableModifiers)
+namespace Lunches.Api.Domain;
+
+public class LunchItem(Guid id) : Entity(id), IPurchasable
 {
-    public LunchItem() : this(string.Empty, 0, [])
+    // ef constructor?
+    
+    public static Result<LunchItem> Create(string name, decimal price, List<LunchItemModifier> availableModifiers)
     {
-        // ef constructor. required because of something to do with constructor parameter matching.
+        var itemId = Guid.CreateVersion7();
+        
+        var item = new LunchItem(itemId)
+        {
+            Name = name,
+            Price = price,
+            AvailableModifiers = availableModifiers
+        };
+
+        return Result.Success(item);
     }
+
+    public required string Name { get; init; }
+    public decimal Price { get; init; }
+    public List<LunchItemModifier> AvailableModifiers { get; init; } = [];
 }

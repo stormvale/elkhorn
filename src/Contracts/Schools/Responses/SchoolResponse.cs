@@ -8,5 +8,4 @@ public sealed record SchoolResponse(
     string ExternalId,
     Contact Contact,
     Address Address,
-    PacResponse Pac,
-    uint Version);
+    PacResponse Pac);
