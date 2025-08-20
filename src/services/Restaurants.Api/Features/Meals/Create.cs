@@ -8,7 +8,7 @@ using Restaurants.Api.Domain;
 using Restaurants.Api.DomainErrors;
 using Restaurants.Api.EfCore;
 using Restaurants.Api.Extensions;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware.MultiTenancy;
 
 namespace Restaurants.Api.Features.Meals;
 

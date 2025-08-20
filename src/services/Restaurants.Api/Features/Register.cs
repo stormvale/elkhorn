@@ -4,7 +4,7 @@ using Contracts.Restaurants.Responses;
 using Restaurants.Api.Domain;
 using Restaurants.Api.EfCore;
 using Restaurants.Api.Extensions;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware.MultiTenancy;
 
 namespace Restaurants.Api.Features;
 

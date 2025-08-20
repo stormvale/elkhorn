@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware;
+using ServiceDefaults.Middleware.MultiTenancy;
 
 namespace ServiceDefaults.EfCore.Interceptors;
 
-public sealed class SetTenantIdInterceptor(TenantContext tenantContext) : SaveChangesInterceptor
+public sealed class SetTenantIdInterceptor(IRequestContextAccessor requestContext) : SaveChangesInterceptor
 {
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
@@ -20,7 +21,9 @@ public sealed class SetTenantIdInterceptor(TenantContext tenantContext) : SaveCh
 
     private void UpdateTenantId(DbContext? context)
     {
-        if (context == null || tenantContext.TenantId == Guid.Empty)
+        var tenantId = requestContext.Current.Tenant.TenantId;
+        
+        if (context == null || tenantId == Guid.Empty)
         {
             return;
         }
@@ -29,7 +32,7 @@ public sealed class SetTenantIdInterceptor(TenantContext tenantContext) : SaveCh
         {
             if (entry is { State: EntityState.Added, Entity: ITenantAware tenantAwareEntity })
             {
-                tenantAwareEntity.TenantId = tenantContext.TenantId;
+                tenantAwareEntity.TenantId = tenantId;
             }
         }
     }

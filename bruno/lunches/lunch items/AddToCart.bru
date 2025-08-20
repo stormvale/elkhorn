@@ -1,0 +1,15 @@
+meta {
+  name: AddToCart
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://{{host.lunches.api}}/{{lunchId}}/items/0198c5bb-fc12-7d4c-bdfd-069669bf4318/add-to-cart
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

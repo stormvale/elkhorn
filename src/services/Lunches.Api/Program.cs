@@ -1,18 +1,20 @@
 using Lunches.Api.EfCore;
 using Lunches.Api.Features;
+using Lunches.Api.Features.LunchItems;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using ServiceDefaults;
 using ServiceDefaults.EfCore;
 using ServiceDefaults.Exceptions;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware;
+using ServiceDefaults.Middleware.MultiTenancy;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddTenantServices();
 builder.AddJsonConfiguration();
-builder.AddDaprClientWithJsonConfiguration();
+builder.AddRequestContextServices();
+builder.AddDaprClientAndTenantAwareServices();
 builder.AddTenantAwareDbContext<AppDbContext>("cosmos-db", "elkhornDb");
 
 // if using multiple exception handlers, the order here matters
@@ -49,7 +51,7 @@ var app = builder.Build();
 
 app.UseCloudEvents();
 app.UseExceptionHandler();
-app.UseTenantResolutionMiddleware();
+app.UseRequestContextMiddleware();
 
 app.MapOpenApi();
 app.MapDefaultEndpoints();
@@ -60,6 +62,10 @@ app.MapSchedule();
 app.MapGetById();
 app.MapList();
 app.MapCancel();
+
+// lunch items group
+var lunchItems = app.MapGroup("{lunchId:Guid}/items");
+lunchItems.MapAddLunchItemToCart();
 
 await app.RunAsync();
 

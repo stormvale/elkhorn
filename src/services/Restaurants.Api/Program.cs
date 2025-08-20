@@ -6,14 +6,15 @@ using Scalar.AspNetCore;
 using ServiceDefaults;
 using ServiceDefaults.EfCore;
 using ServiceDefaults.Exceptions;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware;
+using ServiceDefaults.Middleware.MultiTenancy;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddTenantServices();
 builder.AddJsonConfiguration();
-builder.AddDaprClientWithJsonConfiguration();
+builder.AddRequestContextServices();
+builder.AddDaprClientAndTenantAwareServices();
 builder.AddTenantAwareDbContext<AppDbContext>("cosmos-db", "elkhornDb");
 
 // AddCosmosDbContext enables DbContext pooling. With pooling, the DbContext is configured from the root service provider where scoped services are not available.
@@ -64,7 +65,7 @@ var app = builder.Build();
 
 app.UseCloudEvents();
 app.UseExceptionHandler();
-app.UseTenantResolutionMiddleware();
+app.UseRequestContextMiddleware();
 
 app.MapOpenApi();
 app.MapDefaultEndpoints();

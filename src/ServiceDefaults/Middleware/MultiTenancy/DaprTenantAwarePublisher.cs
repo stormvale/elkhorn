@@ -1,4 +1,6 @@
-﻿namespace ServiceDefaults.MultiTenancy;
+﻿using Dapr.Client;
+
+namespace ServiceDefaults.Middleware.MultiTenancy;
 
 public interface ITenantAwarePublisher
 {
@@ -12,3 +14,20 @@ public interface ITenantAwarePublisher
     /// <param name="ct">The cancellation token which will be forwarded to the Dapr client.</param>
     Task PublishEventAsync<T>(string pubSubName, string topicName, T data, CancellationToken ct) where T : ITenantAware;
 }
+
+public class DaprTenantAwarePublisher(DaprClient daprClient, IRequestContextAccessor requestContext) : ITenantAwarePublisher
+{
+    public async Task PublishEventAsync<T>(string pubSubName, string topicName, T data, CancellationToken ct) where T : ITenantAware
+    {
+        data.TenantId = requestContext.Current.Tenant.TenantId;
+        
+        Dictionary<string, string> metaData = new()
+        {
+            // used by pubsub subscriptions to configure routes
+            { "cloudevent.type", typeof(T).Name }
+        };
+        
+        await daprClient.PublishEventAsync(pubSubName, topicName, data, metaData, ct);
+    }
+}
+

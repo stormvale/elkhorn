@@ -19,9 +19,9 @@ public class LunchTests
             new Contact("Principal", "principal@email.com", "Phone", ContactType.Principal),
             new Address("Street", "City", "PostCode", "State"),
             new PacResponse(
-                id: Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
                 new Contact("Pac", "pac@email.com", "Phone", ContactType.Parent), [
-                new LunchItemResponse("Gummies", 1.5M, [])
+                new LunchItemResponse(Guid.CreateVersion7(),"Gummies", 1.5M, [])
             ]));
 
         var mcDonalds = new RestaurantResponse(

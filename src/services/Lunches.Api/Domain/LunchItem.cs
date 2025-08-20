@@ -22,6 +22,7 @@ public class LunchItem(Guid id) : Entity(id), IPurchasable
         return Result.Success(item);
     }
 
+    public string Type => "LunchItem";
     public required string Name { get; init; }
     public decimal Price { get; init; }
     public List<LunchItemModifier> AvailableModifiers { get; init; } = [];

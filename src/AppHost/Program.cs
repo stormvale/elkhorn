@@ -75,10 +75,10 @@ var ordersApi = builder.AddProject<Orders_Api>("orders-api")
     .WithReference(pubSub)
     .WithReference(cosmos);
 
-// builder.AddProject<Projects.Cart_Api>("cart-api")
-//     .WithDaprSidecar()
-//     .WithReference(stateStore)
-//     .WithReference(pubSub);
+var cartApi = builder.AddProject<Cart_Api>("cart-api")
+    .WithDaprSidecar()
+    .WithReference(statestore)
+    .WithReference(pubSub);
 
 // builder.AddProject<Projects.Billing_Api>("billing-api")
 //     .WithDaprSidecar()
@@ -96,6 +96,7 @@ var gatewayApi = builder.AddProject<Gateway_Api>("gateway-api")
     .WithReference(schoolsApi).WaitFor(schoolsApi)
     .WithReference(lunchesApi).WaitFor(lunchesApi)
     .WithReference(ordersApi).WaitFor(ordersApi)
+    .WithReference(cartApi).WaitFor(cartApi)
     .WithReference(usersApi).WaitFor(usersApi)
     .WithExternalHttpEndpoints();
 
@@ -112,6 +113,7 @@ var gatewayApi = builder.AddProject<Gateway_Api>("gateway-api")
         .WithApiReference(schoolsApi, options => options.WithOpenApiRoutePattern("/openapi/v1.json"))
         .WithApiReference(lunchesApi, options => options.WithOpenApiRoutePattern("/openapi/v1.json"))
         .WithApiReference(ordersApi, options => options.WithOpenApiRoutePattern("/openapi/v1.json"))
+        .WithApiReference(cartApi, options => options.WithOpenApiRoutePattern("/openapi/v1.json"))
         .WithApiReference(usersApi, options => options.WithOpenApiRoutePattern("/openapi/v1.json"));
 
 #endregion

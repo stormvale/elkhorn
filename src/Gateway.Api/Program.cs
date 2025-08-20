@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
@@ -22,17 +23,21 @@ builder.Services.AddReverseProxy()
             {
                 // when the access token is parsed into a ClaimsPrincipal, the 'tid' claim type is mapped to the full URI.
                 var tenantId = user.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
-                if (!string.IsNullOrEmpty(tenantId))
-                {
-                    // this is used by the TenantResolutionMiddleware to set the TenantId on the TenantContext
-                    transformContext.ProxyRequest.Headers.Add("X-Tenant-ID", tenantId);
-                }
+                var userId = user.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
+                var email = user.FindFirst(ClaimTypes.Email)?.Value ?? user.FindFirst("preferred_username")?.Value;
+                var roles = user.FindAll("roles").Select(r => r.Value).ToArray();
 
-                var roles = user.FindAll("roles").Select(r => r.Value);
-                if (roles.Any())
-                {
+                if (!string.IsNullOrEmpty(tenantId))
+                    transformContext.ProxyRequest.Headers.Add("X-Tenant-Id", tenantId);
+                
+                if (!string.IsNullOrEmpty(userId))
+                    transformContext.ProxyRequest.Headers.Add("X-User-Id", userId);
+
+                if (!string.IsNullOrEmpty(email))
+                    transformContext.ProxyRequest.Headers.Add("X-User-Email", email);
+
+                if (roles.Length != 0)
                     transformContext.ProxyRequest.Headers.Add("X-User-Roles", string.Join(",", roles));
-                }
             }
         });
     });

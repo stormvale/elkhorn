@@ -6,7 +6,7 @@ using Contracts.Schools.Responses;
 using Lunches.Api.Domain;
 using Lunches.Api.EfCore;
 using Lunches.Api.Extensions;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware.MultiTenancy;
 
 namespace Lunches.Api.Features;
 

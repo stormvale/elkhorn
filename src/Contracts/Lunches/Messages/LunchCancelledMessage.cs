@@ -1,3 +1,8 @@
-﻿namespace Contracts.Lunches.Messages;
+﻿using ServiceDefaults.Middleware.MultiTenancy;
 
-public record LunchCancelledMessage(Guid LunchId, string Route = "lunch-cancelled");
+namespace Contracts.Lunches.Messages;
+
+public record LunchCancelledMessage(Guid LunchId, string Route = "lunch-cancelled") : ITenantAware
+{
+    public Guid TenantId { get; set; }
+}

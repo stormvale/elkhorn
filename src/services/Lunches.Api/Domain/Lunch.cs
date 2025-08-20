@@ -4,7 +4,7 @@ using Domain.Abstractions;
 using Domain.Results;
 using Lunches.Api.DomainErrors;
 using Lunches.Api.Extensions;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware.MultiTenancy;
 
 namespace Lunches.Api.Domain;
 

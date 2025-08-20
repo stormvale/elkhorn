@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware;
+using ServiceDefaults.Middleware.MultiTenancy;
 using Users.Api.Domain;
 
 namespace Users.Api.EfCore;
 
 public sealed class AppDbContext(
     DbContextOptions<AppDbContext> options,
-    TenantContext tenantContext) : DbContext(options)
+    IRequestContextAccessor requestContext) : DbContext(options)
 {
     public DbSet<User> Users { get; set; }
 
@@ -14,7 +15,7 @@ public sealed class AppDbContext(
     {
         modelBuilder.Entity<User>().ToContainer("users")
             .HasPartitionKey(x => x.TenantId)
-            .HasQueryFilter(x => x.TenantId == tenantContext.TenantId)
+            .HasQueryFilter(x => x.TenantId == requestContext.Current.Tenant.TenantId)
             .HasKey(x => x.Id);
 
         modelBuilder.Entity<User>().Property(x => x.Name).HasMaxLength(100);

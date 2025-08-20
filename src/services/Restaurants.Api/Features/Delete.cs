@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Restaurants.Api.DomainErrors;
 using Restaurants.Api.EfCore;
 using Restaurants.Api.Extensions;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware.MultiTenancy;
 
 namespace Restaurants.Api.Features;
 
@@ -15,7 +15,6 @@ public static class Delete
         app.MapDelete("/{restaurantId:Guid}", async (Guid restaurantId, AppDbContext db, ITenantAwarePublisher publisher, CancellationToken ct) =>
         {
             var restaurant = await db.Restaurants
-                .AsNoTracking()
                 .Where(x => x.Id == restaurantId)
                 .FirstOrDefaultAsync(ct);
             

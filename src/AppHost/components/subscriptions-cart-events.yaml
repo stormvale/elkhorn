@@ -1,0 +1,13 @@
+﻿apiVersion: dapr.io/v2alpha1
+kind: Subscription
+metadata:
+  name: cart-events-subscription
+scopes:
+  - cart-api
+spec:
+  pubsubname: pubsub
+  topic: cart-events
+  routes:
+    rules:
+      - match: "event.type == 'AddItemToCartMessage'"
+        path: /add-item-to-cart

@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using Orders.Api.EfCore;
 using Orders.Api.Features;
@@ -7,14 +5,15 @@ using Scalar.AspNetCore;
 using ServiceDefaults;
 using ServiceDefaults.EfCore;
 using ServiceDefaults.Exceptions;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware;
+using ServiceDefaults.Middleware.MultiTenancy;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddTenantServices();
 builder.AddJsonConfiguration();
-builder.AddDaprClientWithJsonConfiguration();
+builder.AddRequestContextServices();
+builder.AddDaprClientAndTenantAwareServices();
 builder.AddTenantAwareDbContext<AppDbContext>("cosmos-db", "elkhornDb");
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -50,7 +49,7 @@ var app = builder.Build();
 
 app.UseCloudEvents();
 app.UseExceptionHandler();
-app.UseTenantResolutionMiddleware();
+app.UseRequestContextMiddleware();
 
 app.MapOpenApi();
 app.MapDefaultEndpoints();

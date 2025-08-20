@@ -1,6 +1,6 @@
 ﻿using Domain.Abstractions;
 using Domain.Common;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware.MultiTenancy;
 
 namespace Orders.Api.Domain;
 
@@ -12,6 +12,8 @@ public class Order : AggregateRoot, ITenantAware
         LunchId = lunchId;
         Parent = parent;
     }
+
+    // public static Order FromCart(Cart cart) { }
 
     public Guid TenantId { get; set; }
     public Guid LunchId { get; private set; }
