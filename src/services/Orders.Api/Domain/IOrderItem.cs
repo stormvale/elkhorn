@@ -1,5 +1,4 @@
 ﻿using Domain.Abstractions;
-using Domain.Interfaces;
 
 namespace Orders.Api.Domain;
 

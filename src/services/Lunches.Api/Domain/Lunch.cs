@@ -26,7 +26,7 @@ public class Lunch(Guid id) : AggregateRoot(id), ITenantAware
         };
         
         // validate invariants...
-        if (school.Pac.LunchItems.Count + restaurant.Menu.Count < 0)
+        if (school.Pac.LunchItems.Count + restaurant.Menu.Count == 0)
         {
             return Result.Failure<Lunch>(LunchErrors.NoLunchItemsAvailable());
         }

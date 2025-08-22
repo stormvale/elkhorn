@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ServiceDefaults.Middleware;
-using ServiceDefaults.Middleware.MultiTenancy;
 using Users.Api.Domain;
 
 namespace Users.Api.EfCore;

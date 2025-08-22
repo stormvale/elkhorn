@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Restaurants.Api.Domain;
 using ServiceDefaults.Middleware;
-using ServiceDefaults.Middleware.MultiTenancy;
 
 namespace Restaurants.Api.EfCore;
 

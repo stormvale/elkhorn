@@ -1,7 +1,6 @@
 ﻿using Contracts.Lunches.Responses;
 using Contracts.Schools.Responses;
 using Domain.Common;
-using Microsoft.Azure.Cosmos.Linq;
 using Schools.Api.Domain;
 
 namespace Schools.Api.Extensions;

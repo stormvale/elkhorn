@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Schools.Api.Domain;
 using ServiceDefaults.Middleware;
-using ServiceDefaults.Middleware.MultiTenancy;
 
 namespace Schools.Api.EfCore;
 

@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Orders.Api.Domain;
 using ServiceDefaults.Middleware;
-using ServiceDefaults.Middleware.MultiTenancy;
 
 namespace Orders.Api.EfCore;
 
