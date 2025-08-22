@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: 
+  url: https://{{host.cart.api}}/{{userId}}
   body: none
   auth: inherit
+}
+
+vars:pre-request {
+  userId: c896b3e8-f586-4e6e-b4ab-0b19f7a47992
 }
 
 settings {
