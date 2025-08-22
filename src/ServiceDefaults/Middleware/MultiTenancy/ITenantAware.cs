@@ -1,4 +1,4 @@
-﻿namespace ServiceDefaults.MultiTenancy;
+﻿namespace ServiceDefaults.Middleware.MultiTenancy;
 
 public interface ITenantAware
 {

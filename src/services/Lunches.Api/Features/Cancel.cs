@@ -1,10 +1,10 @@
 ﻿using Contracts.Lunches.Messages;
-using Dapr.Client;
 using Domain.Results;
 using Lunches.Api.DomainErrors;
 using Lunches.Api.EfCore;
 using Lunches.Api.Extensions;
 using Microsoft.EntityFrameworkCore;
+using ServiceDefaults.Middleware.MultiTenancy;
 
 namespace Lunches.Api.Features;
 
@@ -12,10 +12,9 @@ public static class Cancel
 {
     public static void MapCancel(this WebApplication app)
     {
-        app.MapDelete("/{lunchId:Guid}", async (Guid lunchId, AppDbContext db, DaprClient dapr, CancellationToken ct) =>
+        app.MapDelete("/{lunchId:Guid}", async (Guid lunchId, AppDbContext db, ITenantAwarePublisher publisher, CancellationToken ct) =>
         {
             var lunch = await db.Lunches
-                .AsNoTracking()
                 .Where(x => x.Id == lunchId)
                 .FirstOrDefaultAsync(ct);
             
@@ -28,7 +27,7 @@ public static class Cancel
             db.Lunches.Remove(lunch);
             await db.SaveChangesAsync(ct);
 
-            await dapr.PublishEventAsync("pubsub", "lunches-events", new LunchCancelledMessage(lunchId), ct);
+            await publisher.PublishEventAsync("pubsub", "lunches-events", new LunchCancelledMessage(lunchId), ct);
             
             return TypedResults.NoContent();
         })

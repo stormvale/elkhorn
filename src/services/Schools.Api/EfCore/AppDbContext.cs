@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Schools.Api.Domain;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware;
 
 namespace Schools.Api.EfCore;
 
 public sealed class AppDbContext(
     DbContextOptions<AppDbContext> options,
-    TenantContext tenantContext) : DbContext(options)
+    IRequestContextAccessor requestContext) : DbContext(options)
 {
     public DbSet<School> Schools { get; set; }
 
@@ -14,7 +14,7 @@ public sealed class AppDbContext(
     {
         modelBuilder.Entity<School>().ToContainer("schools")
             .HasPartitionKey(x => x.TenantId)
-            .HasQueryFilter(x => x.TenantId == tenantContext.TenantId)
+            .HasQueryFilter(x => x.TenantId == requestContext.Current.Tenant.TenantId)
             .HasKey(x => x.Id);
 
         modelBuilder.Entity<School>().Property(x => x.Name).HasMaxLength(100);

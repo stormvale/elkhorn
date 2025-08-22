@@ -1,6 +1,6 @@
 ﻿using Domain.Abstractions;
 using Domain.Common;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware.MultiTenancy;
 
 namespace Orders.Api.Domain;
 
@@ -13,12 +13,14 @@ public class Order : AggregateRoot, ITenantAware
         Parent = parent;
     }
 
+    // public static Order FromCart(Cart cart) { }
+
     public Guid TenantId { get; set; }
     public Guid LunchId { get; private set; }
     public Contact Parent { get; private set; }
-    public List<LunchOrderItem> Items { get; private set; } = [];
+    public List<IOrderItem> Items { get; } = [];
 
-    public void AddItem(LunchOrderItem item) => Items.Add(item);
+    public void AddItem(IOrderItem item) => Items.Add(item);
     
-    public decimal GetTotal() => Items.Sum(i => i.Price);
+    public decimal GetTotal() => Items.Sum(i => i.TotalPrice);
 }

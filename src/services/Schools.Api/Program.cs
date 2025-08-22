@@ -5,15 +5,16 @@ using Schools.Api.Features;
 using Schools.Api.Features.Pac;
 using ServiceDefaults;
 using ServiceDefaults.Exceptions;
-using ServiceDefaults.MultiTenancy;
 using ServiceDefaults.EfCore;
+using ServiceDefaults.Middleware;
+using ServiceDefaults.Middleware.MultiTenancy;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddTenantServices();
 builder.AddJsonConfiguration();
-builder.AddDaprClientWithJsonConfiguration();
+builder.AddRequestContextServices();
+builder.AddDaprClientAndTenantAwareServices();
 builder.AddTenantAwareDbContext<AppDbContext>("cosmos-db", "elkhornDb");
 
 // if using multiple exception handlers, the order here matters
@@ -60,7 +61,7 @@ var app = builder.Build();
 
 app.UseCloudEvents();
 app.UseExceptionHandler();
-app.UseTenantResolutionMiddleware();
+app.UseRequestContextMiddleware();
 
 app.MapOpenApi();
 app.MapDefaultEndpoints();

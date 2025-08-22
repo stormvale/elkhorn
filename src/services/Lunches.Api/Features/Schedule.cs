@@ -6,7 +6,7 @@ using Contracts.Schools.Responses;
 using Lunches.Api.Domain;
 using Lunches.Api.EfCore;
 using Lunches.Api.Extensions;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware.MultiTenancy;
 
 namespace Lunches.Api.Features;
 
@@ -22,23 +22,7 @@ public static class Schedule
             var restaurant = await invoker.InvokeMethodAsync<RestaurantResponse>(
                 HttpMethod.Get, "restaurants-api", $"/{req.RestaurantId}", ct);
 
-            var pacLunchItems = school.Pac.LunchItems.Select(x =>
-                new LunchItem(
-                    Name: x.Name,
-                    Price: x.Price,
-                    AvailableModifiers: [])
-            ).ToList();
-
-            var restaurantLunchItems = restaurant.Menu.Select(x =>
-                new LunchItem(
-                    Name: x.Name,
-                    Price: x.Price,
-                    AvailableModifiers: [.. x.AvailableModifiers.Select(y => new LunchItemModifier(y.Name, y.PriceAdjustment))])
-            ).ToList();
-            
-            var lunch = new Lunch(Guid.CreateVersion7(), req.SchoolId, req.RestaurantId, req.Date);
-            lunch.AddPacItems(pacLunchItems);
-            lunch.AddRestaurantItems(restaurantLunchItems);
+            Lunch lunch = Lunch.Create(school, restaurant, req.Date);
             
             await db.Lunches.AddAsync(lunch, ct);
             await db.SaveChangesAsync(ct);

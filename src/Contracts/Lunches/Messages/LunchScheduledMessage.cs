@@ -1,4 +1,4 @@
-﻿using ServiceDefaults.MultiTenancy;
+﻿using ServiceDefaults.Middleware.MultiTenancy;
 
 namespace Contracts.Lunches.Messages;
 

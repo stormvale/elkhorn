@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Domain.Abstractions;
 using Domain.Common;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware.MultiTenancy;
 
 namespace Restaurants.Api.Domain;
 

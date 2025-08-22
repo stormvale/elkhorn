@@ -63,6 +63,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Users.Api.Tests", "test\uni
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceDefaults.EfCore", "src\ServiceDefaults.EfCore\ServiceDefaults.EfCore.csproj", "{BCE03CCE-07A6-4165-B586-575F3242F6B4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cart.Api.Tests", "test\unit\Cart.Api.Tests\Cart.Api.Tests.csproj", "{398224CC-A1CC-4483-9023-7E79E4F9CA61}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -153,6 +155,10 @@ Global
 		{BCE03CCE-07A6-4165-B586-575F3242F6B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BCE03CCE-07A6-4165-B586-575F3242F6B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCE03CCE-07A6-4165-B586-575F3242F6B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{398224CC-A1CC-4483-9023-7E79E4F9CA61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{398224CC-A1CC-4483-9023-7E79E4F9CA61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{398224CC-A1CC-4483-9023-7E79E4F9CA61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{398224CC-A1CC-4483-9023-7E79E4F9CA61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -182,6 +188,7 @@ Global
 		{BDC68549-4B49-4B2A-AAE5-8BF526CB8A36} = {36665124-D7F5-44D9-A0D1-1B24BC19D845}
 		{D5C2AA26-B1FE-44B0-A133-1E30D12F7A7E} = {EED3D332-2517-45AD-B637-5F9E012B5131}
 		{BCE03CCE-07A6-4165-B586-575F3242F6B4} = {0C5A74F6-702F-4276-B76F-A37F3CBB1C90}
+		{398224CC-A1CC-4483-9023-7E79E4F9CA61} = {EED3D332-2517-45AD-B637-5F9E012B5131}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {428F9C1D-63A3-4FDC-91D4-3A6307968374}

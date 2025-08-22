@@ -17,7 +17,7 @@ public abstract class AggregateRoot<TId>(TId id) : Entity<TId>(id), IAggregateRo
     /// Marten: automatically set if used as the target of a SingleStreamAggregation. Setter can't be private.
     /// EfCore: automatically set if mapped using 'IsRowVersion' in the configuration.
     /// </summary>
-    public uint Version { get; set; }
+    public uint Version { get; protected set; }
 }
 
 

@@ -1,9 +1,8 @@
 ﻿using Domain.Abstractions;
-using Domain.Interfaces;
 using Domain.Results;
 using System.Text.Json.Serialization;
 using ServiceDefaults.EfCore.Interfaces;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware.MultiTenancy;
 using Users.Api.DomainErrors;
 
 namespace Users.Api.Domain;

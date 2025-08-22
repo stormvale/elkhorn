@@ -1,0 +1,15 @@
+meta {
+  name: Delete
+  type: http
+  seq: 6
+}
+
+delete {
+  url: https://{{host.schools.api}}/{{schoolId}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

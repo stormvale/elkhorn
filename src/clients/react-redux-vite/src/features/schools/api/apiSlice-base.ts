@@ -7,14 +7,14 @@ import { msalInstance } from '../../../msalConfig';
 export const apiBase = createApi({
   reducerPath: 'schoolsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_SCHOOLS_API_URL,
+    baseUrl: `${import.meta.env.VITE_API_GATEWAY_URL}/schools`,
     prepareHeaders: async (headers, { getState }) => {
       let token: string | null = null;
 
       // first try to get token from MSAL silently
       const accounts = msalInstance.getAllAccounts();
       if (accounts.length > 0) {
-        console.log('🔑 Attempting to get Gateway API token from MSAL silently...');
+        console.log('🔑 Attempting to get API token from MSAL silently...');
         
         try {
           const tokenResponse = await msalInstance.acquireTokenSilent({
@@ -24,7 +24,7 @@ export const apiBase = createApi({
           
           token = tokenResponse.accessToken;
         } catch (msalError) {
-          console.warn('⚠️ Could not acquire Schools API token silently from MSAL:', msalError);
+          console.warn('⚠️ Could not acquire API token silently from MSAL:', msalError);
         }
       }
 

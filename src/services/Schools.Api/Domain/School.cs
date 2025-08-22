@@ -1,10 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 using Domain.Abstractions;
 using Domain.Common;
-using Domain.Interfaces;
 using Domain.Results;
 using ServiceDefaults.EfCore.Interfaces;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware.MultiTenancy;
 
 namespace Schools.Api.Domain;
 
@@ -32,8 +31,6 @@ public class School : AggregateRoot, ITenantAware, IAuditable
     public Address Address { get; private set; }
     public Contact Contact { get; private set; }
     public Pac Pac { get; private set; }
-
-    public void UpdateContact(Contact contact) => Contact = contact;
     
     #region IAuditable
 

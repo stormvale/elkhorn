@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Restaurants.Api.Domain;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware;
 
 namespace Restaurants.Api.EfCore;
 
@@ -8,7 +8,7 @@ namespace Restaurants.Api.EfCore;
 
 public sealed class AppDbContext(
     DbContextOptions<AppDbContext> options,
-    TenantContext tenantContext) : DbContext(options)
+    IRequestContextAccessor requestContext) : DbContext(options)
 {
     public DbSet<Restaurant> Restaurants { get; set; }
     
@@ -17,7 +17,7 @@ public sealed class AppDbContext(
         modelBuilder.Entity<Restaurant>()
             .ToContainer("restaurants")
             .HasPartitionKey(x => x.TenantId)
-            .HasQueryFilter(x => x.TenantId == tenantContext.TenantId)
+            .HasQueryFilter(x => x.TenantId == requestContext.Current.Tenant.TenantId)
             .OwnsMany(r => r.Menu, mealBuilder =>
             {
                 mealBuilder.WithOwner();

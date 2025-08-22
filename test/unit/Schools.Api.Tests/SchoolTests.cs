@@ -11,7 +11,7 @@ public class SchoolTests
     {
         var address = new Address("Street", "City", "PostCode", "State");
         var contact = new Contact("Name", "Email", "Phone", ContactType.Principal);
-        var school = School.Create(Guid.CreateVersion7(),"Test School", "123", address, contact).Value!;
+        School school = School.Create(Guid.CreateVersion7(),"Test School", "123", address, contact);
     
         // id generated only when persisted
         school.Id.ShouldNotBe(Guid.Empty);

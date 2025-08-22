@@ -3,14 +3,15 @@ using Notifications.Api.Features;
 using Notifications.Api.Services;
 using Scalar.AspNetCore;
 using ServiceDefaults;
-using ServiceDefaults.MultiTenancy;
+using ServiceDefaults.Middleware;
+using ServiceDefaults.Middleware.MultiTenancy;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddTenantServices();
 builder.AddJsonConfiguration();
-builder.AddDaprClientWithJsonConfiguration();
+builder.AddRequestContextServices();
+builder.AddDaprClientAndTenantAwareServices();
 
 builder.Services.AddOpenApi(o =>
 {
@@ -38,7 +39,7 @@ builder.Services.AddTransient<EmailSender>();
 var app = builder.Build();
 
 app.UseCloudEvents();
-app.UseTenantResolutionMiddleware();
+app.UseRequestContextMiddleware();
 
 app.MapSubscribeHandler();
 app.MapOpenApi();

@@ -1,4 +1,4 @@
-﻿namespace ServiceDefaults.MultiTenancy;
+﻿namespace ServiceDefaults.Middleware.MultiTenancy;
 
 /// <summary>
 /// A shared tenant context that is populated early in the request pipeline

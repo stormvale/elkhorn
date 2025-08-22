@@ -16,7 +16,7 @@ public sealed class Pac : Entity
     }
 
     public Contact Chairperson { get; set; }
-    public List<LunchItem> LunchItems { get; set; } = [];
+    public List<PacFundraisingItem> LunchItems { get; set; } = [];
     
     public Result AddLunchItem(string name, decimal price)
     {
@@ -25,7 +25,7 @@ public sealed class Pac : Entity
             return Result.Failure(PacErrors.LunchItemAlreadyExists(name));
         }
         
-        LunchItems.Add(new LunchItem(name, price));
+        LunchItems.Add(new PacFundraisingItem(name, price));
         return Result.Success();
     }
 
@@ -35,5 +35,3 @@ public sealed class Pac : Entity
         return Result.Success();
     }
 }
-
-public record LunchItem(string Name, decimal Price);

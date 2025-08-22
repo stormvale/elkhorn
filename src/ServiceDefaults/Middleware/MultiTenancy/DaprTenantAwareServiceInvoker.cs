@@ -1,13 +1,13 @@
 ﻿using Dapr.Client;
 
-namespace ServiceDefaults.MultiTenancy;
+namespace ServiceDefaults.Middleware.MultiTenancy;
 
 public interface ITenantAwareServiceInvoker
 {
     Task<TResponse> InvokeMethodAsync<TResponse>(HttpMethod httpMethod, string appId, string methodName, CancellationToken ct);
 }
 
-public class DaprTenantAwareServiceInvoker(DaprClient daprClient, TenantContext tenantContext) : ITenantAwareServiceInvoker
+public class DaprTenantAwareServiceInvoker(DaprClient daprClient, IRequestContextAccessor requestContext) : ITenantAwareServiceInvoker
 {
     public async Task<TResponse> InvokeMethodAsync<TResponse>(HttpMethod httpMethod, string appId, string methodName, CancellationToken ct = default)
     {
@@ -17,7 +17,7 @@ public class DaprTenantAwareServiceInvoker(DaprClient daprClient, TenantContext 
         }
 
         var request = daprClient.CreateInvokeMethodRequest(httpMethod, appId, methodName);
-        request.Headers.Add("X-Tenant-Id", tenantContext.TenantId.ToString());
+        request.Headers.Add("X-Tenant-Id", requestContext.Current.Tenant.TenantId.ToString());
 
         return await daprClient.InvokeMethodAsync<TResponse>(request, ct);
     }
