@@ -15,8 +15,10 @@ public interface ITenantAwarePublisher
     Task PublishEventAsync<T>(string pubSubName, string topicName, T data, CancellationToken ct) where T : ITenantAware;
 }
 
-public class DaprTenantAwarePublisher(DaprClient daprClient, IRequestContextAccessor requestContext) : ITenantAwarePublisher
+public class DaprTenantAwarePublisher(IRequestContextAccessor requestContext) : ITenantAwarePublisher, IDisposable
 {
+    private readonly DaprClient _client = new DaprClientBuilder().Build();
+    
     public async Task PublishEventAsync<T>(string pubSubName, string topicName, T data, CancellationToken ct) where T : ITenantAware
     {
         data.TenantId = requestContext.Current.Tenant.TenantId;
@@ -27,7 +29,13 @@ public class DaprTenantAwarePublisher(DaprClient daprClient, IRequestContextAcce
             { "cloudevent.type", typeof(T).Name }
         };
         
-        await daprClient.PublishEventAsync(pubSubName, topicName, data, metaData, ct);
+        await _client.PublishEventAsync(pubSubName, topicName, data, metaData, ct);
+    }
+
+    public void Dispose()
+    {
+        _client.Dispose();
+        GC.SuppressFinalize(this);
     }
 }
 

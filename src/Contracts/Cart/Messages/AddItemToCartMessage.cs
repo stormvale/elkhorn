@@ -1,5 +1,5 @@
-﻿using System.Text.Json;
-using System.Text.Json.Nodes;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Contracts.Lunches.Responses;
 using ServiceDefaults.Middleware.MultiTenancy;
@@ -9,7 +9,7 @@ namespace Contracts.Cart.Messages;
 /// <summary>
 /// Represents a message for adding an item to a cart.
 /// </summary>
-public record AddItemToCartMessage : ITenantAware
+public record AddItemToCartMessage : ITenantAware // TenantAwareMessage
 {
     public Guid CartId { get; }
     public string ItemType { get; }
@@ -19,7 +19,14 @@ public record AddItemToCartMessage : ITenantAware
     public Guid TenantId { get; set; }
 
     [JsonConstructor]
-    private AddItemToCartMessage(Guid cartId, string itemType, Guid itemId, string itemName, string payloadJson)
+    [SetsRequiredMembers]
+    private AddItemToCartMessage(
+        Guid cartId,
+        string itemType,
+        Guid itemId,
+        string itemName,
+        string payloadJson)
+        //Guid tenantId) : base(tenantId)
     {
         CartId = cartId;
         ItemType = itemType;
@@ -35,7 +42,7 @@ public record AddItemToCartMessage : ITenantAware
             item.GetType().FullName!,
             item.Id,
             item.Name,
-            JsonSerializer.Serialize(item)
-        );
+            JsonSerializer.Serialize(item));
+            //tenantId);
     }
 }

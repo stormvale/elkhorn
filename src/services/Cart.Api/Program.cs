@@ -53,6 +53,7 @@ app.MapDefaultEndpoints();
 app.MapSubscribeHandler();
 
 // endpoints
+app.MapGetById();
 app.MapAddItem();
 
 await app.RunAsync();

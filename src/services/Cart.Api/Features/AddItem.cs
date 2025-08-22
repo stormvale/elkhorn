@@ -15,14 +15,14 @@ public static class AddItem
         {
             var cartId = message.CartId;
 
-            var cart = await state.GetStateAsync<Domain.Cart>(cartId.ToString(), ct)
+            var cart = await state.GetStateAsync<Domain.Cart>(message.TenantId, cartId.ToString(), ct)
                        ?? new Domain.Cart(cartId, []);
 
             var cartItem = CartItem.CreateFrom(message);
             
             cart.AddItem(cartItem);
             
-            await state.SaveStateAsync(cart.Id.ToString(), cart, ct);
+            await state.SaveStateAsync(message.TenantId, cart.Id.ToString(), cart, ct);
             
             return TypedResults.Ok();
         })

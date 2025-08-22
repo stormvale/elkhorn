@@ -44,6 +44,7 @@ public static class AddLunchItemToCart
 
             // we will use the user id as the cart id
             var cartId = requestContext.Current.User.UserId;
+            //var tenantId = requestContext.Current.Tenant.TenantId;
             var message = AddItemToCartMessage.CreateFrom(cartId, lunchItem.ToLunchItemResponse());
             await publisher.PublishEventAsync("pubsub", "cart-events", message, ct);
 
