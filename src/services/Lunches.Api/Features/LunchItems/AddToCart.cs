@@ -1,7 +1,5 @@
-﻿using System.Text.Json;
-using Contracts.Cart.Messages;
+﻿using Contracts.Cart.Messages;
 using Domain.Results;
-using Lunches.Api.Domain;
 using Lunches.Api.DomainErrors;
 using Lunches.Api.EfCore;
 using Lunches.Api.Extensions;
@@ -44,7 +42,9 @@ public static class AddLunchItemToCart
                 return Result.Failure(LunchItemErrors.NotFound(lunchItemId, lunchId)).ToProblemDetails();
             }
 
-            var message = CreateAddItemToCartMessage(requestContext, lunchItem);
+            // we will use the user id as the cart id
+            var cartId = requestContext.Current.User.UserId;
+            var message = AddItemToCartMessage.CreateFrom(cartId, lunchItem.ToLunchItemResponse());
             await publisher.PublishEventAsync("pubsub", "cart-events", message, ct);
 
             return TypedResults.Ok();
@@ -55,11 +55,4 @@ public static class AddLunchItemToCart
         .Produces(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status404NotFound);
     }
-    
-    // create the message (user id is used as the cart id)
-    private static AddItemToCartMessage CreateAddItemToCartMessage(IRequestContextAccessor requestContext, LunchItem lunchItem) => new (
-            requestContext.Current.User.UserId,
-            nameof(LunchItem),
-            lunchItem.Name,
-            JsonSerializer.Serialize(lunchItem.ToLunchItemResponse()));
 }

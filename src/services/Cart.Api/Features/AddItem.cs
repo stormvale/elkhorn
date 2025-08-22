@@ -18,10 +18,7 @@ public static class AddItem
             var cart = await state.GetStateAsync<Domain.Cart>(cartId.ToString(), ct)
                        ?? new Domain.Cart(cartId, []);
 
-            var cartItem = new CartItem(
-                message.ItemType,
-                message.ItemName,
-                message.PayloadObject);
+            var cartItem = CartItem.CreateFrom(message);
             
             cart.AddItem(cartItem);
             
