@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using Dapr.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -21,19 +20,13 @@ public static class TenantServiceDefaults
     /// <param name="builder">The IHostApplicationBuilder instance.</param>
     public static void AddDaprClientAndTenantAwareServices(this IHostApplicationBuilder builder)
     {
-        // Fail fast if someone registered DaprClient into DI
-        if (builder.Services.Any(d => d.ServiceType == typeof(DaprClient)))
+        builder.Services.AddDaprClient(config =>
         {
-            throw new InvalidOperationException("DaprClient is not allowed in DI. Use ITenantAwarePublisher only.");
-        }
-        
-        // builder.Services.AddDaprClient(config =>
-        // {
-        //     var serializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-        //     serializerOptions.Converters.Add(new JsonStringEnumConverter());
-        //     
-        //     config.UseJsonSerializationOptions(serializerOptions);
-        // });
+            var serializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+            serializerOptions.Converters.Add(new JsonStringEnumConverter());
+            
+            config.UseJsonSerializationOptions(serializerOptions);
+        });
         
         builder.Services.AddScoped<ITenantAwarePublisher, DaprTenantAwarePublisher>();
         builder.Services.AddScoped<ITenantAwareServiceInvoker, DaprTenantAwareServiceInvoker>();
